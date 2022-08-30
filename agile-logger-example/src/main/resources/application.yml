@@ -1,0 +1,8 @@
+sourceflag:
+  agile-logger:
+    enable: true
+    log-mode: log
+    async: true
+    async-params:
+      core-pool-size: 1
+      maximum-pool-size: 2

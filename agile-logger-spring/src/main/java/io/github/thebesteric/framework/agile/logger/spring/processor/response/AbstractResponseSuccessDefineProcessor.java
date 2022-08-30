@@ -1,0 +1,56 @@
+package io.github.thebesteric.framework.agile.logger.spring.processor.response;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import io.github.thebesteric.framework.agile.logger.commons.utils.CollectionUtils;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
+import io.github.thebesteric.framework.agile.logger.spring.processor.ResponseSuccessDefineProcessor;
+
+import java.lang.reflect.Method;
+
+/**
+ * AbstractResponseCodeReturnedProcessor
+ * <p>Customize Code and value returned successfully when HttpStatus is 200
+ *
+ * @author Eric Joe
+ * @since 1.0
+ */
+public abstract class AbstractResponseSuccessDefineProcessor implements ResponseSuccessDefineProcessor {
+
+    protected final AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine;
+
+    public AbstractResponseSuccessDefineProcessor(AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine) {
+        this.responseSuccessDefine = responseSuccessDefine;
+    }
+
+    /**
+     * process exception message
+     * <p>Customize Code and value returned successfully when HttpStatus is 200
+     * <p>If no exception occurs, return null
+     *
+     * @param method         Method
+     * @param resultJsonNode JsonNode
+     * @param result         Object
+     * @return String
+     */
+    abstract String doProcessor(Method method, JsonNode resultJsonNode, Object result);
+
+    @Override
+    public String processor(Method method, Object result) throws JsonProcessingException {
+        // Result converts to JsonNode
+        JsonNode resultJsonNode = getResultJsonNode(result);
+        return doProcessor(method, resultJsonNode, result);
+    }
+
+    /**
+     * Gets the default response codes and message fields
+     *
+     * @return {@link AgileLoggerSpringProperties.ResponseSuccessDefine}
+     */
+    public static AgileLoggerSpringProperties.ResponseSuccessDefine getDefaultResponseSuccessDefine() {
+        AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine = new AgileLoggerSpringProperties.ResponseSuccessDefine();
+        responseSuccessDefine.setCodeFields(CollectionUtils.createList(new AgileLoggerSpringProperties.ResponseSuccessDefine.CodeField("code", 200)));
+        responseSuccessDefine.setMessageFields(CollectionUtils.createList("message", "msg"));
+        return responseSuccessDefine;
+    }
+}
