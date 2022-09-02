@@ -27,25 +27,21 @@ public class SyntheticAgileLogger {
     }
 
     public SyntheticAgileLogger(AgileLogger onType, AgileLogger onMethod) {
-        String prefixOnType = null, prefixOnMethod = null;
         String tagOnType = null, tagOnMethod = null;
         String extraOnType = null, extraOnMethod = null;
         String levelOnType = null, levelOnMethod = null;
         String[] ignoreMethodsOnType = null;
         if (onType != null) {
-            prefixOnType = onType.prefix();
             tagOnType = onType.tag();
             extraOnType = onType.extra();
             levelOnType = onType.level();
             ignoreMethodsOnType = onType.ignoreMethods();
         }
         if (onMethod != null) {
-            prefixOnMethod = onMethod.prefix();
             tagOnMethod = onMethod.tag();
             extraOnMethod = onMethod.extra();
             levelOnMethod = onMethod.level();
         }
-        this.prefix = StringUtils.blankToNull(StringUtils.isNotEmpty(prefixOnMethod) ? prefixOnMethod : prefixOnType);
         this.extra = StringUtils.isNotEmpty(extraOnMethod) ? extraOnMethod : extraOnType;
         this.tag = StringUtils.isNotEquals(AbstractEntity.TAG_DEFAULT, tagOnMethod) ? tagOnMethod != null ? tagOnMethod : tagOnType : tagOnType;
         this.level = StringUtils.isNotEquals(AbstractEntity.LEVEL_INFO, levelOnMethod) ? levelOnMethod != null ? levelOnMethod : levelOnType : levelOnType;

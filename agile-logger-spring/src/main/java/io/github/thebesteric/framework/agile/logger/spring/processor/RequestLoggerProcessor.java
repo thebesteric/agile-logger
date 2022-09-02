@@ -26,7 +26,6 @@ public interface RequestLoggerProcessor {
         invokeLog.setLevel(syntheticAgileLogger.getLevel());
         invokeLog.setTag(syntheticAgileLogger.getTag());
         invokeLog.setExtra(syntheticAgileLogger.getExtra());
-        invokeLog.setPrefix(syntheticAgileLogger.getPrefix());
     }
 
     default Method getMethod(String uri) {

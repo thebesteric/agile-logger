@@ -1,7 +1,7 @@
 sourceflag:
   agile-logger:
     enable: true
-    log-mode: log
+    log-mode: redis
     async: true
     async-params:
       core-pool-size: 1

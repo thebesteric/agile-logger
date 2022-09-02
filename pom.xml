@@ -63,6 +63,7 @@
         <jedis.version>4.2.3</jedis.version>
         <com.google.guava.version>31.1-jre</com.google.guava.version>
         <skywalking.version>8.11.0</skywalking.version>
+        <netty.version>4.1.80.Final</netty.version>
     </properties>
 
     <modules>
@@ -72,8 +73,8 @@
         <module>agile-logger-boot-starter</module>
         <module>agile-logger-plugin-redis</module>
         <module>agile-logger-plugin-mysql</module>
-        <module>agile-logger-example</module>
         <module>agile-logger-plugin-cache</module>
+        <module>agile-logger-example</module>
     </modules>
 
     <dependencies>
@@ -194,6 +195,13 @@
                 <version>${spring.boot.version}</version>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
             <!-- https://search.maven.org/artifact/cglib/cglib -->
             <dependency>
                 <groupId>cglib</groupId>
@@ -241,6 +249,13 @@
                 <groupId>org.apache.skywalking</groupId>
                 <artifactId>apm-toolkit-trace</artifactId>
                 <version>${skywalking.version}</version>
+            </dependency>
+
+            <!-- https://search.maven.org/artifact/io.netty/netty-all -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
             </dependency>
 
         </dependencies>

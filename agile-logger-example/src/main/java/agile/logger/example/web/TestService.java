@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * @since 1.0
  */
 @Service
-@AgileLogger(prefix = "[UPSTREAM]", tag = "TestService", extra = "just in test")
+@AgileLogger(tag = "[UPSTREAM]", extra = "just in test")
 public class TestService {
 
     ApplicationContext context;
@@ -27,7 +27,7 @@ public class TestService {
         this.context1 = context1;
     }
 
-    @AgileLogger(tag = "TestService: add", extra = "just in test: add")
+    @AgileLogger(tag = "[UPSTREAM-OUT]", extra = "just in test: add")
     public int add(int a, int b) {
         hello("agile");
         return a + b;

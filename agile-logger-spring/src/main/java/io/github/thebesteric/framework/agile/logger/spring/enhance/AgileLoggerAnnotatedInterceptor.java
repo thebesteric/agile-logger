@@ -70,7 +70,6 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             invokeLog = InvokeLog.builder(invokeLog)
                     .trackId(trackId)
                     .createdAt(duration.getStartTime())
-                    .prefix(syntheticAgileLogger.getPrefix())
                     .tag(syntheticAgileLogger.getTag())
                     .extra(syntheticAgileLogger.getExtra())
                     .level(syntheticAgileLogger.getLevel())

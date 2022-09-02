@@ -18,7 +18,7 @@
         <!-- https://search.maven.org/artifact/io.github.thebesteric.framework/agile-logger-core -->
         <dependency>
             <groupId>io.github.thebesteric.framework.agile</groupId>
-            <artifactId>agile-logger-core</artifactId>
+            <artifactId>agile-logger-spring</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -27,6 +27,19 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- https://search.maven.org/artifact/io.netty/netty-all -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
+
 
     </dependencies>
 

@@ -9,9 +9,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface AgileLogger {
 
-    /** Log prefix */
-    String prefix() default "";
-
     /** Tag information */
     String tag() default AbstractEntity.TAG_DEFAULT;
 

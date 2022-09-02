@@ -1,7 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.core;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.github.thebesteric.framework.agile.logger.core.domain.AgileLoggerConstant;
+import io.github.thebesteric.framework.agile.logger.commons.AgileLoggerConstant;
 import io.github.thebesteric.framework.agile.logger.core.domain.LogMode;
 import io.github.thebesteric.framework.agile.logger.core.handler.Handler;
 import io.github.thebesteric.framework.agile.logger.core.pipeline.Node;

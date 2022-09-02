@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  * @since 2022/7/25
  */
-@AgileLogger(prefix = "[UPSTREAM]", tag = "math")
+@AgileLogger(tag = "math")
 // @IgnoreMethods({"add", "minus"})
 public class MathCalc {
 

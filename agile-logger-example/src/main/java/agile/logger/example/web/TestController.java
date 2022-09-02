@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/test")
-@AgileLogger(prefix = "[API]")
+@AgileLogger(tag = "[API]")
 public class TestController {
 
     @Autowired

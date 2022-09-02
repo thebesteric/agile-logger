@@ -12,7 +12,7 @@ import io.github.thebesteric.framework.agile.logger.core.utils.AgileLoggerHelper
  * @version 1.0
  * @since 2022-07-25
  */
-@AgileLogger(prefix = "[API]", tag = "application")
+@AgileLogger(tag = "application")
 public class BasicApplication {
 
     // -javaagent:agile-logger-core-0.0.1.jar=stdout

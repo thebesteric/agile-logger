@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  io.github.thebesteric.framework.agile.logger.plugin.redis.spring.config.AgileLoggerRedisAutoConfiguration

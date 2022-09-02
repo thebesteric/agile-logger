@@ -1,7 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.annotation.Column;
 import io.github.thebesteric.framework.agile.logger.core.annotation.Table;
@@ -24,9 +23,6 @@ public class InvokeLog extends AbstractEntity {
 
     @Column(length = 64)
     protected String parentId;
-
-    @Column(length = 64)
-    protected String prefix;
 
     @Column(length = 32)
     protected String tag = TAG_DEFAULT;
@@ -77,7 +73,7 @@ public class InvokeLog extends AbstractEntity {
     }
 
     public String print() {
-        return StringUtils.isEmpty(this.prefix) ? this.toString() : this.prefix + " " + this;
+        return this.toString();
     }
 
     public static class Builder {
@@ -95,11 +91,6 @@ public class InvokeLog extends AbstractEntity {
 
         public Builder parentId(String parentId) {
             this.invokeLog.parentId = parentId;
-            return this;
-        }
-
-        public Builder prefix(String prefix) {
-            this.invokeLog.prefix = prefix;
             return this;
         }
 
@@ -179,14 +170,6 @@ public class InvokeLog extends AbstractEntity {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     public String getTag() {

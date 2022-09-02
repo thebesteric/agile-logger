@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization {
 
-    protected AgileLoggerInitialization(AgileLoggerSpringProperties properties, List<ClassPathScanner> classPathScanners) {
+    public AgileLoggerInitialization(AgileLoggerSpringProperties properties, List<ClassPathScanner> classPathScanners) {
         super(properties, classPathScanners);
     }
 

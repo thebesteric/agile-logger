@@ -27,7 +27,7 @@ public abstract class AbstractAgileLoggerInitialization implements SmartLifecycl
     protected final AgileLoggerSpringProperties properties;
     protected final List<ClassPathScanner> classPathScanners;
 
-    protected AbstractAgileLoggerInitialization(AgileLoggerSpringProperties properties, List<ClassPathScanner> classPathScanners) {
+    public AbstractAgileLoggerInitialization(AgileLoggerSpringProperties properties, List<ClassPathScanner> classPathScanners) {
         this.properties = properties;
         this.classPathScanners = classPathScanners;
     }

@@ -26,7 +26,6 @@ public abstract class AbstractHeadHandler implements Handler {
         AgileLoggerContext loggerContext = ctx.getAgileLoggerContext(joinMethod.getJoinPoint());
         SyntheticAgileLogger syntheticAgileLogger = loggerContext.getSyntheticAgileLogger();
         invokeLog.setTrackId(ctx.getTrackId());
-        invokeLog.setPrefix(syntheticAgileLogger.getPrefix());
         invokeLog.setTag(syntheticAgileLogger.getTag());
         invokeLog.setLevel(syntheticAgileLogger.getLevel());
         invokeLog.setExtra(syntheticAgileLogger.getExtra());
