@@ -118,6 +118,9 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
         do {
             for (Field sourceField : currentClass.getDeclaredFields()) {
                 try {
+                    if (ReflectUtils.isStatic(sourceField) && ReflectUtils.isFinal(sourceField)) {
+                        continue;
+                    }
                     ReflectUtils.set(sourceField, target, source);
                 } catch (Exception ex) {
                     LoggerPrinter.error(log, ex.getMessage());

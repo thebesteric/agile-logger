@@ -83,6 +83,7 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
         if (isUseSkyWalkingTrace && useSkyWalkingTrace) {
             if (StringUtils.isEmpty(TraceContext.traceId()) || "Ignored_Trace".equalsIgnoreCase(TraceContext.traceId())) {
                 LoggerPrinter.warn(log, "Please check Sky Walking agent setting are correct or OAP Server are running that the local track id will be used instead");
+                LoggerPrinter.warn(log, "Make sure add VM options, Example: -javaagent:/opt/skywalking-agent.jar -Dskywalking.agent.service_name=app -Dskywalking.collector.backend_service=127.0.0.1:11800");
                 TransactionUtils.initialize(AgileContext.trackIdGenerator.generate());
                 useSkyWalkingTrace = false;
             } else {

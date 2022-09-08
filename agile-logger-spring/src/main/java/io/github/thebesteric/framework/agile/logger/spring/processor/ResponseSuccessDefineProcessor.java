@@ -3,6 +3,7 @@ package io.github.thebesteric.framework.agile.logger.spring.processor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.thebesteric.framework.agile.logger.commons.utils.JsonUtils;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 
 import java.lang.reflect.Method;
 
@@ -25,6 +26,11 @@ public interface ResponseSuccessDefineProcessor {
      * @return exception message
      */
     String processor(Method method, Object result) throws JsonProcessingException;
+
+
+    AgileLoggerSpringProperties.ResponseSuccessDefine getResponseSuccessDefine();
+
+    void setResponseSuccessDefine(AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine);
 
     /**
      * Get JsonNode for result

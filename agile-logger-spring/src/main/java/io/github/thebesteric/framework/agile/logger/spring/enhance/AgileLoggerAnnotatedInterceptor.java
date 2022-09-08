@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.spring.enhance;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod;
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethods;
 import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
@@ -115,7 +116,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             return false;
         }
 
-        // Check the IgnoreModifiers in the properties
+        // Check the IgnoreModifier type in the properties
         AgileLoggerSpringProperties properties = agileLoggerContext.getProperties();
         AgileLoggerSpringProperties.IgnoreModifiers.IgnoreModifier ignoreModifierByType = properties.getIgnoreModifiers().getType();
         if ((ignoreModifierByType.isPrivateModifier() && ReflectUtils.isPrivate(type))
@@ -123,9 +124,20 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             return false;
         }
 
+        // Check the IgnoreModifier method in the properties
         AgileLoggerSpringProperties.IgnoreModifiers.IgnoreModifier ignoreModifierByMethod = properties.getIgnoreModifiers().getMethod();
-        return (!ignoreModifierByMethod.isPrivateModifier() || !ReflectUtils.isPrivate(method))
-                && (!ignoreModifierByMethod.isStaticModifier() || !ReflectUtils.isStatic(method));
+        if ((ignoreModifierByMethod.isPrivateModifier() && ReflectUtils.isPrivate(method))
+                || (ignoreModifierByMethod.isStaticModifier() && ReflectUtils.isStatic(method))) {
+            return false;
+        }
+
+        // SkyWalking's setSkyWalkingDynamicField(Object arg) method is ignored
+        if (agileLoggerContext.getProperties().isUseSkyWalkingTrace() && StringUtils.isEquals("setSkyWalkingDynamicField", method.getName())) {
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            return parameterTypes.length != 1 || !parameterTypes[0].getName().equals("java.lang.Object");
+        }
+
+        return true;
     }
 
 }
