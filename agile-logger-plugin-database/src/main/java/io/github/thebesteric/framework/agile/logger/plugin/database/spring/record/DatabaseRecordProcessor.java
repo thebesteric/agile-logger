@@ -80,7 +80,7 @@ public class DatabaseRecordProcessor extends AbstractThreadPoolRecordProcessor {
     }
 
     private String getTableName(Class<?> clazz) {
-        String tableNamePrefix = this.agileLoggerContext.getProperties().getDatabase().getTableNamePrefix();
+        String tableNamePrefix = this.agileLoggerContext.getProperties().getPlugins().getDatabase().getTableNamePrefix();
         return this.agileLoggerJdbcTemplate.getTableName(tableNamePrefix, clazz);
     }
 

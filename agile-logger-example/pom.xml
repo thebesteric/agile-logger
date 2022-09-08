@@ -40,10 +40,17 @@
             <version>${project.version}</version>
         </dependency>
 
+<!--        &lt;!&ndash; https://search.maven.org/artifact/io.github.thebesteric.framework/agile-logger-plugin-redis &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>io.github.thebesteric.framework.agile</groupId>-->
+<!--            <artifactId>agile-logger-plugin-database</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
+
         <!-- https://search.maven.org/artifact/io.github.thebesteric.framework/agile-logger-plugin-redis -->
         <dependency>
             <groupId>io.github.thebesteric.framework.agile</groupId>
-            <artifactId>agile-logger-plugin-database</artifactId>
+            <artifactId>agile-logger-plugin-cache</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -54,11 +61,11 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.30</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>mysql</groupId>-->
+<!--            <artifactId>mysql-connector-java</artifactId>-->
+<!--            <version>8.0.30</version>-->
+<!--        </dependency>-->
 
     </dependencies>
 

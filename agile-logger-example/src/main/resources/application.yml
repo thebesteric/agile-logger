@@ -1,13 +1,19 @@
 sourceflag:
   agile-logger:
     enable: true
-    log-mode: database
-    async: true
+    log-mode: stdout
+    use-sky-walking-trace: true
+    async: false
     async-params:
       core-pool-size: 1
       maximum-pool-size: 2
-    database:
-      url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&userSSL=false&serverTimezone=Asia/Shanghai
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      username: root
-      password: root
+    plugins:
+      database:
+        url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&userSSL=false&serverTimezone=Asia/Shanghai
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: root
+      cache:
+        initial-capacity: 200
+        maximum-size: 2000
+        expired-time: 3600000

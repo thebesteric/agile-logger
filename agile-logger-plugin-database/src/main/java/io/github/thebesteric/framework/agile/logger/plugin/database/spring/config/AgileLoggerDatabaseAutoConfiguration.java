@@ -6,6 +6,7 @@ import io.github.thebesteric.framework.agile.logger.commons.AgileLoggerConstant;
 import io.github.thebesteric.framework.agile.logger.plugin.database.spring.jdbc.AgileLoggerJdbcTemplate;
 import io.github.thebesteric.framework.agile.logger.plugin.database.spring.record.DatabaseRecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
+import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,13 +34,14 @@ public class AgileLoggerDatabaseAutoConfiguration {
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "HikariDataSource")
     public DataSource hikariDataSource(AgileLoggerSpringProperties properties) {
+        AgileLoggerSpringProperties.Plugins plugins = properties.getPlugins();
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(properties.getDatabase().getUrl());
-        config.setUsername(properties.getDatabase().getUsername());
-        config.setPassword(properties.getDatabase().getPassword());
-        config.setDriverClassName(properties.getDatabase().getDriverClassName());
-        config.setMinimumIdle(properties.getDatabase().getMinIdle());
-        config.setMaximumPoolSize(properties.getDatabase().getMaxActive());
+        config.setJdbcUrl(plugins.getDatabase().getUrl());
+        config.setUsername(plugins.getDatabase().getUsername());
+        config.setPassword(plugins.getDatabase().getPassword());
+        config.setDriverClassName(plugins.getDatabase().getDriverClassName());
+        config.setMinimumIdle(plugins.getDatabase().getMinIdle());
+        config.setMaximumPoolSize(plugins.getDatabase().getMaxActive());
         return new HikariDataSource(config);
     }
 
@@ -52,8 +54,8 @@ public class AgileLoggerDatabaseAutoConfiguration {
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "DatabaseRecordProcessor")
     @DependsOn("agileLoggerContext")
-    public DatabaseRecordProcessor databaseRecordProcessor(@Nullable AgileLoggerContext agileLoggerContext,
-                                                           AgileLoggerJdbcTemplate agileLoggerJdbcTemplate) {
+    public RecordProcessor databaseRecordProcessor(@Nullable AgileLoggerContext agileLoggerContext,
+                                                   AgileLoggerJdbcTemplate agileLoggerJdbcTemplate) {
         return new DatabaseRecordProcessor(agileLoggerContext, agileLoggerJdbcTemplate);
     }
 

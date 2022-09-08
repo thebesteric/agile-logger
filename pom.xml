@@ -61,8 +61,8 @@
         <apache.commons.lang3>3.12.0</apache.commons.lang3>
         <apache.commons.collections4>4.4</apache.commons.collections4>
         <jedis.version>4.2.3</jedis.version>
-        <com.google.guava.version>31.1-jre</com.google.guava.version>
-        <skywalking.version>8.11.0</skywalking.version>
+        <caffeine.version>3.1.1</caffeine.version>
+        <skywalking.version>8.12.0</skywalking.version>
         <netty.version>4.1.80.Final</netty.version>
     </properties>
 
@@ -244,11 +244,11 @@
                 <version>${jedis.version}</version>
             </dependency>
 
-            <!-- https://search.maven.org/artifact/com.google.guava/guava -->
+            <!-- https://search.maven.org/artifact/com.github.ben-manes.caffeine/caffeine -->
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${com.google.guava.version}</version>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
             </dependency>
 
             <!-- https://search.maven.org/artifact/org.apache.skywalking/apm-toolkit-trace -->

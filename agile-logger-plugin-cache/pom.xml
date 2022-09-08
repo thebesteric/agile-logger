@@ -13,4 +13,21 @@
 
     <artifactId>agile-logger-plugin-cache</artifactId>
 
+    <dependencies>
+
+        <!-- https://search.maven.org/artifact/io.github.thebesteric.framework/agile-logger-core -->
+        <dependency>
+            <groupId>io.github.thebesteric.framework.agile</groupId>
+            <artifactId>agile-logger-spring</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- https://search.maven.org/artifact/com.github.ben-manes.caffeine/caffeine -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+    </dependencies>
+
 </project>

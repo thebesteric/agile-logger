@@ -35,9 +35,6 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
             return;
         }
 
-        LoggerPrinter.info(log, "Log Mode is {}, Running in {}",
-                properties.getLogMode(), properties.isAsync() ? "Async: " + properties.getAsyncParams() : "Sync");
-
         String projectPath = ClassPathUtils.getProjectPath();
 
         // Scanner @Controller and @SwitchLogger and so on
@@ -54,5 +51,8 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
             LoggerPrinter.debug(log, "Scan project path is {}", projectPath);
             AbstractAgileLoggerFilter.URL_MAPPING.forEach((url, method) -> LoggerPrinter.debug(log, "Mapping: {} => {}", url, ClassUtils.getMethodQualifiedName(method)));
         }
+
+        LoggerPrinter.info(log, "Log Mode is {}, Running in {}",
+                properties.getLogMode(), properties.isAsync() ? "Async: " + properties.getAsyncParams() : "Sync");
     }
 }

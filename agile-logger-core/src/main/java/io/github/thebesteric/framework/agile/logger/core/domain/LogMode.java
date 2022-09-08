@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 public enum LogMode {
 
-    STDOUT("stdout"), LOG("log"), REDIS("redis"), DATABASE("database");
+    STDOUT("stdout"), LOG("log"), REDIS("redis"), DATABASE("database"), CACHE("cache");
 
     private final String name;
 

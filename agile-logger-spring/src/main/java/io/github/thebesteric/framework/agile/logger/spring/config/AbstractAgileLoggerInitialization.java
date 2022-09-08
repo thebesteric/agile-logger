@@ -14,8 +14,7 @@ import java.util.List;
  * AbstractAgileLoggerInitialization
  *
  * @author Eric Joe
- * @build 2022-08-16 14:32:23
- * @since 1.0
+ * @version 1.0
  */
 public abstract class AbstractAgileLoggerInitialization implements SmartLifecycle, ApplicationContextAware {
 

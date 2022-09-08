@@ -46,22 +46,24 @@ public class AgileLoggerRedisAutoConfiguration {
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "GenericObjectPoolConfig")
     @SuppressWarnings("rawtypes")
     public GenericObjectPoolConfig genericObjectPoolConfig(AgileLoggerSpringProperties properties) {
+        AgileLoggerSpringProperties.Plugins plugins = properties.getPlugins();
         GenericObjectPoolConfig genericObjectPoolConfig = new GenericObjectPoolConfig<>();
-        genericObjectPoolConfig.setMaxIdle(properties.getRedis().getMaxIdle());
-        genericObjectPoolConfig.setMinIdle(properties.getRedis().getMinIdle());
-        genericObjectPoolConfig.setMaxTotal(properties.getRedis().getMaxActive());
-        genericObjectPoolConfig.setMaxWait(Duration.ofMillis(properties.getRedis().getMaxWait()));
+        genericObjectPoolConfig.setMaxIdle(plugins.getRedis().getMaxIdle());
+        genericObjectPoolConfig.setMinIdle(plugins.getRedis().getMinIdle());
+        genericObjectPoolConfig.setMaxTotal(plugins.getRedis().getMaxActive());
+        genericObjectPoolConfig.setMaxWait(Duration.ofMillis(plugins.getRedis().getMaxWait()));
         return genericObjectPoolConfig;
     }
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisConfiguration")
     public RedisConfiguration redisConfiguration(AgileLoggerSpringProperties properties) {
+        AgileLoggerSpringProperties.Plugins plugins = properties.getPlugins();
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setDatabase(properties.getRedis().getDatabase());
-        redisStandaloneConfiguration.setHostName(properties.getRedis().getHost());
-        redisStandaloneConfiguration.setPort(properties.getRedis().getPort());
-        redisStandaloneConfiguration.setUsername(properties.getRedis().getUsername());
-        redisStandaloneConfiguration.setPassword(RedisPassword.of(properties.getRedis().getPassword()));
+        redisStandaloneConfiguration.setDatabase(plugins.getRedis().getDatabase());
+        redisStandaloneConfiguration.setHostName(plugins.getRedis().getHost());
+        redisStandaloneConfiguration.setPort(plugins.getRedis().getPort());
+        redisStandaloneConfiguration.setUsername(plugins.getRedis().getUsername());
+        redisStandaloneConfiguration.setPassword(RedisPassword.of(plugins.getRedis().getPassword()));
         return redisStandaloneConfiguration;
     }
 
@@ -72,9 +74,10 @@ public class AgileLoggerRedisAutoConfiguration {
                                                              @Qualifier(AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisConfiguration")
                                                              RedisConfiguration redisConfiguration,
                                                              AgileLoggerSpringProperties properties) {
+        AgileLoggerSpringProperties.Plugins plugins = properties.getPlugins();
         return new LettuceConnectionFactory(redisConfiguration, LettucePoolingClientConfiguration.builder()
-                .commandTimeout(Duration.ofMillis(properties.getRedis().getTimeout()))
-                .shutdownTimeout(Duration.ofMillis(properties.getRedis().getShutdownTimeout()))
+                .commandTimeout(Duration.ofMillis(plugins.getRedis().getTimeout()))
+                .shutdownTimeout(Duration.ofMillis(plugins.getRedis().getShutdownTimeout()))
                 .poolConfig(genericObjectPoolConfig)
                 .build());
     }

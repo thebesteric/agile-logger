@@ -34,7 +34,7 @@ public class RedisRecordProcessor extends AbstractThreadPoolRecordProcessor {
     @Override
     public void doProcess(InvokeLog invokeLog) throws Throwable {
         String key = AgileContext.redisKeyPrefix + invokeLog.getTrackId() + ":" + invokeLog.getLogId();
-        int expiredTime = this.agileLoggerContext.getProperties().getRedis().getExpiredTime();
+        int expiredTime = this.agileLoggerContext.getProperties().getPlugins().getRedis().getExpiredTime();
         redisTemplate.opsForValue().set(key, invokeLog, Duration.ofMillis(expiredTime));
     }
 }

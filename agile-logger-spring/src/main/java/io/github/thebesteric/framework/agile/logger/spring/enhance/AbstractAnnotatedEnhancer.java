@@ -4,7 +4,6 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.Enhancer;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -23,13 +22,16 @@ import java.util.Optional;
  * @since 1.0
  */
 @Slf4j
-@RequiredArgsConstructor
 public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
 
     private static final String SPRING_CGLIB_PROXY_SEPARATOR = "$$";
     protected final Enhancer enhancer = new Enhancer();
 
     protected final AgileLoggerContext agileLoggerContext;
+
+    public AbstractAnnotatedEnhancer(AgileLoggerContext agileLoggerContext) {
+        this.agileLoggerContext = agileLoggerContext;
+    }
 
     protected boolean needEnhance(Class<?> clazz) {
         return ReflectUtils.anyAnnotationPresent(clazz, AgileLogger.class);

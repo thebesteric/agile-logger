@@ -33,21 +33,21 @@ public class AgileLoggerDatabaseInitialization extends AbstractAgileLoggerInitia
     @Override
     public void start() {
         if (LogMode.DATABASE == properties.getLogMode()) {
-            String url = properties.getDatabase().getUrl();
+            AgileLoggerSpringProperties.Plugins plugins = properties.getPlugins();
+            String url = plugins.getDatabase().getUrl();
             String vendor = getDatabaseVendor(url);
             if (vendor == null) {
                 throw new IllegalArgumentException("Unsupported database url: " + url);
             }
-            LoggerPrinter.info(log, "Database plugin ({}) installed: {}", vendor, properties.getDatabase().toString());
+            LoggerPrinter.info(log, "Database plugin ({}) installed: {}", vendor, plugins.getDatabase().toString());
 
             AgileLoggerJdbcTemplate agileLoggerJdbcTemplate = getBean(AgileLoggerJdbcTemplate.class);
-            String tableNamePrefix = properties.getDatabase().getTableNamePrefix();
+            String tableNamePrefix = plugins.getDatabase().getTableNamePrefix();
             try {
                 agileLoggerJdbcTemplate.createOrUpdateTable(tableNamePrefix, CollectionUtils.createList(InvokeLog.class, RequestLog.class));
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-
         }
     }
 

@@ -29,6 +29,9 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
 
     public AgileLoggerAnnotatedEnhancer(AgileLoggerContext agileLoggerContext) {
         super(agileLoggerContext);
+        if (!agileLoggerContext.getProperties().isEnable()) {
+            return;
+        }
         enhancer.setNamingPolicy((prefix, source, key, names) -> {
             if (prefix == null) {
                 prefix = "net.sf.cglib.empty.Object";
@@ -55,7 +58,7 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
         Class<?> beanClass = bean.getClass();
 
         // Beans that does not require an agent
-        if (!needEnhance(beanClass)) {
+        if (!agileLoggerContext.getProperties().isEnable() || !needEnhance(beanClass)) {
             return bean;
         }
 

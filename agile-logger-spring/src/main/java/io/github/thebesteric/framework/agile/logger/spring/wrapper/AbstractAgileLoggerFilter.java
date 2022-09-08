@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractAgileLoggerFilter implements Filter {
 
     public static final Map<String, Method> URL_MAPPING = new ConcurrentHashMap<>(128);
-    public static boolean showSkyWalkingWarnTips = true;
+    public static boolean useSkyWalkingTrace = true;
 
     protected final AgileLoggerContext agileLoggerContext;
 
@@ -76,18 +76,18 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
         return CollectionUtils.isEmpty(urls) || passed;
     }
 
-    protected void initTrackId(AgileLoggerRequestWrapper requestWrapper, boolean isSkyWalkingTrace) {
+    protected void initTrackId(AgileLoggerRequestWrapper requestWrapper, boolean isUseSkyWalkingTrace) {
         if (AgileContext.trackIdGenerator == null) {
             AgileContext.trackIdGenerator = DefaultIdGenerator.getInstance();
         }
-        if (isSkyWalkingTrace) {
-            if (showSkyWalkingWarnTips && (StringUtils.isEmpty(TraceContext.traceId()) || "Ignored_Trace".equalsIgnoreCase(TraceContext.traceId()))) {
+        if (isUseSkyWalkingTrace && useSkyWalkingTrace) {
+            if (StringUtils.isEmpty(TraceContext.traceId()) || "Ignored_Trace".equalsIgnoreCase(TraceContext.traceId())) {
                 LoggerPrinter.warn(log, "Please check Sky Walking agent setting are correct or OAP Server are running that the local track id will be used instead");
                 TransactionUtils.initialize(AgileContext.trackIdGenerator.generate());
+                useSkyWalkingTrace = false;
             } else {
                 TransactionUtils.set(TraceContext.traceId());
             }
-            showSkyWalkingWarnTips = false;
         } else {
             TransactionUtils.initialize(AgileContext.trackIdGenerator.generate());
         }

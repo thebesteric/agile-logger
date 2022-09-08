@@ -47,11 +47,39 @@ public class AgileLoggerSpringProperties {
     // Response success define
     private ResponseSuccessDefine responseSuccessDefine;
 
-    // Redis-Plugin
-    private Redis redis = new Redis();
+    // Plugin
+    private Plugins plugins = new Plugins();
 
-    // Database-Plugin
-    private Database database = new Database();
+
+    @Getter
+    @Setter
+    public static class Plugins {
+        // Redis-Plugin
+        private Redis redis = new Redis();
+
+        // Database-Plugin
+        private Database database = new Database();
+
+        // Cache-Plugin
+        private Cache cache = new Cache();
+    }
+
+    @Getter
+    @Setter
+    public static class Cache {
+        private int initialCapacity = 2000;
+        private int maximumSize = 20000;
+        private int expiredTime = 1000 * 60 * 60;;
+
+        @Override
+        public String toString() {
+            return "[" +
+                    "initialCapacity=" + initialCapacity + ", " +
+                    "maximumSize=" + maximumSize + ", " +
+                    "expiredTime=" + MathUtils.divStripTrailingZeros((double) expiredTime, 1000D) + "s" +
+                    "]";
+        }
+    }
 
     @Getter
     @Setter
