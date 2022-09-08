@@ -3,9 +3,7 @@ package agile.logger.example.web;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.domain.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * TestController
@@ -27,9 +25,15 @@ public class TestController {
         return R.success();
     }
 
-    @GetMapping("/query")
-    public R query(String name, int age) {
+    @GetMapping("/test")
+    public R test(String name, int age) {
         int result = testService.add(1, 2);
         return R.success().put("name", name).put("age", age).put("result", result);
+    }
+
+    @PostMapping("/query")
+    public R query(@RequestBody User user, String name, int age) {
+        R result = test(name, age);
+        return R.success().put("result", result.getData()).put("user", user);
     }
 }

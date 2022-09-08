@@ -14,6 +14,8 @@ import java.io.Serializable;
  */
 public abstract class AbstractEntity implements Serializable {
 
+    public static final String EXCEPTION_FIELD_NAME = "exception";
+
     public static final String TAG_DEFAULT = "default";
 
     public static final String LEVEL_DEBUG = "DEBUG";

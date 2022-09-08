@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.Enhancer;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -34,8 +32,7 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
     protected final AgileLoggerContext agileLoggerContext;
 
     protected boolean needEnhance(Class<?> clazz) {
-        return ReflectUtils.anyAnnotationPresent(clazz, AgileLogger.class)
-                && !ReflectUtils.isAnnotationPresent(clazz, Controller.class, RestController.class);
+        return ReflectUtils.anyAnnotationPresent(clazz, AgileLogger.class);
     }
 
     /**

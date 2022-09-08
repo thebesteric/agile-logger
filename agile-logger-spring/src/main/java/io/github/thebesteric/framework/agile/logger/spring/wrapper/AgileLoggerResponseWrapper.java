@@ -1,6 +1,5 @@
 package io.github.thebesteric.framework.agile.logger.spring.wrapper;
 
-import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,10 +20,6 @@ public class AgileLoggerResponseWrapper extends HttpServletResponseWrapper {
 
     private final ByteArrayOutputStream buffer;
     private final ServletOutputStream out;
-
-    @Getter
-    @Setter
-    private String level = InvokeLog.LEVEL_INFO;
 
     @Getter
     @Setter

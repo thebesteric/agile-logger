@@ -50,6 +50,29 @@ public class AgileLoggerSpringProperties {
     // Redis-Plugin
     private Redis redis = new Redis();
 
+    // Database-Plugin
+    private Database database = new Database();
+
+    @Getter
+    @Setter
+    public static class Database {
+        private String tableNamePrefix = "agile_logger";
+        private String url;
+        private String driverClassName;
+        private String username;
+        private String password;
+        private int minIdle = 1;
+        private int maxActive = 8;
+
+        @Override
+        public String toString() {
+            return "[" +
+                    "url=" + url + ", " +
+                    "driverClass=" + driverClassName +
+                    "]";
+        }
+    }
+
     @Getter
     @Setter
     public static class Redis {
@@ -63,7 +86,7 @@ public class AgileLoggerSpringProperties {
         private int timeout = 10000;
         private int shutdownTimeout = 10000;
         private int maxIdle = 8;
-        private int minIdle = 0;
+        private int minIdle = 1;
         private int maxActive = 8;
         private int maxWait = -1;
 

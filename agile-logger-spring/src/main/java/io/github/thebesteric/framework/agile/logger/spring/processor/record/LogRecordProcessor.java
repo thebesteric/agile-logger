@@ -21,7 +21,7 @@ public class LogRecordProcessor extends AbstractThreadPoolRecordProcessor {
 
     @Override
     public boolean supports(LogMode model) throws UnsupportedModeException {
-        return model == null || model.getName().trim().equals("") || LogMode.LOG.name().equalsIgnoreCase(model.getName());
+        return model == null || model.getName().trim().equals("") || LogMode.LOG.getName().equalsIgnoreCase(model.getName());
     }
 
     @Override

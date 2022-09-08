@@ -2,7 +2,9 @@ package io.github.thebesteric.framework.agile.logger.core;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.ExceptionUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
+import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLoggerEntrance;
+import io.github.thebesteric.framework.agile.logger.core.annotation.Column;
 import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.utils.AgileConditionChecker;
@@ -14,6 +16,7 @@ import org.aspectj.lang.reflect.CodeSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -72,7 +75,13 @@ public class AgileAspect {
         } catch (Throwable ex) {
             String exTitle = ExceptionUtils.getTitle(ex);
             String exCause = Objects.requireNonNull(ExceptionUtils.getMajorCause(ex)).toString();
-            invokeLog.setException(ExceptionUtils.getSimpleMessage(ex));
+
+            int limit = 1024;
+            Field field = ReflectUtils.getField(InvokeLog.class, InvokeLog.EXCEPTION_FIELD_NAME);
+            if (field != null && field.isAnnotationPresent(Column.class)) {
+                limit = field.getAnnotation(Column.class).length();
+            }
+            invokeLog.setException(ExceptionUtils.getSimpleMessage(ex, limit));
             invokeLog.setLevel(InvokeLog.LEVEL_ERROR);
             throw new RuntimeException(exTitle + "\n\t" + exCause);
         } finally {

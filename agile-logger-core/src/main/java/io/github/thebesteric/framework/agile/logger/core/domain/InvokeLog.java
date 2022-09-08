@@ -1,6 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.annotation.Column;
 import io.github.thebesteric.framework.agile.logger.core.annotation.Table;
@@ -18,50 +19,50 @@ import java.util.Date;
 @Table(name = "invoke")
 public class InvokeLog extends AbstractEntity {
 
-    @Column(length = 64)
-    protected String id;
+    @Column(length = 64, unique = true, comment = "日志 ID")
+    protected String logId;
 
-    @Column(length = 64)
-    protected String parentId;
+    @Column(length = 64, comment = "父日志 ID")
+    protected String logParentId;
 
-    @Column(length = 32)
+    @Column(length = 32, comment = "标签", nullable = false)
     protected String tag = TAG_DEFAULT;
 
-    @Column(length = 32)
+    @Column(length = 32, comment = "日志级别")
     protected String level = LEVEL_INFO;
 
-    @Column(length = 64)
+    @Column(length = 64, comment = "日志链追踪 ID")
     protected String trackId;
 
-    @Column(length = 32)
+    @Column(type = Column.Type.DATETIME, comment = "创建时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     protected Date createdAt = new Date();
 
-    @Column(type = "json")
+    @Column(type = Column.Type.JSON, comment = "执行信息")
     protected ExecuteInfo executeInfo;
 
-    @Column(type = "json")
+    @Column(type = Column.Type.JSON, comment = "执行结果")
     protected Object result;
 
-    @Column(length = 256)
+    @Column(name = EXCEPTION_FIELD_NAME, length = 1024, comment = "异常信息")
     protected String exception;
 
-    @Column(type = "json")
+    @Column(type = Column.Type.JSON, comment = "扩展信息")
     protected Object extra;
 
-    @Column(length = 32)
+    @Column(length = 64, comment = "执行线程名称")
     protected String threadName = Thread.currentThread().getName();
 
     public InvokeLog() {
         if (AgileContext.idGenerator == null) {
             AgileContext.idGenerator = DefaultIdGenerator.getInstance();
         }
-        this.id = AgileContext.idGenerator.generate();
+        this.logId = AgileContext.idGenerator.generate();
     }
 
-    public InvokeLog(String parentId) {
+    public InvokeLog(String logParentId) {
         this();
-        this.parentId = parentId;
+        this.logParentId = logParentId;
     }
 
     public static Builder builder(InvokeLog invokeLog) {
@@ -85,12 +86,12 @@ public class InvokeLog extends AbstractEntity {
         }
 
         public Builder id(String id) {
-            this.invokeLog.id = id;
+            this.invokeLog.logId = id;
             return this;
         }
 
         public Builder parentId(String parentId) {
-            this.invokeLog.parentId = parentId;
+            this.invokeLog.logParentId = parentId;
             return this;
         }
 
@@ -134,7 +135,7 @@ public class InvokeLog extends AbstractEntity {
         }
 
         public Builder extra(String extra) {
-            this.invokeLog.extra = extra;
+            this.invokeLog.extra = StringUtils.blankToNull(extra);
             return this;
         }
 
@@ -156,20 +157,20 @@ public class InvokeLog extends AbstractEntity {
 
     /* getter and setter */
 
-    public String getId() {
-        return id;
+    public String getLogId() {
+        return logId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setLogId(String logId) {
+        this.logId = logId;
     }
 
-    public String getParentId() {
-        return parentId;
+    public String getLogParentId() {
+        return logParentId;
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setLogParentId(String logParentId) {
+        this.logParentId = logParentId;
     }
 
     public String getTag() {

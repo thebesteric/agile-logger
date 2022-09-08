@@ -19,7 +19,7 @@ public class StdoutRecordProcessor extends AbstractThreadPoolRecordProcessor {
 
     @Override
     public boolean supports(LogMode model) throws UnsupportedModeException {
-        return model != null && !model.getName().trim().equals("") && LogMode.STDOUT.name().equalsIgnoreCase(model.getName());
+        return model != null && !model.getName().trim().equals("") && LogMode.STDOUT.getName().equalsIgnoreCase(model.getName());
     }
 
     @Override

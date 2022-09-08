@@ -32,7 +32,7 @@ public class InternalRedisTailHandler extends AbstractTailHandler {
     @Override
     public void process(AgileContext ctx, JoinMethod joinMethod, InvokeLog invokeLog) {
         try {
-            String key = AgileContext.redisKeyPrefix + invokeLog.getTrackId() + ":" + invokeLog.getId();
+            String key = AgileContext.redisKeyPrefix + invokeLog.getTrackId() + ":" + invokeLog.getLogId();
             redisUtils.set(key, JsonUtils.mapper.writeValueAsString(invokeLog), AgileContext.redisExpireSeconds);
         } catch (JsonProcessingException e) {
             log.error("Can't serialize this object: {}", invokeLog.getClass().getName());

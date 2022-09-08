@@ -2,9 +2,7 @@ package io.github.thebesteric.framework.agile.logger.commons.utils;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,21 +88,25 @@ public class CollectionUtils {
     }
 
     public static boolean isEmpty(Collection<?> collection) {
+        if (collection == null) return true;
         return org.apache.commons.collections4.CollectionUtils.isEmpty(collection);
     }
 
     public static boolean isNotEmpty(Collection<?> collection) {
-        int[] arr = {};
-        ArrayUtils.isNotEmpty(arr);
-
-        return org.apache.commons.collections4.CollectionUtils.isNotEmpty(collection);
+        return !isEmpty(collection);
     }
 
+    @SafeVarargs
     public static <T> List<T> createList(T... items) {
+        if (items == null || items.length == 0) return new ArrayList<>();
         return Stream.of(items).collect(Collectors.toList());
     }
 
+    @SafeVarargs
     public static <T> Set<T> createSet(T... items) {
+        if (items == null || items.length == 0) {
+            return new HashSet<>();
+        }
         return Stream.of(items).collect(Collectors.toSet());
     }
 

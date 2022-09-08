@@ -72,7 +72,7 @@
         <module>agile-logger-spring</module>
         <module>agile-logger-boot-starter</module>
         <module>agile-logger-plugin-redis</module>
-        <module>agile-logger-plugin-mysql</module>
+        <module>agile-logger-plugin-database</module>
         <module>agile-logger-plugin-cache</module>
         <module>agile-logger-example</module>
     </modules>
@@ -199,6 +199,13 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-jdbc</artifactId>
                 <version>${spring.boot.version}</version>
             </dependency>
 

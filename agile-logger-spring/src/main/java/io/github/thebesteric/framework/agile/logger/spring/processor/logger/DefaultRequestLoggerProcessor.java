@@ -4,6 +4,7 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatche
 import io.github.thebesteric.framework.agile.logger.commons.utils.JsonUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
 import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
+import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RequestLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerRequestWrapper;
@@ -33,6 +34,9 @@ public class DefaultRequestLoggerProcessor implements RequestLoggerProcessor {
         Method method = getMethod(requestLog.getUri());
         if (method != null) {
             buildAgileLoggerInfo(method, requestLog);
+            if (responseWrapper.getException() != null) {
+                requestLog.setLevel(InvokeLog.LEVEL_ERROR);
+            }
             requestLog.setExecuteInfo(new ExecuteInfo(method, null, duration));
         }
         return requestLog;

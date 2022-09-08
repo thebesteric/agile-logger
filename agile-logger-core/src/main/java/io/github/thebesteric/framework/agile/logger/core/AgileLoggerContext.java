@@ -81,7 +81,7 @@ public class AgileLoggerContext {
                 }
             }
         }
-        context.setInvokeLogId(invokeLog == null ? null : invokeLog.getId());
+        context.setInvokeLogId(invokeLog == null ? null : invokeLog.getLogId());
         return invokeLog;
     }
 

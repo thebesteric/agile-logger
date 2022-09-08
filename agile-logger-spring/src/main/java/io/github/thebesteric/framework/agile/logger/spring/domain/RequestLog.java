@@ -1,10 +1,11 @@
 package io.github.thebesteric.framework.agile.logger.spring.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ExceptionUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
 import io.github.thebesteric.framework.agile.logger.core.annotation.Column;
+import io.github.thebesteric.framework.agile.logger.core.annotation.Table;
 import io.github.thebesteric.framework.agile.logger.core.domain.AbstractEntity;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.spring.TransactionUtils;
@@ -13,6 +14,7 @@ import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerRe
 import lombok.*;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -26,87 +28,78 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
+@Table(name ="request")
 public class RequestLog extends InvokeLog {
 
-    @JsonProperty("session_id")
-    @Column(length = 64)
+    @Column(length = 64, comment = "session ID")
     private String sessionId;
 
-    @Column(length = 512)
+    @Column(length = 512, comment = "URI")
     private String uri;
 
-    @Column(length = 512)
+    @Column(length = 512, comment = "URL")
     private String url;
 
-    @Column(length = 128)
+    @Column(length = 128, comment = "请求方法")
     private String method;
 
-    @Column(length = 64)
+    @Column(length = 64, comment = "请求协议")
     private String protocol;
 
-    @Column(length = 128)
+    @Column(length = 128, comment = "IP")
     private String ip;
 
-    @Column(length = 128)
+    @Column(length = 128, comment = "域信息")
     private String domain;
-    @JsonProperty("server_name")
-    @Column(length = 128)
+
+    @Column(length = 128, comment = "服务器名")
     private String serverName;
 
-    @JsonProperty("local_addr")
-    @Column(length = 64)
+    @Column(length = 64, comment = "本地地址")
     private String localAddr;
 
-    @JsonProperty("local_port")
-    @Column(length = 11, type = "int")
-    private int localPort;
+    @Column(type = Column.Type.SMALL_INT, unsigned = true, comment = "本地端口")
+    private Integer localPort;
 
-    @JsonProperty("remote_addr")
-    @Column(length = 64)
+    @Column(length = 64, comment = "远程地址")
     private String remoteAddr;
 
-    @JsonProperty("remote_port")
-    @Column(length = 11, type = "int")
-    private int remotePort;
+    @Column(type = Column.Type.SMALL_INT, unsigned = true, comment = "远程地址")
+    private Integer remotePort;
 
-    @JsonProperty("query")
-    @Column(length = 2048)
+    @Column(length = 2048, comment = "请求参数")
     private String query;
 
-    @Column(type = "json")
+    @Column(type = Column.Type.JSON, comment = "COOKIES")
     private Set<Cookie> cookies = new HashSet<>();
 
-    @Column(type = "json")
+    @Column(type = Column.Type.JSON, comment = "请求头信息")
     private Map<String, String> headers = new HashMap<>();
 
-    @Column(type = "json")
+    @Column(type = Column.Type.JSON, comment = "请求参数")
     private Map<String, String> params = new HashMap<>();
 
-    @Column(type = "json")
+    @Column(type = Column.Type.JSON, comment = "请求体")
     private Object body;
 
-    @JsonProperty("raw_body")
-    @Column(length = 2048)
+    @Column(length = 2048, comment = "原生请求体", version=1)
     private String rawBody;
 
-    @JsonProperty("duration")
-    @Column(length = 11, type = "int")
-    private long duration;
+    @Column(type = Column.Type.INT, comment = "运行时长")
+    private Long duration;
 
-    @Column(type = "json")
+    @Column(type = Column.Type.JSON, comment = "响应信息")
     private Response response;
 
     public RequestLog(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
         this(requestWrapper, responseWrapper, duration);
-        this.id = id;
+        this.logId = id;
     }
 
     public RequestLog(AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
 
         this.trackId = TransactionUtils.get();
         this.threadName = Thread.currentThread().getName();
-        this.level = responseWrapper.getLevel() == null ? InvokeLog.LEVEL_INFO : responseWrapper.getLevel();
-        this.exception = ExceptionUtils.getSimpleMessage(responseWrapper.getException());
         this.createdAt = new Date(duration.getStartTime());
         this.duration = duration.getDuration();
         this.body = requestWrapper.getBody();
@@ -125,6 +118,14 @@ public class RequestLog extends InvokeLog {
         this.remotePort = requestWrapper.getRemotePort();
         this.url = requestWrapper.getUrlWithQuery();
         this.uri = requestWrapper.getRequestURI();
+
+        // exception message
+        int limit = 1024;
+        Field field = ReflectUtils.getField(InvokeLog.class, InvokeLog.EXCEPTION_FIELD_NAME);
+        if (field != null && field.isAnnotationPresent(Column.class)) {
+            limit = field.getAnnotation(Column.class).length();
+        }
+        this.exception = ExceptionUtils.getSimpleMessage(responseWrapper.getException(), limit);
 
         // params
         Enumeration<String> parameterNames = requestWrapper.getParameterNames();

@@ -40,6 +40,7 @@ import java.time.Duration;
 @Configuration
 @Import(AgileLoggerRedisInitialization.class)
 @EnableConfigurationProperties(AgileLoggerSpringProperties.class)
+@ConditionalOnProperty(prefix = AgileLoggerConstant.PROPERTIES_PREFIX, name = "log-mode", havingValue = "redis")
 public class AgileLoggerRedisAutoConfiguration {
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "GenericObjectPoolConfig")
@@ -79,7 +80,6 @@ public class AgileLoggerRedisAutoConfiguration {
     }
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisTemplate")
-    @ConditionalOnProperty(prefix = AgileLoggerConstant.PROPERTIES_PREFIX, name = "log-mode", havingValue = "redis")
     @DependsOn(AgileLoggerConstant.BEAN_NAME_PREFIX + "LettuceConnectionFactory")
     public RedisTemplate<String, Object> redisTemplate(@Qualifier(AgileLoggerConstant.BEAN_NAME_PREFIX + "LettuceConnectionFactory")
                                                        LettuceConnectionFactory lettuceConnectionFactory) {
@@ -107,13 +107,12 @@ public class AgileLoggerRedisAutoConfiguration {
         return template;
     }
 
-    @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisTRecordProcessor")
-    @ConditionalOnProperty(prefix = AgileLoggerConstant.PROPERTIES_PREFIX, name = "log-mode", havingValue = "redis")
+    @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisRecordProcessor")
     @DependsOn("agileLoggerContext")
-    public RecordProcessor redisRecordProcessor(@Qualifier(AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisTemplate")
-                                                RedisTemplate<String, Object> redisTemplate,
-                                                @Nullable AgileLoggerContext agileLoggerContext) {
-        return new RedisRecordProcessor(redisTemplate, agileLoggerContext);
+    public RecordProcessor redisRecordProcessor(@Nullable AgileLoggerContext agileLoggerContext,
+                                                @Qualifier(AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisTemplate")
+                                                RedisTemplate<String, Object> redisTemplate) {
+        return new RedisRecordProcessor(agileLoggerContext, redisTemplate);
     }
 
 }

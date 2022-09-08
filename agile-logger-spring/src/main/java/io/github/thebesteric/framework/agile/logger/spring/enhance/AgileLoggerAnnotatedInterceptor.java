@@ -49,7 +49,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
         // Initialize the invokeLog
         InvokeLog invokeLog = new InvokeLog(AgileLoggerContext.getParentId());
-        AgileLoggerContext.setParentId(invokeLog.getId());
+        AgileLoggerContext.setParentId(invokeLog.getLogId());
 
         try {
             // Star watcher

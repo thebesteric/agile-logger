@@ -50,11 +50,17 @@ public class ObjectUtils {
         return org.apache.commons.lang3.ObjectUtils.isNotEmpty(object);
     }
 
+    public static <T> T requireNonNull(T obj) {
+        if (obj == null)
+            throw new NullPointerException();
+        return obj;
+    }
+
     public static Object initialValue(Class<?> clazz) {
         Object object = null;
         if (clazz.isPrimitive()) {
             if (clazz == char.class) {
-                object = '0';
+                object = '\u0000';
             } else if (clazz == byte.class) {
                 object = 0;
             } else if (clazz == short.class) {

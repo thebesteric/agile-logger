@@ -8,6 +8,10 @@ package io.github.thebesteric.framework.agile.logger.commons.utils;
  */
 public class ExceptionUtils {
 
+    public static String getSimpleMessage(Throwable ex, int limit) {
+        return StringUtils.limit(getSimpleMessage(ex), limit);
+    }
+
     public static String getSimpleMessage(Throwable ex) {
         if (ex != null) {
             String exTitle = getTitle(ex);

@@ -20,19 +20,20 @@ public class RedisRecordProcessor extends AbstractThreadPoolRecordProcessor {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public RedisRecordProcessor(RedisTemplate<String, Object> redisTemplate, AgileLoggerContext agileLoggerContext) {
+    public RedisRecordProcessor(AgileLoggerContext agileLoggerContext, RedisTemplate<String, Object> redisTemplate) {
         super(agileLoggerContext);
         this.redisTemplate = redisTemplate;
     }
 
     @Override
     public boolean supports(LogMode model) throws UnsupportedModeException {
-        return model != null && !model.getName().trim().equals("") && LogMode.REDIS.name().equalsIgnoreCase(model.getName());
+        return redisTemplate != null && model != null && !model.getName().trim().equals("")
+                && LogMode.REDIS.getName().equalsIgnoreCase(model.getName());
     }
 
     @Override
     public void doProcess(InvokeLog invokeLog) throws Throwable {
-        String key = AgileContext.redisKeyPrefix + invokeLog.getTrackId() + ":" + invokeLog.getId();
+        String key = AgileContext.redisKeyPrefix + invokeLog.getTrackId() + ":" + invokeLog.getLogId();
         int expiredTime = this.agileLoggerContext.getProperties().getRedis().getExpiredTime();
         redisTemplate.opsForValue().set(key, invokeLog, Duration.ofMillis(expiredTime));
     }

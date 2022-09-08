@@ -1,6 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.commons.utils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * StringUtils
@@ -12,11 +13,11 @@ import java.nio.charset.StandardCharsets;
 public class StringUtils {
 
     public static boolean isEmpty(String str) {
-        return org.apache.commons.lang3.StringUtils.isEmpty(str);
+        return org.apache.commons.lang3.StringUtils.isEmpty(str) || Objects.equals(str, "\"\"");
     }
 
     public static boolean isNotEmpty(String str) {
-        return org.apache.commons.lang3.StringUtils.isNotEmpty(str);
+        return !isEmpty(str);
     }
 
     public static boolean isEquals(String str1, String str2) {
@@ -27,6 +28,17 @@ public class StringUtils {
 
     public static boolean isNotEquals(String str1, String str2) {
         return !isEquals(str1, str2);
+    }
+
+    public static boolean isEqualsIgnoreCase(String str1, String str2) {
+        str1 = nullToBlank(str1);
+        str2 = nullToBlank(str2);
+        return str1.equalsIgnoreCase(str2);
+    }
+
+
+    public static boolean isNotEqualsIgnoreCase(String str1, String str2) {
+        return !isEqualsIgnoreCase(str1, str2);
     }
 
     public static String nullToBlank(String str) {
@@ -61,5 +73,12 @@ public class StringUtils {
 
     public static String bytesToString(byte[] bytes) {
         return CollectionUtils.isNotEmpty(bytes) ? new String(bytes, StandardCharsets.UTF_8) : null;
+    }
+
+    public static String limit(String str, int limit) {
+        if (str != null && str.length() > limit) {
+            str = str.substring(0, limit);
+        }
+        return str;
     }
 }

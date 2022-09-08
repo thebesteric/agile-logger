@@ -5,6 +5,7 @@ import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * JsonUtils
@@ -55,6 +56,23 @@ public class ReflectUtils {
         return Modifier.isFinal(member.getModifiers());
     }
 
+    public static boolean isPrimitive(Field field) {
+        return isPrimitive(field.getType());
+    }
+
+    public static boolean isPrimitive(Class<?> clazz) {
+        return clazz.isPrimitive();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getDefaultValue(Class<T> clazz) {
+        return (T) Array.get(Array.newInstance(clazz, 1), 0);
+    }
+
+    public static Object getDefaultValue(Field field) {
+        return getDefaultValue(field.getType());
+    }
+
     public static String[] getModifiers(Class<?> clazz) {
         return Modifier.toString(clazz.getModifiers()).split(" ");
     }
@@ -63,29 +81,37 @@ public class ReflectUtils {
         return Modifier.toString(member.getModifiers()).split(" ");
     }
 
-    public static List<Field> getFields(Class<?> clazz) {
+    public static List<Field> getFields(Class<?> clazz, Predicate<Field> predicate) {
         List<Field> fields = new ArrayList<>();
         for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
             for (Field field : clazz.getDeclaredFields()) {
-                if (isStatic(field) || isFinal(field)) {
-                    continue;
+                if (predicate == null || predicate.test(field)) {
+                    fields.add(field);
                 }
-                fields.add(field);
             }
         }
         return fields;
     }
 
-    public static List<String> getFieldName(Class<?> clazz) {
-        List<Field> fields = getFields(clazz);
+    public static List<Field> getFields(Class<?> clazz) {
+        return getFields(clazz, null);
+    }
+
+    public static Field getField(Class<?> clazz, String fieldName) {
+        return getFields(clazz, null).stream().filter(field -> fieldName.equals(field.getName())).findFirst().orElse(null);
+    }
+
+    public static List<String> getFieldNames(Class<?> clazz, Predicate<Field> predicate) {
+        List<Field> fields = getFields(clazz, predicate);
         List<String> fieldNames = new ArrayList<>();
         for (Field field : fields) {
-            if (isStatic(field) || isFinal(field)) {
-                continue;
-            }
             fieldNames.add(field.getName());
         }
         return fieldNames;
+    }
+
+    public static List<String> getFieldNames(Class<?> clazz) {
+        return getFieldNames(clazz, null);
     }
 
     public static <T extends Annotation> T getAnnotation(Class<?> objectClass, Class<T> annotationClass) {
@@ -114,13 +140,25 @@ public class ReflectUtils {
     }
 
     @SafeVarargs
-    public static boolean isAnnotationPresent(Class<?> objectClass, Class<? extends Annotation>... annotationClasses) {
-        return Arrays.stream(annotationClasses).anyMatch(objectClass::isAnnotationPresent);
+    public static boolean isAnnotationPresent(Class<?> objectClass, Class<? extends Annotation> annotationClass, Class<? extends Annotation>... annotationClasses) {
+        List<Class<? extends Annotation>> annoClasses = mergeIndefiniteParams(annotationClass, annotationClasses);
+        return annoClasses.stream().allMatch(objectClass::isAnnotationPresent);
     }
 
     @SafeVarargs
-    public static boolean isAnnotationPresent(Method method, Class<? extends Annotation>... annotationClasses) {
-        return Arrays.stream(annotationClasses).anyMatch(method::isAnnotationPresent);
+    public static boolean isAnnotationPresent(Method method, Class<? extends Annotation> annotationClass, Class<? extends Annotation>... annotationClasses) {
+        List<Class<? extends Annotation>> annoClasses = mergeIndefiniteParams(annotationClass, annotationClasses);
+        return annoClasses.stream().allMatch(method::isAnnotationPresent);
+    }
+
+    @SafeVarargs
+    private static <T> List<T> mergeIndefiniteParams(T t, T... IndefiniteParams) {
+        List<T> list = new ArrayList<>();
+        list.add(t);
+        if (IndefiniteParams != null && IndefiniteParams.length > 0) {
+            list.addAll(Arrays.asList(IndefiniteParams));
+        }
+        return list;
     }
 
     public static void set(Field field, Object target, Object value) throws IllegalAccessException {

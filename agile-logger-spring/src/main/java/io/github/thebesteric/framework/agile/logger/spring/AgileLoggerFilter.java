@@ -2,7 +2,6 @@ package io.github.thebesteric.framework.agile.logger.spring;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
-import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AbstractAgileLoggerFilter;
@@ -66,7 +65,6 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
             filterChain.doFilter(requestWrapper, responseWrapper);
         } catch (Exception ex) {
             ex.printStackTrace();
-            responseWrapper.setLevel(InvokeLog.LEVEL_ERROR);
             responseWrapper.setException(ex);
             responseWrapper.setBuffer(ex.getMessage());
         } finally {

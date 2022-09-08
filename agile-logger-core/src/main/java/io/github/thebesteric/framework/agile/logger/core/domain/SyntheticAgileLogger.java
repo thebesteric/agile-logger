@@ -42,9 +42,9 @@ public class SyntheticAgileLogger {
             extraOnMethod = onMethod.extra();
             levelOnMethod = onMethod.level();
         }
-        this.extra = StringUtils.isNotEmpty(extraOnMethod) ? extraOnMethod : extraOnType;
-        this.tag = StringUtils.isNotEquals(AbstractEntity.TAG_DEFAULT, tagOnMethod) ? tagOnMethod != null ? tagOnMethod : tagOnType : tagOnType;
-        this.level = StringUtils.isNotEquals(AbstractEntity.LEVEL_INFO, levelOnMethod) ? levelOnMethod != null ? levelOnMethod : levelOnType : levelOnType;
+        this.extra = StringUtils.blankToNull(StringUtils.isNotEmpty(extraOnMethod) ? extraOnMethod : extraOnType);
+        this.tag = StringUtils.blankToNull(StringUtils.isNotEquals(AbstractEntity.TAG_DEFAULT, tagOnMethod) ? tagOnMethod != null ? tagOnMethod : tagOnType : tagOnType);
+        this.level = StringUtils.blankToNull(StringUtils.isNotEquals(AbstractEntity.LEVEL_INFO, levelOnMethod) ? levelOnMethod != null ? levelOnMethod : levelOnType : levelOnType);
         this.ignoreMethods = ignoreMethodsOnType;
 
         // If Controller has not @AgileLogger
@@ -60,7 +60,7 @@ public class SyntheticAgileLogger {
     }
 
     public void setPrefix(String prefix) {
-        this.prefix = prefix;
+        this.prefix = StringUtils.blankToNull(prefix);
     }
 
     public String getTag() {
@@ -68,7 +68,7 @@ public class SyntheticAgileLogger {
     }
 
     public void setTag(String tag) {
-        this.tag = tag;
+        this.tag = StringUtils.blankToNull(tag);
     }
 
     public String getExtra() {
@@ -76,7 +76,7 @@ public class SyntheticAgileLogger {
     }
 
     public void setExtra(String extra) {
-        this.extra = extra;
+        this.extra = StringUtils.blankToNull(extra);
     }
 
     public String getLevel() {
@@ -84,7 +84,7 @@ public class SyntheticAgileLogger {
     }
 
     public void setLevel(String level) {
-        this.level = level;
+        this.level = StringUtils.blankToNull(level);;
     }
 
     public String[] getIgnoreMethods() {
