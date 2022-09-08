@@ -20,8 +20,8 @@ public class DefaultResponseSuccessDefineProcessorProcessor extends AbstractResp
 
     public static final String ERROR_MESSAGE = "The execution result did not meet expectations";
 
-    public DefaultResponseSuccessDefineProcessorProcessor(AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine) {
-        super(responseSuccessDefine);
+    public DefaultResponseSuccessDefineProcessorProcessor() {
+        super(DefaultResponseSuccessDefineProcessorProcessor.getDefaultResponseSuccessDefine());
     }
 
     @Override

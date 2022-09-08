@@ -31,7 +31,7 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
     @Override
     public void start() {
         if (!properties.isEnable()) {
-            LoggerPrinter.info(log, "Agile Logger disabled");
+            LoggerPrinter.info(log, "Logger has been Disabled");
             return;
         }
 
@@ -52,7 +52,9 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
             AbstractAgileLoggerFilter.URL_MAPPING.forEach((url, method) -> LoggerPrinter.debug(log, "Mapping: {} => {}", url, ClassUtils.getMethodQualifiedName(method)));
         }
 
-        LoggerPrinter.info(log, "Log Mode is {}, Running in {}",
-                properties.getLogMode(), properties.isAsync() ? "Async: " + properties.getAsyncParams() : "Sync");
+        String asyncMessage = properties.isAsync() ? "Async: " + properties.getAsyncParams() : "Sync";
+        String traceMessage = properties.isUseSkyWalkingTrace() ? "SkyWalking Trace" : "Local Generator";
+        LoggerPrinter.info(log, "Log Mode is {}, Running in {}, TrackIdGenerator: {}",
+                properties.getLogMode(), asyncMessage, traceMessage);
     }
 }

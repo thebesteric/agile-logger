@@ -3,7 +3,7 @@ sourceflag:
     enable: true
     log-mode: stdout
     use-sky-walking-trace: true
-    async: false
+    async: true
     async-params:
       core-pool-size: 1
       maximum-pool-size: 2

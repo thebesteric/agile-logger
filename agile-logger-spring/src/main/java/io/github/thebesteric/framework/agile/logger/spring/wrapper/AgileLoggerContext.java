@@ -108,7 +108,7 @@ public class AgileLoggerContext {
             if (defaultValue != null) {
                 obj = defaultValue;
             } else {
-                LoggerPrinter.info(log, e.getMessage());
+                LoggerPrinter.warn(log, e.getMessage());
             }
         }
         return obj;
@@ -176,10 +176,7 @@ public class AgileLoggerContext {
      * @return {@link IgnoreMethodProcessor}
      */
     private IgnoreMethodProcessor generateIgnoreMethodProcessor() {
-        IgnoreMethodProcessor ignoreMethodProcessor = getBean(IgnoreMethodProcessor.class);
-        if (ignoreMethodProcessor == null) {
-            ignoreMethodProcessor = new DefaultIgnoreMethodProcessor();
-        }
+        IgnoreMethodProcessor ignoreMethodProcessor = getBeanOrDefault(IgnoreMethodProcessor.class, new DefaultIgnoreMethodProcessor());
         ignoreMethodProcessor.add(ignoreMethodProcessor.get());
         return ignoreMethodProcessor;
     }
@@ -190,10 +187,7 @@ public class AgileLoggerContext {
      * @return {@link IgnoreUriProcessor}
      */
     private IgnoreUriProcessor generateIgnoreUriProcessor() {
-        IgnoreUriProcessor ignoreUriProcessor = getBean(IgnoreUriProcessor.class);
-        if (ignoreUriProcessor == null) {
-            ignoreUriProcessor = new DefaultIgnoreUriProcessor();
-        }
+        IgnoreUriProcessor ignoreUriProcessor = getBeanOrDefault(IgnoreUriProcessor.class, new DefaultIgnoreUriProcessor());
         ignoreUriProcessor.add(ignoreUriProcessor.get());
         return ignoreUriProcessor;
     }
@@ -204,13 +198,10 @@ public class AgileLoggerContext {
      * @return {@link ResponseSuccessDefineProcessor}
      */
     private ResponseSuccessDefineProcessor generateResponseSuccessDefineProcessor() {
-        ResponseSuccessDefineProcessor responseSuccessDefineProcessor = getBean(ResponseSuccessDefineProcessor.class);
-        if (responseSuccessDefineProcessor == null) {
-            AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine = this.properties.getResponseSuccessDefine();
-            if (responseSuccessDefine == null) {
-                responseSuccessDefine = DefaultResponseSuccessDefineProcessorProcessor.getDefaultResponseSuccessDefine();
-            }
-            responseSuccessDefineProcessor = new DefaultResponseSuccessDefineProcessorProcessor(responseSuccessDefine);
+        ResponseSuccessDefineProcessor responseSuccessDefineProcessor = getBeanOrDefault(ResponseSuccessDefineProcessor.class, new DefaultResponseSuccessDefineProcessorProcessor());
+        AgileLoggerSpringProperties.ResponseSuccessDefine userResponseSuccessDefine = this.properties.getResponseSuccessDefine();
+        if (userResponseSuccessDefine != null) {
+            responseSuccessDefineProcessor.setResponseSuccessDefine(userResponseSuccessDefine);
         }
         return responseSuccessDefineProcessor;
     }

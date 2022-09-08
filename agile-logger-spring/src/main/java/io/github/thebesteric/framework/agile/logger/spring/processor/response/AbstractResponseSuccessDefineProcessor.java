@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
  */
 public abstract class AbstractResponseSuccessDefineProcessor implements ResponseSuccessDefineProcessor {
 
-    protected final AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine;
+    protected AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine;
 
     public AbstractResponseSuccessDefineProcessor(AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine) {
         this.responseSuccessDefine = responseSuccessDefine;
@@ -34,6 +34,16 @@ public abstract class AbstractResponseSuccessDefineProcessor implements Response
      * @return String
      */
     abstract String doProcessor(Method method, JsonNode resultJsonNode, Object result);
+
+    @Override
+    public AgileLoggerSpringProperties.ResponseSuccessDefine getResponseSuccessDefine() {
+        return this.responseSuccessDefine;
+    }
+
+    @Override
+    public void setResponseSuccessDefine(AgileLoggerSpringProperties.ResponseSuccessDefine responseSuccessDefine) {
+        this.responseSuccessDefine = responseSuccessDefine;
+    }
 
     @Override
     public String processor(Method method, Object result) throws JsonProcessingException {
