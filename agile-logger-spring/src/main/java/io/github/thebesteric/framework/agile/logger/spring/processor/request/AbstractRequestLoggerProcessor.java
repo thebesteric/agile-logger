@@ -1,4 +1,4 @@
-package io.github.thebesteric.framework.agile.logger.spring.processor.logger;
+package io.github.thebesteric.framework.agile.logger.spring.processor.request;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.commons.utils.JsonUtils;
@@ -15,13 +15,13 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 /**
- * DefaultRequestLoggerProcessor
+ * AbstractRequestLoggerProcessor
  *
  * @author Eric Joe
- * @since 1.0
+ * @version 1.0
  */
 @Slf4j
-public class DefaultRequestLoggerProcessor implements RequestLoggerProcessor {
+public abstract class AbstractRequestLoggerProcessor implements RequestLoggerProcessor {
 
     @Override
     public RequestLog processor(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
@@ -39,6 +39,14 @@ public class DefaultRequestLoggerProcessor implements RequestLoggerProcessor {
             }
             requestLog.setExecuteInfo(new ExecuteInfo(method, null, duration));
         }
-        return requestLog;
+        return doAfterProcessor(requestLog);
     }
+
+    /**
+     * Executes when processor is processed
+     *
+     * @param requestLog requestLog
+     * @return RequestLog
+     */
+    public abstract RequestLog doAfterProcessor(RequestLog requestLog);
 }

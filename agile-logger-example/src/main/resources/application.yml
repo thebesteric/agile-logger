@@ -2,7 +2,7 @@ sourceflag:
   agile-logger:
     enable: true
     log-mode: stdout
-    use-sky-walking-trace: true
+    use-sky-walking-trace: false
     async: true
     async-params:
       core-pool-size: 1

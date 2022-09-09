@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-@Table(name ="request")
+@Table(name = "request")
 public class RequestLog extends InvokeLog {
 
     @Column(length = 64, comment = "session ID")
@@ -82,7 +82,7 @@ public class RequestLog extends InvokeLog {
     @Column(type = Column.Type.JSON, comment = "请求体")
     private Object body;
 
-    @Column(length = 2048, comment = "原生请求体", version=1)
+    @Column(length = 2048, comment = "原生请求体", version = 1)
     private String rawBody;
 
     @Column(type = Column.Type.INT, comment = "运行时长")
@@ -90,6 +90,10 @@ public class RequestLog extends InvokeLog {
 
     @Column(type = Column.Type.JSON, comment = "响应信息")
     private Response response;
+
+    public RequestLog() {
+        super();
+    }
 
     public RequestLog(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
         this(requestWrapper, responseWrapper, duration);

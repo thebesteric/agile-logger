@@ -22,12 +22,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- https://search.maven.org/artifact/com.github.ben-manes.caffeine/caffeine -->
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

@@ -6,7 +6,7 @@ import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpr
 import io.github.thebesteric.framework.agile.logger.spring.processor.*;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ignore.DefaultIgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ignore.DefaultIgnoreUriProcessor;
-import io.github.thebesteric.framework.agile.logger.spring.processor.logger.DefaultRequestLoggerProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.processor.request.DefaultRequestLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.record.StdoutRecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.response.DefaultResponseSuccessDefineProcessorProcessor;
 import lombok.Getter;
