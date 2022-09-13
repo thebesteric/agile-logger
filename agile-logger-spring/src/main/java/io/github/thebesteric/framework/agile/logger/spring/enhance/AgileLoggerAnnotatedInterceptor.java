@@ -67,16 +67,17 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             // End watcher
             DurationWatcher.Duration duration = DurationWatcher.stop(durationTag);
 
-            // Assembly InvokeLog
+            // Create InvokeLog
             invokeLog = InvokeLog.builder(invokeLog)
                     .trackId(trackId)
                     .createdAt(duration.getStartTime())
                     .tag(syntheticAgileLogger.getTag())
                     .extra(syntheticAgileLogger.getExtra())
-                    .level(syntheticAgileLogger.getLevel())
-                    .exception(exception)
                     .executeInfo(new ExecuteInfo(method, args, duration))
-                    .result(result).build();
+                    .exception(exception)
+                    .result(result)
+                    .level(invokeLog.getException() != null ? InvokeLog.LEVEL_ERROR : syntheticAgileLogger.getLevel())
+                    .build();
 
             this.agileLoggerContext.getCurrentRecordProcessor().processor(invokeLog);
 

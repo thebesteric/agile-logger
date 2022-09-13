@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.spring;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
+import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AbstractAgileLoggerFilter;
@@ -64,13 +65,23 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
         try {
             filterChain.doFilter(requestWrapper, responseWrapper);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // Program exceptions
             responseWrapper.setException(ex);
             responseWrapper.setBuffer(ex.getMessage());
+            throw ex;
         } finally {
             DurationWatcher.Duration duration = DurationWatcher.stop(durationTag);
 
+            // Create RequestLog
             RequestLog requestLog = this.requestLoggerProcessor.processor(id, requestWrapper, responseWrapper, duration);
+
+            // Process non-program exceptions(Logical exception)
+            String exception = this.agileLoggerContext.getResponseSuccessDefineProcessor()
+                    .processor(this.requestLoggerProcessor.getMethod(requestLog.getUri()), requestLog.getResult());
+            if (exception != null) {
+                requestLog.setException(exception);
+                requestLog.setLevel(InvokeLog.LEVEL_ERROR);
+            }
 
             // Record request info
             this.currentRecordProcessor.processor(requestLog);
