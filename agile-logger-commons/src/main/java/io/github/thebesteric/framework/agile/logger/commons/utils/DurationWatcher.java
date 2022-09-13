@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.commons.utils;
 
 import lombok.Data;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -72,6 +73,10 @@ public class DurationWatcher {
         public void setEndTime(long endTime) {
             this.endTime = endTime;
             this.duration = this.endTime - this.startTime;
+        }
+
+        public Date getStartTimeToDate() {
+            return new Date(this.startTime);
         }
 
         public static class Builder {

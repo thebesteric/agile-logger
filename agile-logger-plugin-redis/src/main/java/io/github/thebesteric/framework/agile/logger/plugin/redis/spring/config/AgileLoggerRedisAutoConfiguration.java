@@ -115,6 +115,7 @@ public class AgileLoggerRedisAutoConfiguration {
     public RecordProcessor redisRecordProcessor(@Nullable AgileLoggerContext agileLoggerContext,
                                                 @Qualifier(AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisTemplate")
                                                 RedisTemplate<String, Object> redisTemplate) {
+        assert (agileLoggerContext != null) : AgileLoggerConstant.ASSERT_AGILE_LOGGER_CONTEXT_NOT_NULL;
         return new RedisRecordProcessor(agileLoggerContext, redisTemplate);
     }
 

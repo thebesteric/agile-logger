@@ -64,6 +64,7 @@
         <caffeine.version>3.1.1</caffeine.version>
         <skywalking.version>8.12.0</skywalking.version>
         <netty.version>4.1.80.Final</netty.version>
+        <feign.version>11.9.1</feign.version>
     </properties>
 
     <modules>
@@ -75,6 +76,7 @@
         <module>agile-logger-plugin-database</module>
         <module>agile-logger-plugin-cache</module>
         <module>agile-logger-example</module>
+        <module>agile-logger-rpc-feign</module>
     </modules>
 
     <dependencies>
@@ -263,6 +265,13 @@
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
                 <version>${netty.version}</version>
+            </dependency>
+
+            <!-- https://search.maven.org/artifact/io.github.openfeign/feign-core -->
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-core</artifactId>
+                <version>${feign.version}</version>
             </dependency>
 
         </dependencies>

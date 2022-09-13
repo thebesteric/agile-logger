@@ -6,8 +6,8 @@ import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpr
 import io.github.thebesteric.framework.agile.logger.spring.processor.*;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ignore.DefaultIgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ignore.DefaultIgnoreUriProcessor;
-import io.github.thebesteric.framework.agile.logger.spring.processor.request.DefaultRequestLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.record.StdoutRecordProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.processor.request.DefaultRequestLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.response.DefaultResponseSuccessDefineProcessorProcessor;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +16,7 @@ import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.Environment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,12 +46,12 @@ public class AgileLoggerContext {
     private final ResponseSuccessDefineProcessor responseSuccessDefineProcessor;
     private final RequestLoggerProcessor requestLoggerProcessor;
     private final ExecutorService recordLoggerThreadPool;
+    private final Environment environment;
 
     private List<RecordProcessor> recordProcessors;
 
     @Setter
     private RecordProcessor currentRecordProcessor;
-
 
     public AgileLoggerContext(ApplicationContext applicationContext) {
         this.applicationContext = (GenericApplicationContext) applicationContext;
@@ -60,6 +61,7 @@ public class AgileLoggerContext {
         this.responseSuccessDefineProcessor = generateResponseSuccessDefineProcessor();
         this.requestLoggerProcessor = getBeanOrDefault(RequestLoggerProcessor.class, new DefaultRequestLoggerProcessor());
         this.recordLoggerThreadPool = generateExecutorService();
+        this.environment = getBean(Environment.class);
     }
 
     public static void setParentId(String id) {
@@ -70,6 +72,11 @@ public class AgileLoggerContext {
         String id = AgileLoggerContext.parentId.get();
         AgileLoggerContext.parentId.remove();
         return id;
+    }
+
+    public int getServerPort() {
+        String serverPort = this.environment.getProperty("server.port", "8080");
+        return Integer.parseInt(serverPort);
     }
 
     /**

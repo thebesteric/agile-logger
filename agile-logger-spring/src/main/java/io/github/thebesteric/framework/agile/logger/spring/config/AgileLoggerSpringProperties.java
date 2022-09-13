@@ -50,6 +50,21 @@ public class AgileLoggerSpringProperties {
     // Plugin
     private Plugins plugins = new Plugins();
 
+    // RPC
+    private Rpc rpc = new Rpc();
+
+    @Getter
+    @Setter
+    public static class Rpc {
+
+        private Feign feign = new Feign();
+
+        @Getter
+        @Setter
+        public static class Feign {
+            private boolean enable = true;
+        }
+    }
 
     @Getter
     @Setter

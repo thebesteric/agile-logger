@@ -5,6 +5,7 @@ import io.github.thebesteric.framework.agile.logger.spring.processor.RequestLogg
 import io.github.thebesteric.framework.agile.logger.spring.processor.request.MetricsRequestLoggerProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootApplication(scanBasePackages = "agile.logger.example.web")
 @EnableAgileLogger
+@EnableFeignClients
 public class Application {
 
     public static void main(String[] args) {

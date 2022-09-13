@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Table(name = "request")
 public class RequestLog extends InvokeLog {
 
-    @Column(length = 64, comment = "session ID")
+    @Column(length = 64, comment = "Session ID")
     private String sessionId;
 
     @Column(length = 512, comment = "URI")
@@ -93,6 +93,10 @@ public class RequestLog extends InvokeLog {
 
     public RequestLog() {
         super();
+    }
+
+    public RequestLog(String logParentId) {
+        super(logParentId);
     }
 
     public RequestLog(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
@@ -201,6 +205,10 @@ public class RequestLog extends InvokeLog {
         private String contentType;
         private String locale;
         private Map<String, String> headers = new HashMap<>();
+    }
+
+    public static Response buildResponse() {
+        return new Response();
     }
 
 }

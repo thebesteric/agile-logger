@@ -16,7 +16,6 @@ import java.lang.reflect.Method;
  */
 public class SyntheticAgileLogger {
 
-    private String prefix;
     private String tag;
     private String extra;
     private String level;
@@ -53,14 +52,6 @@ public class SyntheticAgileLogger {
             this.tag = AbstractEntity.TAG_DEFAULT;
         }
 
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = StringUtils.blankToNull(prefix);
     }
 
     public String getTag() {

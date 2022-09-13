@@ -1,9 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.core.domain;
 
 import io.github.thebesteric.framework.agile.logger.core.annotation.RewriteParam;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletRequest;
@@ -17,9 +14,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
 public class MethodInfo extends AbstractEntity {
 
     private String methodName;
@@ -36,6 +30,10 @@ public class MethodInfo extends AbstractEntity {
         SIMPLE_PROCESS_CLASSES.add(File.class);
         SIMPLE_PROCESS_CLASSES.add(InputStream.class);
         SIMPLE_PROCESS_CLASSES.add(OutputStream.class);
+    }
+
+    public MethodInfo() {
+        super();
     }
 
     public MethodInfo(Method method, Object[] args) {

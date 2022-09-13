@@ -3,20 +3,13 @@ package io.github.thebesteric.framework.agile.logger.core.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.core.annotation.Column;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.lang.reflect.Method;
 import java.util.Date;
 
-@Getter
-@Setter
-@NoArgsConstructor
 public class ExecuteInfo extends AbstractEntity {
 
     private String className;
-
     private MethodInfo methodInfo;
 
     @Column(length = 32)
@@ -25,8 +18,12 @@ public class ExecuteInfo extends AbstractEntity {
 
     private long duration;
 
-    public ExecuteInfo(Method method, Object[] args) {
+    public ExecuteInfo() {
         this.createdAt = new Date();
+    }
+
+    public ExecuteInfo(Method method, Object[] args) {
+        super();
         this.className = method.getDeclaringClass().getName();
         this.methodInfo = new MethodInfo(method, args);
     }

@@ -9,7 +9,10 @@ import java.lang.annotation.*;
 @Documented
 public @interface AgileLogger {
 
-    /** Tag information */
+    /**
+     * Tag information
+     * <p>For example: API, UPSTREAM, Controller, Service, Adapter etc.
+     */
     String tag() default AbstractEntity.TAG_DEFAULT;
 
     /** Extra information */
@@ -24,7 +27,7 @@ public @interface AgileLogger {
     /**
      * Methods to ignore
      * <p>Method overloading is not considered.
-     * To consider method overloading, please use: {@link IgnoreMethod}
+     * <p>If need to consider method overloading, please use: {@link IgnoreMethod}
      *
      * @see IgnoreMethod
      */
