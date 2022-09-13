@@ -26,6 +26,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- https://search.maven.org/artifact/org.springframework.cloud/spring-cloud-starter-openfeign -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>3.1.4</version>
+        </dependency>
+
         <!-- https://search.maven.org/artifact/io.github.thebesteric.framework/agile-logger-core -->
         <dependency>
             <groupId>io.github.thebesteric.framework.agile</groupId>
@@ -51,6 +58,13 @@
         <dependency>
             <groupId>io.github.thebesteric.framework.agile</groupId>
             <artifactId>agile-logger-plugin-cache</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- https://search.maven.org/artifact/io.github.thebesteric.framework/agile-logger-core -->
+        <dependency>
+            <groupId>io.github.thebesteric.framework.agile</groupId>
+            <artifactId>agile-logger-rpc-feign</artifactId>
             <version>${project.version}</version>
         </dependency>
 

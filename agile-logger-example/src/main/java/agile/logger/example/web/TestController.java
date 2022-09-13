@@ -20,6 +20,9 @@ public class TestController {
     @Autowired
     private TestService testService;
 
+    @Autowired
+    private FeignService feignService;
+
     @GetMapping
     public R index() {
         return R.success();
@@ -35,5 +38,12 @@ public class TestController {
     public R query(@RequestBody User user, String name, int age) {
         R result = test(name, age);
         return R.success().put("result", result.getData()).put("user", user);
+    }
+
+    @GetMapping("/feign")
+    public R test(String name) {
+        int result = testService.add(1, 2);
+        Object data = feignService.get(name);
+        return R.error(data).put("name", name).put("result", result);
     }
 }

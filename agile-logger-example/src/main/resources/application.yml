@@ -7,6 +7,16 @@ sourceflag:
     async-params:
       core-pool-size: 1
       maximum-pool-size: 2
+    response-success-define:
+      code-fields:
+        - name: errcode
+          value: 0
+        - name: code
+          value: 200
+        - name: code
+          value: 100
+
+      message-fields: message, msg
     plugins:
       database:
         url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&userSSL=false&serverTimezone=Asia/Shanghai
@@ -17,3 +27,6 @@ sourceflag:
         initial-capacity: 200
         maximum-size: 2000
         expired-time: 3600000
+    rpc:
+      feign:
+        enable: true
