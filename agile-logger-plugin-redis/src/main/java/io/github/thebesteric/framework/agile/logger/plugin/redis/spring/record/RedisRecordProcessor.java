@@ -1,9 +1,9 @@
 package io.github.thebesteric.framework.agile.logger.plugin.redis.spring.record;
 
 import io.github.thebesteric.framework.agile.logger.commons.exception.UnsupportedModeException;
-import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.LogMode;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.processor.record.AbstractThreadPoolRecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,8 +33,8 @@ public class RedisRecordProcessor extends AbstractThreadPoolRecordProcessor {
 
     @Override
     public void doProcess(InvokeLog invokeLog) throws Throwable {
-        String key = AgileContext.redisKeyPrefix + invokeLog.getTrackId() + ":" + invokeLog.getLogId();
-        int expiredTime = this.agileLoggerContext.getProperties().getPlugins().getRedis().getExpiredTime();
-        redisTemplate.opsForValue().set(key, invokeLog, Duration.ofMillis(expiredTime));
+        AgileLoggerSpringProperties.Redis redisPlugin = this.agileLoggerContext.getProperties().getPlugins().getRedis();
+        String key = redisPlugin.getKeyPrefix() + "_" + invokeLog.getTrackId() + "_" + invokeLog.getLogId();
+        redisTemplate.opsForValue().set(key, invokeLog, Duration.ofMillis(redisPlugin.getExpiredTime()));
     }
 }

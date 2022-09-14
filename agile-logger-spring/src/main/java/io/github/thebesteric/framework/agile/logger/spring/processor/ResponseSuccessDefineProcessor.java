@@ -53,6 +53,9 @@ public interface ResponseSuccessDefineProcessor {
      * @return JsonNode
      */
     default JsonNode getJsonNodeField(JsonNode resultJsonNode, String fieldExpression) {
+        if (resultJsonNode == null) {
+            return null;
+        }
         String[] fields = fieldExpression.split("\\.");
         JsonNode jsonCodeField = null;
         for (String field : fields) {

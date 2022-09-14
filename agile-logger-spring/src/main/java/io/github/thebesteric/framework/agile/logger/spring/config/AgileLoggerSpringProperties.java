@@ -119,7 +119,7 @@ public class AgileLoggerSpringProperties {
     @Getter
     @Setter
     public static class Redis {
-        private String keyPrefix = "agile_";
+        private String keyPrefix = "agile";
         private String host = "localhost";
         private int port = 6379;
         private int database = 1;
@@ -128,8 +128,8 @@ public class AgileLoggerSpringProperties {
         private String password;
         private int timeout = 10000;
         private int shutdownTimeout = 10000;
-        private int maxIdle = 8;
         private int minIdle = 1;
+        private int maxIdle = 8;
         private int maxActive = 8;
         private int maxWait = -1;
 

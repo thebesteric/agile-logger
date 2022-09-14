@@ -27,7 +27,9 @@ public abstract class AbstractRequestLoggerProcessor implements RequestLoggerPro
     public RequestLog processor(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
         RequestLog requestLog = new RequestLog(id, requestWrapper, responseWrapper, duration);
         try {
-            requestLog.setResult(JsonUtils.mapper.readTree(requestLog.getResult().toString()));
+            if (requestLog.getResult() != null) {
+                requestLog.setResult(JsonUtils.mapper.readTree(requestLog.getResult().toString()));
+            }
         } catch (Exception ex) {
             LoggerPrinter.error(log, "Cannot parse {} to json", requestLog.getResult());
         }

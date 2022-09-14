@@ -41,7 +41,7 @@ public class AgileLoggerProperties {
     public static String redisHost = "localhost";
     public static int redisPort = 6379;
     public static int redisDB = 0;
-    public static String redisKeyPrefix = "agile_";
+    public static String redisKeyPrefix = "agile";
     public static int redisExpireSeconds = -1;
 
 }
