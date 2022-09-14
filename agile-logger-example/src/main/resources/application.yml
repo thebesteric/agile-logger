@@ -27,6 +27,18 @@ sourceflag:
         initial-capacity: 200
         maximum-size: 2000
         expired-time: 3600000
+      redis:
+        database: 1
+        host: 127.0.0.1
+        port: 6379
+        expired-time: 3600000
+        username: root
+        password: root
+        minIdle: 1
+        max-idle: 8
+        max-active: 8
+        max-wait: -1
+        key-prefix: agile
     rpc:
       feign:
         enable: true

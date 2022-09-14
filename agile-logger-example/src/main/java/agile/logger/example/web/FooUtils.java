@@ -1,5 +1,6 @@
 package agile.logger.example.web;
 
+import agile.logger.example.web.quickstart.TestService;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import org.springframework.beans.factory.annotation.Autowired;
