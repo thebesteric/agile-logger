@@ -6,6 +6,7 @@ import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethods;
 
 import java.lang.reflect.Method;
+import java.util.regex.Pattern;
 
 /**
  * AgileConditionChecker
@@ -83,8 +84,8 @@ public class AgileConditionChecker {
         if (type.isAnnotationPresent(IgnoreMethods.class)) {
             IgnoreMethods ignoreMethods = type.getAnnotation(IgnoreMethods.class);
             String[] ignoreMethodsArr = ignoreMethods.value();
-            for (String im : ignoreMethodsArr) {
-                if (methodName.equalsIgnoreCase(im)) {
+            for (String ignoreMethodPattern : ignoreMethodsArr) {
+                if (Pattern.matches(ignoreMethodPattern, methodName)) {
                     return true;
                 }
             }

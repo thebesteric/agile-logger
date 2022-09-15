@@ -32,9 +32,6 @@ public class AgileLoggerSpringProperties {
     // Thread pool parameters
     private AsyncParams asyncParams = new AsyncParams();
 
-    // Modifiers on class or method that need to be ignored
-    private IgnoreModifiers ignoreModifiers = new IgnoreModifiers();
-
     // Support Maven and Gradle build tools
     private List<String> compilePaths = ClassPathUtils.compilePaths;
 
@@ -173,20 +170,6 @@ public class AgileLoggerSpringProperties {
         private String[] includes = {".*"};
         // Matches invalid urls
         private String[] excludes = {};
-    }
-
-    @Getter
-    @Setter
-    public static class IgnoreModifiers {
-        private IgnoreModifier type = new IgnoreModifier();
-        private IgnoreModifier method = new IgnoreModifier();
-
-        @Getter
-        @Setter
-        public static class IgnoreModifier {
-            private boolean privateModifier = false;
-            private boolean staticModifier = false;
-        }
     }
 
     @Getter
