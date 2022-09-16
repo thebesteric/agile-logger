@@ -15,9 +15,7 @@ import org.apache.skywalking.apm.toolkit.trace.TraceContext;
 
 import javax.servlet.Filter;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -65,12 +63,12 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
                 }
             }
             if (!flag) {
+                Set<Boolean> resultSet = new HashSet<>();
                 for (boolean result : results) {
-                    if (result) {
-                        passed = false;
-                        break;
-                    }
+                    resultSet.add(result);
                 }
+                // The passed is true as long as one element in resultSet is false.
+                passed = resultSet.contains(false);
             }
         }
         return CollectionUtils.isEmpty(urls) || passed;

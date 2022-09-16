@@ -45,7 +45,8 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
 
         // Check whether intercept is required
-        if (!needProxy(method.getDeclaringClass(), method)) {
+        // If parentId is null, the Controller layer is filtered
+        if (!needProxy(method.getDeclaringClass(), method) || AgileLoggerContext.getParentId() == null) {
             return methodProxy.invokeSuper(obj, args);
         }
 
