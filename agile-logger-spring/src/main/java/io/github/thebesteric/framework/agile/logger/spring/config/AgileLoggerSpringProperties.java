@@ -164,8 +164,6 @@ public class AgileLoggerSpringProperties {
     @Getter
     @Setter
     public static class UrlFilter {
-        // Matches whether the URL can enter the filter
-        private String[] urlPatterns = {"/*"};
         // Matches valid urls
         private String[] includes = {".*"};
         // Matches invalid urls

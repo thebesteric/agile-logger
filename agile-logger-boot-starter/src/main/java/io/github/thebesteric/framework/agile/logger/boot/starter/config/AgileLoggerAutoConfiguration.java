@@ -49,7 +49,7 @@ public class AgileLoggerAutoConfiguration {
         FilterRegistrationBean frBean = new FilterRegistrationBean();
         frBean.setName(AgileLoggerFilter.class.getSimpleName());
         frBean.setFilter(new AgileLoggerFilter(agileLoggerContext, recordProcessors));
-        frBean.addUrlPatterns(agileLoggerContext.getProperties().getUrlFilter().getUrlPatterns());
+        frBean.addUrlPatterns("/*");
         frBean.setOrder(1);
         return frBean;
     }
