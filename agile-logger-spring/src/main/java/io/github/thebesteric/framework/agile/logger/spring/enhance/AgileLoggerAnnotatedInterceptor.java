@@ -116,17 +116,24 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
                 return false;
             }
 
+            // Check there are no @AgileLogger on method and type
+            AgileLogger agileLoggerAnnoOnType = ReflectUtils.getAnnotation(type, AgileLogger.class);
+            AgileLogger agileLoggerAnnoOnMethod = ReflectUtils.getAnnotation(method, AgileLogger.class);
+            if (agileLoggerAnnoOnType == null && agileLoggerAnnoOnMethod == null) {
+                checkedMethodsCache.put(fullyQualifiedName, false);
+                return false;
+            }
+
             // Check the @IgnoreMethods on the class
             Set<String> ignoreMethods = ignoreMethodsCache.get(type.getName());
             if (ignoreMethods == null) {
                 ignoreMethods = new HashSet<>();
                 IgnoreMethods ignoreMethodsOnClassAnno = ReflectUtils.getAnnotation(type, IgnoreMethods.class);
-                AgileLogger agileLoggerAnno = ReflectUtils.getAnnotation(type, AgileLogger.class);
                 if (ignoreMethodsOnClassAnno != null) {
                     ignoreMethods.addAll(Arrays.asList(ignoreMethodsOnClassAnno.value()));
                 }
-                if (agileLoggerAnno != null) {
-                    ignoreMethods.addAll(Arrays.asList(agileLoggerAnno.ignoreMethods()));
+                if (agileLoggerAnnoOnType != null) {
+                    ignoreMethods.addAll(Arrays.asList(agileLoggerAnnoOnType.ignoreMethods()));
                 }
                 ignoreMethodsCache.put(type.getName(), ignoreMethods);
             }
