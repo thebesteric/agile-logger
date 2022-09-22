@@ -17,12 +17,12 @@ public interface IgnoreUriProcessor {
     /**
      * Add ignore uris
      *
-     * @param ignoreUrls ignoreUrls
+     * @param ignoreUris ignoreUris
      */
-    void add(Set<String> ignoreUrls);
+    void add(Set<String> ignoreUris);
 
     /**
-     * Get IGNORE_URLS
+     * Get IGNORE_URIS
      *
      * @return {@link Set<String>}
      */
@@ -34,12 +34,12 @@ public interface IgnoreUriProcessor {
     /**
      * Whether the value matching the regular
      *
-     * @param url String
+     * @param uri String
      * @return boolean
      */
-    default boolean matching(String url) {
+    default boolean matching(String uri) {
         for (String ignoreUri : IGNORE_URIS) {
-            Matcher matcher = Pattern.compile(ignoreUri).matcher(url);
+            Matcher matcher = Pattern.compile(ignoreUri).matcher(uri);
             if (matcher.find()) {
                 return true;
             }

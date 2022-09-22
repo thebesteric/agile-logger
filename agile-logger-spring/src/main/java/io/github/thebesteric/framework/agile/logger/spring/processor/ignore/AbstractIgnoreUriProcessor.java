@@ -12,11 +12,11 @@ import java.util.Set;
  */
 public abstract class AbstractIgnoreUriProcessor implements IgnoreUriProcessor {
 
-    abstract void addIgnoreUris(Set<String> ignoreUrls);
+    public abstract void addIgnoreUris(Set<String> ignoreUris);
 
     @Override
-    public void add(Set<String> ignoreUrls) {
-        addIgnoreUris(ignoreUrls);
+    public void add(Set<String> ignoreUris) {
+        addIgnoreUris(ignoreUris);
         addDefaultIgnoreUris();
     }
 }

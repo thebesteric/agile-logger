@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class DefaultIgnoreMethodProcessor extends AbstractIgnoreMethodProcessor {
     @Override
-    void addIgnoreMethods(Set<IgnoreMethod> ignoreMethods) {
+    public void addIgnoreMethods(Set<IgnoreMethod> ignoreMethods) {
         addDefaultIgnoreMethods();
     }
 }

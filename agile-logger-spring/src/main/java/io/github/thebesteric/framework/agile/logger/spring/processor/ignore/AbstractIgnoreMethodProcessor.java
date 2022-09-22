@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public abstract class AbstractIgnoreMethodProcessor implements IgnoreMethodProcessor {
 
-    abstract void addIgnoreMethods(Set<IgnoreMethod> ignoreMethods);
+    public abstract void addIgnoreMethods(Set<IgnoreMethod> ignoreMethods);
 
     @Override
     public void add(Set<IgnoreMethod> ignoreMethods) {

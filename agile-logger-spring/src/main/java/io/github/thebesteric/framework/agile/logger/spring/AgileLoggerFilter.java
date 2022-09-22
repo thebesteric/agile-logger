@@ -4,6 +4,7 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatche
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
+import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AbstractAgileLoggerFilter;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
@@ -15,6 +16,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -43,6 +45,15 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
         // Check ignore URI
         String uri = ((HttpServletRequest) request).getRequestURI();
         if (this.ignoreUriProcessor.matching(uri)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Check ignore Method
+        Method method = AbstractAgileLoggerFilter.URL_MAPPING.get(uri);
+        IgnoreMethodProcessor.IgnoreMethod ignoreMethod = IgnoreMethodProcessor.IgnoreMethod.builder()
+                .clazz(method.getDeclaringClass()).method(method).build();
+        if (ignoreMethodProcessor.matching(ignoreMethod)) {
             filterChain.doFilter(request, response);
             return;
         }

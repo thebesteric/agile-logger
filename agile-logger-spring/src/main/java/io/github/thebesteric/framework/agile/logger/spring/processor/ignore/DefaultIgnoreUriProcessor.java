@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class DefaultIgnoreUriProcessor extends AbstractIgnoreUriProcessor {
     @Override
-    void addIgnoreUris(Set<String> ignoreUrls) {
+    public void addIgnoreUris(Set<String> ignoreUris) {
         addDefaultIgnoreUris();
     }
 }

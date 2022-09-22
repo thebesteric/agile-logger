@@ -46,7 +46,9 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
         // Check whether intercept is required
         // If parentId is null, the Controller layer is filtered
-        if (!needProxy(method.getDeclaringClass(), method) || AgileLoggerContext.getParentId() == null) {
+        String parentId = AgileLoggerContext.getParentId();
+        if (!needProxy(method.getDeclaringClass(), method) || parentId == null) {
+            AgileLoggerContext.setParentId(parentId);
             return methodProxy.invokeSuper(obj, args);
         }
 
@@ -58,7 +60,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         String exception = null;
 
         // Initialize the invokeLog
-        InvokeLog invokeLog = new InvokeLog(AgileLoggerContext.getParentId());
+        InvokeLog invokeLog = new InvokeLog(parentId);
         AgileLoggerContext.setParentId(invokeLog.getLogId());
 
         try {

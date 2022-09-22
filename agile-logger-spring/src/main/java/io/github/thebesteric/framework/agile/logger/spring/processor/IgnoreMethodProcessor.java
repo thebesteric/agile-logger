@@ -69,6 +69,10 @@ public interface IgnoreMethodProcessor {
         private String className;
         private String methodName;
 
+        private IgnoreMethod() {
+            super();
+        }
+
         public static Builder builder() {
             return new Builder();
         }
@@ -101,7 +105,7 @@ public interface IgnoreMethodProcessor {
 
             public IgnoreMethod build() {
                 if (StringUtils.isEmpty(ignoreMethod.className)) {
-                    ignoreMethod.className = "\\S";
+                    ignoreMethod.className = ".*";
                 }
                 if (StringUtils.isEmpty(ignoreMethod.methodName)) {
                     throw new IllegalArgumentException("methodName cannot be empty");

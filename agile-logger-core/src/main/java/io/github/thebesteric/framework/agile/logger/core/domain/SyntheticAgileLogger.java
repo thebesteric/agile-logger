@@ -41,9 +41,12 @@ public class SyntheticAgileLogger {
             extraOnMethod = onMethod.extra();
             levelOnMethod = onMethod.level();
         }
+
+        this.tag = StringUtils.blankToNull(StringUtils.isNotEquals(AbstractEntity.TAG_DEFAULT, tagOnMethod) ?
+                tagOnMethod != null ? tagOnMethod : tagOnType : tagOnType == null ? AbstractEntity.TAG_DEFAULT : tagOnType);
+        this.level = StringUtils.blankToNull(StringUtils.isNotEquals(AbstractEntity.LEVEL_INFO, levelOnMethod) ?
+                levelOnMethod != null ? levelOnMethod : levelOnType : levelOnType == null ? AbstractEntity.LEVEL_INFO : levelOnType);
         this.extra = StringUtils.blankToNull(StringUtils.isNotEmpty(extraOnMethod) ? extraOnMethod : extraOnType);
-        this.tag = StringUtils.blankToNull(StringUtils.isNotEquals(AbstractEntity.TAG_DEFAULT, tagOnMethod) ? tagOnMethod != null ? tagOnMethod : tagOnType : tagOnType);
-        this.level = StringUtils.blankToNull(StringUtils.isNotEquals(AbstractEntity.LEVEL_INFO, levelOnMethod) ? levelOnMethod != null ? levelOnMethod : levelOnType : levelOnType);
         this.ignoreMethods = ignoreMethodsOnType;
 
         // If Controller has not @AgileLogger
@@ -75,7 +78,8 @@ public class SyntheticAgileLogger {
     }
 
     public void setLevel(String level) {
-        this.level = StringUtils.blankToNull(level);;
+        this.level = StringUtils.blankToNull(level);
+        ;
     }
 
     public String[] getIgnoreMethods() {
