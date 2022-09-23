@@ -105,7 +105,6 @@ public class RequestLog extends InvokeLog {
     }
 
     public RequestLog(AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
-
         this.trackId = TransactionUtils.get();
         this.threadName = Thread.currentThread().getName();
         this.createdAt = new Date(duration.getStartTime());
@@ -115,7 +114,10 @@ public class RequestLog extends InvokeLog {
         this.result = StringUtils.bytesToString(responseWrapper.getByteArray());
         this.serverName = requestWrapper.getServerName();
         this.sessionId = requestWrapper.getRequestedSessionId();
-        this.query = URLDecoder.decode(requestWrapper.getQueryString(), StandardCharsets.UTF_8);
+        String queryString = requestWrapper.getQueryString();
+        if (queryString != null) {
+            this.query = URLDecoder.decode(queryString, StandardCharsets.UTF_8);
+        }
         this.method = requestWrapper.getMethod();
         this.protocol = requestWrapper.getProtocol();
         this.ip = requestWrapper.getIpAddress();

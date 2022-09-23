@@ -21,7 +21,7 @@ public interface RequestLoggerProcessor {
 
     RequestLog processor(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException;
 
-    default void buildAgileLoggerInfo(Method method, InvokeLog invokeLog) {
+    default void buildSyntheticAgileLogger(Method method, InvokeLog invokeLog) {
         SyntheticAgileLogger syntheticAgileLogger = new SyntheticAgileLogger(method);
         invokeLog.setLevel(syntheticAgileLogger.getLevel());
         invokeLog.setTag(syntheticAgileLogger.getTag());

@@ -35,7 +35,7 @@ public abstract class AbstractRequestLoggerProcessor implements RequestLoggerPro
         }
         Method method = getMethod(requestLog.getUri());
         if (method != null) {
-            buildAgileLoggerInfo(method, requestLog);
+            buildSyntheticAgileLogger(method, requestLog);
             if (responseWrapper.getException() != null) {
                 requestLog.setLevel(InvokeLog.LEVEL_ERROR);
             }
@@ -47,7 +47,7 @@ public abstract class AbstractRequestLoggerProcessor implements RequestLoggerPro
     /**
      * Executes when processor is processed
      *
-     * @param requestLog requestLog
+     * @param requestLog {@link RequestLog}
      * @return RequestLog
      */
     public abstract RequestLog doAfterProcessor(RequestLog requestLog);

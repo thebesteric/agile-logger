@@ -1,8 +1,5 @@
 package io.github.thebesteric.framework.agile.logger.core.domain;
 
-import io.github.thebesteric.framework.agile.logger.core.annotation.RewriteParam;
-import org.apache.commons.lang3.StringUtils;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.File;
@@ -42,18 +39,6 @@ public class MethodInfo extends AbstractEntity {
         if (params != null && params.length > 0) {
             for (int i = 0; i < params.length; i++) {
                 Parameter param = params[i];
-
-                // Processing @RewriteParam in method parameters
-                RewriteParam rewriteParam = param.getAnnotation(RewriteParam.class);
-                if (rewriteParam != null) {
-                    String ignoreParamValue = rewriteParam.value();
-                    if (!StringUtils.isEmpty(ignoreParamValue)) {
-                        signatures.put(param.getName(), param.getParameterizedType().getTypeName());
-                        arguments.put(param.getName(), ignoreParamValue);
-                    }
-                    continue;
-                }
-
                 // Add signatures
                 signatures.put(param.getName(), param.getParameterizedType().getTypeName());
 
