@@ -3,14 +3,14 @@ package io.github.thebesteric.framework.agile.logger.spring.enhance;
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
+import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod;
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethods;
-import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
-import io.github.thebesteric.framework.agile.logger.spring.TransactionUtils;
 import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreMethodProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.processor.InvokeLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ResponseSuccessDefineProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -52,16 +52,14 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             return methodProxy.invokeSuper(obj, args);
         }
 
-        final String trackId = TransactionUtils.get();
+        String logId = AgileContext.idGenerator.generate();
+        AgileLoggerContext.setParentId(logId);
+
         final SyntheticAgileLogger syntheticAgileLogger = new SyntheticAgileLogger(method);
 
         String durationTag = null;
         Object result = null;
         String exception = null;
-
-        // Initialize the invokeLog
-        InvokeLog invokeLog = new InvokeLog(parentId);
-        AgileLoggerContext.setParentId(invokeLog.getLogId());
 
         try {
             // Star watcher
@@ -77,19 +75,10 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         } finally {
             // End watcher
             DurationWatcher.Duration duration = DurationWatcher.stop(durationTag);
-
-            // Create InvokeLog
-            invokeLog = InvokeLog.builder(invokeLog)
-                    .trackId(trackId)
-                    .createdAt(duration.getStartTime())
-                    .tag(syntheticAgileLogger.getTag())
-                    .extra(syntheticAgileLogger.getExtra())
-                    .executeInfo(new ExecuteInfo(method, args, duration))
-                    .exception(exception)
-                    .result(result)
-                    .level(invokeLog.getException() != null ? InvokeLog.LEVEL_ERROR : syntheticAgileLogger.getLevel())
-                    .build();
-
+            // Build InvokeLog
+            InvokeLoggerProcessor invokeLoggerProcessor = agileLoggerContext.getInvokeLoggerProcessor();
+            InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parentId, method, args, result, exception, duration);
+            // Record InvokeLog
             this.agileLoggerContext.getCurrentRecordProcessor().processor(invokeLog);
 
         }

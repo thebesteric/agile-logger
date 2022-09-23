@@ -6,6 +6,7 @@ import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpr
 import io.github.thebesteric.framework.agile.logger.spring.processor.*;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ignore.DefaultIgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ignore.DefaultIgnoreUriProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.processor.invoke.DefaultInvokeLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.record.StdoutRecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.request.DefaultRequestLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.response.DefaultResponseSuccessDefineProcessorProcessor;
@@ -45,6 +46,7 @@ public class AgileLoggerContext {
     private final IgnoreUriProcessor ignoreUriProcessor;
     private final ResponseSuccessDefineProcessor responseSuccessDefineProcessor;
     private final RequestLoggerProcessor requestLoggerProcessor;
+    private final InvokeLoggerProcessor invokeLoggerProcessor;
     private final ExecutorService recordLoggerThreadPool;
     private final Environment environment;
 
@@ -60,6 +62,7 @@ public class AgileLoggerContext {
         this.ignoreUriProcessor = generateIgnoreUriProcessor();
         this.responseSuccessDefineProcessor = generateResponseSuccessDefineProcessor();
         this.requestLoggerProcessor = getBeanOrDefault(RequestLoggerProcessor.class, new DefaultRequestLoggerProcessor());
+        this.invokeLoggerProcessor = getBeanOrDefault(InvokeLoggerProcessor.class, new DefaultInvokeLoggerProcessor());
         this.recordLoggerThreadPool = generateExecutorService();
         this.environment = getBean(Environment.class);
     }

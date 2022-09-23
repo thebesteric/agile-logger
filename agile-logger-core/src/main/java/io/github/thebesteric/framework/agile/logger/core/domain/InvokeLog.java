@@ -65,6 +65,11 @@ public class InvokeLog extends AbstractEntity {
         this.logParentId = logParentId;
     }
 
+    public InvokeLog(String logId, String logParentId) {
+        this(logParentId);
+        this.logId = logId;
+    }
+
     public static Builder builder(InvokeLog invokeLog) {
         return new Builder(invokeLog);
     }

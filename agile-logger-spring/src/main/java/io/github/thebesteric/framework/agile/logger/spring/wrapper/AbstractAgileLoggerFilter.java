@@ -7,10 +7,7 @@ import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.utils.DefaultIdGenerator;
 import io.github.thebesteric.framework.agile.logger.spring.TransactionUtils;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
-import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreMethodProcessor;
-import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreUriProcessor;
-import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
-import io.github.thebesteric.framework.agile.logger.spring.processor.RequestLoggerProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.processor.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.skywalking.apm.toolkit.trace.TraceContext;
 
@@ -38,6 +35,7 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
     protected final IgnoreUriProcessor ignoreUriProcessor;
     protected final IgnoreMethodProcessor ignoreMethodProcessor;
     protected final RequestLoggerProcessor requestLoggerProcessor;
+    protected final InvokeLoggerProcessor invokeLoggerProcessor;
 
     protected final RecordProcessor currentRecordProcessor;
 
@@ -47,6 +45,7 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
         this.ignoreUriProcessor = agileLoggerContext.getIgnoreUriProcessor();
         this.ignoreMethodProcessor = agileLoggerContext.getIgnoreMethodProcessor();
         this.requestLoggerProcessor = agileLoggerContext.getRequestLoggerProcessor();
+        this.invokeLoggerProcessor = agileLoggerContext.getInvokeLoggerProcessor();
         this.currentRecordProcessor = agileLoggerContext.setRecordProcessors(recordProcessors);
     }
 
