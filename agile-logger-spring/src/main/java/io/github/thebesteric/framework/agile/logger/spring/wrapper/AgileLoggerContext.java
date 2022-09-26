@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.spring.wrapper;
 
 import io.github.thebesteric.framework.agile.logger.commons.exception.InvalidDataException;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
+import io.github.thebesteric.framework.agile.logger.core.domain.LogMode;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.processor.*;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ignore.DefaultIgnoreMethodProcessor;
@@ -92,6 +93,11 @@ public class AgileLoggerContext {
         this.recordProcessors = recordProcessors;
         this.currentRecordProcessor = this.recordProcessors.stream().filter(recordProcessor -> recordProcessor.supports(this.properties.getLogMode()))
                 .findFirst().orElse(new StdoutRecordProcessor(this));
+        LogMode logMode = this.getProperties().getLogMode();
+        if (logMode != this.currentRecordProcessor.getLogMode()) {
+            String errorMsg = String.format("Can't find recordProcessors %s, make sure it's set up properly", logMode);
+            throw new IllegalArgumentException(errorMsg);
+        }
         return this.currentRecordProcessor;
     }
 

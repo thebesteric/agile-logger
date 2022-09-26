@@ -25,6 +25,11 @@ public class LogRecordProcessor extends AbstractThreadPoolRecordProcessor {
     }
 
     @Override
+    public LogMode getLogMode() {
+        return LogMode.LOG;
+    }
+
+    @Override
     public void doProcess(InvokeLog invokeLog) throws Throwable {
         switch (invokeLog.getLevel().toUpperCase()) {
             case InvokeLog.LEVEL_INFO:

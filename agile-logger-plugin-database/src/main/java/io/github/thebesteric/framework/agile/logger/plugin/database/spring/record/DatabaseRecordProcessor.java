@@ -36,6 +36,11 @@ public class DatabaseRecordProcessor extends AbstractThreadPoolRecordProcessor {
     }
 
     @Override
+    public LogMode getLogMode() {
+        return LogMode.DATABASE;
+    }
+
+    @Override
     public void doProcess(InvokeLog invokeLog) throws Throwable {
         String tableName = getTableName(invokeLog.getClass());
         String[] insertProperties = getInsertProperties(invokeLog.getClass());

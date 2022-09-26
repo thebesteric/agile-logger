@@ -32,6 +32,11 @@ public class RedisRecordProcessor extends AbstractThreadPoolRecordProcessor {
     }
 
     @Override
+    public LogMode getLogMode() {
+        return LogMode.REDIS;
+    }
+
+    @Override
     public void doProcess(InvokeLog invokeLog) throws Throwable {
         AgileLoggerSpringProperties.Redis redisPlugin = this.agileLoggerContext.getProperties().getPlugins().getRedis();
         String key = redisPlugin.getKeyPrefix() + "_" + invokeLog.getTrackId() + "_" + invokeLog.getLogId();

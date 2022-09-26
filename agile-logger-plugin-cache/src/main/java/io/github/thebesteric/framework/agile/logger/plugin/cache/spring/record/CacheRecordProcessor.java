@@ -28,6 +28,11 @@ public class CacheRecordProcessor extends AbstractThreadPoolRecordProcessor {
     }
 
     @Override
+    public LogMode getLogMode() {
+        return LogMode.CACHE;
+    }
+
+    @Override
     public void doProcess(InvokeLog invokeLog) throws Throwable {
         this.cache.put(invokeLog.getLogId(), invokeLog);
     }

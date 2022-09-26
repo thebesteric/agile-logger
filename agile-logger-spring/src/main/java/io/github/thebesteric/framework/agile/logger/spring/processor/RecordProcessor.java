@@ -16,4 +16,6 @@ public interface RecordProcessor {
 
     void processor(InvokeLog invokeLog);
 
+    LogMode getLogMode();
+
 }

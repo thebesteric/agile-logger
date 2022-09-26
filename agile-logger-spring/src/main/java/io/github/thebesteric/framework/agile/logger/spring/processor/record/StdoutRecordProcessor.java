@@ -23,6 +23,11 @@ public class StdoutRecordProcessor extends AbstractThreadPoolRecordProcessor {
     }
 
     @Override
+    public LogMode getLogMode() {
+        return LogMode.STDOUT;
+    }
+
+    @Override
     public void doProcess(InvokeLog invokeLog) {
         switch (invokeLog.getLevel()) {
             case InvokeLog.LEVEL_ERROR:
