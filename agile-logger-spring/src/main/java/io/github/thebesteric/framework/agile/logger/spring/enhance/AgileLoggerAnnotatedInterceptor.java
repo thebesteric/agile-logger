@@ -9,6 +9,7 @@ import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethods;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
+import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.domain.VersionerInfo;
 import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.InvokeLoggerProcessor;
@@ -70,7 +71,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         String logId = AgileContext.idGenerator.generate();
         AgileLoggerContext.setParentId(logId);
 
-        final SyntheticAgileLogger syntheticAgileLogger = new SyntheticAgileLogger(method);
+        final SyntheticAgileLogger syntheticAgileLogger = SpringSyntheticAgileLogger.getSpringSyntheticAgileLogger(method);
 
         String durationTag = null;
         Object result = null;

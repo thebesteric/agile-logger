@@ -4,6 +4,7 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatche
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
+import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AbstractAgileLoggerFilter;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerRequestWrapper;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerResponseWrapper;
@@ -22,7 +23,7 @@ public interface RequestLoggerProcessor {
     RequestLog processor(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException;
 
     default void buildSyntheticAgileLogger(Method method, InvokeLog invokeLog) {
-        SyntheticAgileLogger syntheticAgileLogger = new SyntheticAgileLogger(method);
+        SyntheticAgileLogger syntheticAgileLogger = SpringSyntheticAgileLogger.getSpringSyntheticAgileLogger(method);
         invokeLog.setLevel(syntheticAgileLogger.getLevel());
         invokeLog.setTag(syntheticAgileLogger.getTag());
         invokeLog.setExtra(syntheticAgileLogger.getExtra());

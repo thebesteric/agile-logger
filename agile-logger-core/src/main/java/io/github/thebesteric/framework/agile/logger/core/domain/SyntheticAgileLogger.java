@@ -16,17 +16,16 @@ import java.lang.reflect.Method;
  */
 public class SyntheticAgileLogger {
 
-    private String tag;
-    private String extra;
-    private String level;
-    private String[] ignoreMethods;
+    protected String tag;
+    protected String extra;
+    protected String level;
+    protected String[] ignoreMethods;
 
     public SyntheticAgileLogger(Method method) {
-        // TODO: 设置 tag 默认值，增加缓存
         this(method.getDeclaringClass().getAnnotation(AgileLogger.class), method.getAnnotation(AgileLogger.class));
     }
 
-    public SyntheticAgileLogger(AgileLogger onType, AgileLogger onMethod) {
+    private SyntheticAgileLogger(AgileLogger onType, AgileLogger onMethod) {
         String tagOnType = null, tagOnMethod = null;
         String extraOnType = null, extraOnMethod = null;
         String levelOnType = null, levelOnMethod = null;
@@ -55,7 +54,6 @@ public class SyntheticAgileLogger {
             this.level = AbstractEntity.LEVEL_INFO;
             this.tag = AbstractEntity.TAG_DEFAULT;
         }
-
     }
 
     public String getTag() {

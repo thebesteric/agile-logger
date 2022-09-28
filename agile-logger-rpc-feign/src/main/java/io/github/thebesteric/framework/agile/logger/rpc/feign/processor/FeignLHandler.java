@@ -12,6 +12,7 @@ import io.github.thebesteric.framework.agile.logger.rpc.feign.domain.RequestLogI
 import io.github.thebesteric.framework.agile.logger.spring.TransactionUtils;
 import io.github.thebesteric.framework.agile.logger.spring.domain.R;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
+import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ResponseSuccessDefineProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -138,7 +139,7 @@ public class FeignLHandler extends feign.Logger {
             methodInfo.setReturnType(method.getReturnType().getName());
 
             // Build SyntheticAgileLogger
-            SyntheticAgileLogger syntheticAgileLogger = new SyntheticAgileLogger(method);
+            SyntheticAgileLogger syntheticAgileLogger = SpringSyntheticAgileLogger.getSpringSyntheticAgileLogger(method);
             requestLog.setTag(syntheticAgileLogger.getTag());
             requestLog.setLevel(syntheticAgileLogger.getLevel());
             requestLog.setExtra(syntheticAgileLogger.getExtra());

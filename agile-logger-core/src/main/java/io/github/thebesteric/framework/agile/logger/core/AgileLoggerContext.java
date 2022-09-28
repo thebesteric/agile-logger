@@ -1,6 +1,5 @@
 package io.github.thebesteric.framework.agile.logger.core;
 
-import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.JoinMethod;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
@@ -46,22 +45,8 @@ public class AgileLoggerContext {
         return method;
     }
 
-    public AgileLogger getAgileLogger() {
-        Method method = getDeclaringMethod();
-        AgileLogger agileLogger = method.getAnnotation(AgileLogger.class);
-        if (agileLogger != null) {
-            // AgileLogger from method
-            return agileLogger;
-        }
-        // AgileLogger from type
-        Class<?> clazz = getDeclaringType();
-        return clazz.getAnnotation(AgileLogger.class);
-    }
-
     public SyntheticAgileLogger getSyntheticAgileLogger() {
-        AgileLogger agileLoggerOnType = getDeclaringType().getAnnotation(AgileLogger.class);
-        AgileLogger agileLoggerOnMethod = getDeclaringMethod().getAnnotation(AgileLogger.class);
-        return new SyntheticAgileLogger(agileLoggerOnType, agileLoggerOnMethod);
+        return new SyntheticAgileLogger(getDeclaringMethod());
     }
 
     public InvokeLog fire(AgileContext context) throws NoSuchMethodException {

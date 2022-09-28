@@ -6,6 +6,7 @@ import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.TransactionUtils;
+import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.processor.InvokeLoggerProcessor;
 
 import java.lang.reflect.Method;
@@ -22,7 +23,7 @@ public abstract class AbstractInvokeLoggerProcessor implements InvokeLoggerProce
         // Initialize the invokeLog
         InvokeLog invokeLog = new InvokeLog(logId, parentId);
 
-        SyntheticAgileLogger syntheticAgileLogger = new SyntheticAgileLogger(method);
+        SyntheticAgileLogger syntheticAgileLogger = SpringSyntheticAgileLogger.getSpringSyntheticAgileLogger(method);
 
         // Create InvokeLog
         invokeLog = InvokeLog.builder(invokeLog)
