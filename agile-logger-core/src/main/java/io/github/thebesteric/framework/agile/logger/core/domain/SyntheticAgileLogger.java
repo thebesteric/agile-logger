@@ -22,6 +22,7 @@ public class SyntheticAgileLogger {
     private String[] ignoreMethods;
 
     public SyntheticAgileLogger(Method method) {
+        // TODO: 设置 tag 默认值，增加缓存
         this(method.getDeclaringClass().getAnnotation(AgileLogger.class), method.getAnnotation(AgileLogger.class));
     }
 

@@ -2,7 +2,6 @@ package io.github.thebesteric.framework.agile.logger.spring.enhance;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.ClassUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
-import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.Callback;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +56,7 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
         Class<?> beanClass = bean.getClass();
 
         // Beans that does not require an agent
-        if (!agileLoggerContext.getProperties().isEnable() || !needEnhance(beanClass)) {
+        if (!agileLoggerContext.getProperties().isEnable() || !needEnhance(beanClass) || isSpringInternalClass(beanClass)) {
             return bean;
         }
 
@@ -71,20 +69,7 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
             return bean;
         }
 
-        // Proxy the class if there is an @AgileLogger on the type
-        if (originClass.isAnnotationPresent(AgileLogger.class)) {
-            return enhance(originClass, new AgileLoggerAnnotatedInterceptor(agileLoggerContext), beanName, bean);
-        }
-
-        // Proxy the class if any of the methods have @AgileLogger on them
-        for (Method declaredMethod : beanClass.getDeclaredMethods()) {
-            // Proxy the class if there is an @AgileLogger on the method
-            if (declaredMethod.isAnnotationPresent(AgileLogger.class)) {
-                return enhance(originClass, new AgileLoggerAnnotatedInterceptor(agileLoggerContext), beanName, bean);
-            }
-        }
-
-        return bean;
+        return enhance(originClass, new AgileLoggerAnnotatedInterceptor(agileLoggerContext), beanName, bean);
     }
 
     public Object enhance(Class<?> originClass, Callback callback, String beanName, Object bean) {

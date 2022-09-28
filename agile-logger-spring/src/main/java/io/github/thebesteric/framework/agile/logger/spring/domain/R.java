@@ -1,6 +1,5 @@
 package io.github.thebesteric.framework.agile.logger.spring.domain;
 
-import io.github.thebesteric.framework.agile.logger.commons.exception.DataAlreadyExistsException;
 import io.github.thebesteric.framework.agile.logger.spring.TransactionUtils;
 import lombok.Data;
 
@@ -57,7 +56,7 @@ public class R {
             ((Map<String, Object>) this.data).put(key, value);
             return this;
         }
-        throw new DataAlreadyExistsException("data[%s] is already exists", this.data.toString());
+        throw new IllegalArgumentException(String.format("data: [%s] is not a map structure", this.data));
     }
 
     public R setCode(int code) {

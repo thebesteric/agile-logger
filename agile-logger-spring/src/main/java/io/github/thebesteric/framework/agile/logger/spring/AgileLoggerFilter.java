@@ -86,7 +86,7 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
             // Create RequestLog
             RequestLog requestLog = this.requestLoggerProcessor.processor(id, requestWrapper, responseWrapper, duration);
 
-            // Process non-program exceptions(Logical exception)
+            // Process non-program exceptions, For example: code != 200
             String exception = this.agileLoggerContext.getResponseSuccessDefineProcessor()
                     .processor(this.requestLoggerProcessor.getMethod(requestLog.getUri()), requestLog.getResult());
             if (exception != null) {

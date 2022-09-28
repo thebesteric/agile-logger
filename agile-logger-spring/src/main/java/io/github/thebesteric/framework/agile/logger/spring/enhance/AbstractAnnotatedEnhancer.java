@@ -7,6 +7,9 @@ import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerCo
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.Enhancer;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -34,7 +37,12 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
     }
 
     protected boolean needEnhance(Class<?> clazz) {
-        return ReflectUtils.anyAnnotationPresent(clazz, AgileLogger.class);
+        return ReflectUtils.isAnnotationPresent(clazz, AgileLogger.class)
+                || ReflectUtils.anyAnnotationPresent(clazz, RestController.class, Controller.class);
+    }
+
+    protected boolean isSpringInternalClass(Class<?> clazz) {
+        return BasicErrorController.class == clazz;
     }
 
     /**

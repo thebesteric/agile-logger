@@ -9,12 +9,16 @@ import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethods;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
+import io.github.thebesteric.framework.agile.logger.spring.domain.VersionerInfo;
 import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.InvokeLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ResponseSuccessDefineProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.versionner.annotation.Versioner;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -52,6 +56,17 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             return methodProxy.invokeSuper(obj, args);
         }
 
+        // Versioner: handler request
+        VersionerInfo versionerInfo = null;
+        if (method.isAnnotationPresent(Versioner.class)) {
+            Versioner versioner = method.getAnnotation(Versioner.class);
+            versionerInfo = new VersionerInfo(versioner, args);
+            VersionerInfo.MethodInfo requestMethodInfo = versionerInfo.getRequestMethodInfo();
+            if (requestMethodInfo != null) {
+                requestMethodInfo.invoke();
+            }
+        }
+
         String logId = AgileContext.idGenerator.generate();
         AgileLoggerContext.setParentId(logId);
 
@@ -64,9 +79,22 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         try {
             // Star watcher
             durationTag = DurationWatcher.start();
+
+            // Invoke
             result = methodProxy.invokeSuper(obj, args);
+
+            // Process non-program exceptions, For example: code != 200
             ResponseSuccessDefineProcessor responseSuccessDefineProcessor = agileLoggerContext.getResponseSuccessDefineProcessor();
             exception = responseSuccessDefineProcessor.processor(method, result);
+
+            // Versioner: handler response
+            if (versionerInfo != null) {
+                VersionerInfo.MethodInfo responseMethodInfo = versionerInfo.getResponseMethodInfo(result);
+                if (responseMethodInfo != null) {
+                    result = responseMethodInfo.invoke();
+                }
+            }
+
             return result;
         } catch (Exception ex) {
             exception = ex.getMessage();
@@ -109,8 +137,11 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             AgileLogger agileLoggerAnnoOnType = ReflectUtils.getAnnotation(type, AgileLogger.class);
             AgileLogger agileLoggerAnnoOnMethod = ReflectUtils.getAnnotation(method, AgileLogger.class);
             if (agileLoggerAnnoOnType == null && agileLoggerAnnoOnMethod == null) {
-                checkedMethodsCache.put(fullyQualifiedName, false);
-                return false;
+                // Check is @RestController or @Controller
+                if (!ReflectUtils.anyAnnotationPresent(type, RestController.class, Controller.class)) {
+                    checkedMethodsCache.put(fullyQualifiedName, false);
+                    return false;
+                }
             }
 
             // Check the @IgnoreMethods on the class

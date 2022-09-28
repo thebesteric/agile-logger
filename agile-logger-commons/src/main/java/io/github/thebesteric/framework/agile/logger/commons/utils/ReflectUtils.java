@@ -126,12 +126,12 @@ public class ReflectUtils {
         return field.getAnnotation(annotationClass);
     }
 
-    public static boolean anyAnnotationPresent(Class<?> objectClass, Class<? extends Annotation> annotationClass) {
-        if (isAnnotationPresent(objectClass, annotationClass)) {
+    public static boolean isAnnotationPresent(Class<?> objectClass, Class<? extends Annotation> annotationClass) {
+        if (allAnnotationPresent(objectClass, annotationClass)) {
             return true;
         } else {
             for (Method method : objectClass.getDeclaredMethods()) {
-                if (isAnnotationPresent(method, annotationClass)) {
+                if (allAnnotationPresent(method, annotationClass)) {
                     return true;
                 }
             }
@@ -140,13 +140,25 @@ public class ReflectUtils {
     }
 
     @SafeVarargs
-    public static boolean isAnnotationPresent(Class<?> objectClass, Class<? extends Annotation> annotationClass, Class<? extends Annotation>... annotationClasses) {
+    public static boolean anyAnnotationPresent(Class<?> objectClass, Class<? extends Annotation> annotationClass, Class<? extends Annotation>... annotationClasses) {
+        List<Class<? extends Annotation>> annoClasses = mergeIndefiniteParams(annotationClass, annotationClasses);
+        return annoClasses.stream().anyMatch(objectClass::isAnnotationPresent);
+    }
+
+    @SafeVarargs
+    public static boolean anyAnnotationPresent(Method method, Class<? extends Annotation> annotationClass, Class<? extends Annotation>... annotationClasses) {
+        List<Class<? extends Annotation>> annoClasses = mergeIndefiniteParams(annotationClass, annotationClasses);
+        return annoClasses.stream().anyMatch(method::isAnnotationPresent);
+    }
+
+    @SafeVarargs
+    public static boolean allAnnotationPresent(Class<?> objectClass, Class<? extends Annotation> annotationClass, Class<? extends Annotation>... annotationClasses) {
         List<Class<? extends Annotation>> annoClasses = mergeIndefiniteParams(annotationClass, annotationClasses);
         return annoClasses.stream().allMatch(objectClass::isAnnotationPresent);
     }
 
     @SafeVarargs
-    public static boolean isAnnotationPresent(Method method, Class<? extends Annotation> annotationClass, Class<? extends Annotation>... annotationClasses) {
+    public static boolean allAnnotationPresent(Method method, Class<? extends Annotation> annotationClass, Class<? extends Annotation>... annotationClasses) {
         List<Class<? extends Annotation>> annoClasses = mergeIndefiniteParams(annotationClass, annotationClasses);
         return annoClasses.stream().allMatch(method::isAnnotationPresent);
     }
