@@ -1,5 +1,6 @@
-package io.github.thebesteric.framework.agile.logger.spring;
+package io.github.thebesteric.framework.agile.logger.commons.utils;
 
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -10,7 +11,9 @@ import java.util.UUID;
  */
 public class TransactionUtils {
 
-    public static ThreadLocal<String> trackIdThreadLocal = TransactionUtils.create();
+    public static Set<String> TRACK_ID_NAMES = CollectionUtils.createSet("track-id", "x-track-id", "trans-id", "x-trans-id", "trace-id", "x-trace-id", "transaction-id", "x-transaction-id");
+
+    private static ThreadLocal<String> trackIdThreadLocal = TransactionUtils.create();
 
     public static ThreadLocal<String> create() {
         return create(UUID.randomUUID().toString());
@@ -40,9 +43,8 @@ public class TransactionUtils {
     }
 
     public static boolean hasTrackId(String header) {
-        String[] arr = {"track-id", "x-track-id", "trans-id", "x-trans-id", "trace-id", "x-trace-id", "transaction-id", "x-transaction-id"};
-        for (String key : arr) {
-            if (header.equalsIgnoreCase(key)) {
+        for (String name : TRACK_ID_NAMES) {
+            if (header.equalsIgnoreCase(name)) {
                 return true;
             }
         }

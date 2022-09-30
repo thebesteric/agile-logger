@@ -1,11 +1,8 @@
 package io.github.thebesteric.framework.agile.logger.spring.wrapper;
 
-import io.github.thebesteric.framework.agile.logger.commons.utils.CollectionUtils;
-import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
-import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.*;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.utils.DefaultIdGenerator;
-import io.github.thebesteric.framework.agile.logger.spring.TransactionUtils;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.processor.*;
 import lombok.extern.slf4j.Slf4j;
@@ -76,14 +73,15 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
         return CollectionUtils.isEmpty(urls) || passed;
     }
 
-    protected void initTrackId(AgileLoggerRequestWrapper requestWrapper, boolean isUseSkyWalkingTrace) {
+    protected void initConfigProperties(AgileLoggerRequestWrapper requestWrapper) {
         if (AgileContext.trackIdGenerator == null) {
             AgileContext.trackIdGenerator = DefaultIdGenerator.getInstance();
         }
-        if (isUseSkyWalkingTrace && useSkyWalkingTrace) {
+        if (this.properties.isUseSkyWalkingTrace() && useSkyWalkingTrace) {
             if (StringUtils.isEmpty(TraceContext.traceId()) || "Ignored_Trace".equalsIgnoreCase(TraceContext.traceId())) {
                 LoggerPrinter.warn(log, "Please check Sky Walking agent setting are correct or OAP Server are running that the local track id will be used instead");
-                LoggerPrinter.warn(log, "Make sure add VM options, Example: -javaagent:/opt/skywalking-agent.jar -Dskywalking.agent.service_name=app -Dskywalking.collector.backend_service=127.0.0.1:11800");
+                LoggerPrinter.warn(log, "Make sure add VM options, " +
+                        "Example: -javaagent:/opt/skywalking-agent.jar -Dskywalking.agent.service_name=app -Dskywalking.collector.backend_service=127.0.0.1:11800");
                 TransactionUtils.initialize(AgileContext.trackIdGenerator.generate());
                 useSkyWalkingTrace = false;
             } else {
@@ -91,13 +89,29 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
             }
         } else {
             TransactionUtils.initialize(AgileContext.trackIdGenerator.generate());
+            useSkyWalkingTrace = false;
         }
+
+        // Specify the track-id name
+        if (this.properties.getConfig() != null && this.properties.getConfig().getTrackIdName() != null) {
+            TransactionUtils.TRACK_ID_NAMES.add(this.properties.getConfig().getTrackIdName());
+        }
+
+        // Specify the version name
+        if (this.properties.getConfig() != null && this.properties.getConfig().getVersionName() != null) {
+            VersionUtils.VERSION_NAMES.add(this.properties.getConfig().getVersionName());
+        }
+
+        // Find default value for config properties
         Enumeration<String> headerNames = requestWrapper.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
             String headerValue = requestWrapper.getHeader(headerName);
             if (TransactionUtils.hasTrackId(headerName)) {
                 TransactionUtils.set(headerValue);
+            }
+            if (VersionUtils.hasVersion(headerName)) {
+                VersionUtils.set(headerValue);
             }
         }
     }

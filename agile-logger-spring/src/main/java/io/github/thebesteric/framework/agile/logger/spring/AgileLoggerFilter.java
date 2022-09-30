@@ -68,7 +68,7 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
         AgileLoggerRequestWrapper requestWrapper = new AgileLoggerRequestWrapper((HttpServletRequest) request);
         AgileLoggerResponseWrapper responseWrapper = new AgileLoggerResponseWrapper((HttpServletResponse) response);
 
-        initTrackId(requestWrapper, this.properties.isUseSkyWalkingTrace());
+        initConfigProperties(requestWrapper);
         String id = AgileContext.idGenerator.generate();
         AgileLoggerContext.setParentId(id);
 

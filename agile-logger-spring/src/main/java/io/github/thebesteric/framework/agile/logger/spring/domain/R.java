@@ -1,6 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.spring.domain;
 
-import io.github.thebesteric.framework.agile.logger.spring.TransactionUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUtils;
 import lombok.Data;
 
 import java.time.LocalDateTime;

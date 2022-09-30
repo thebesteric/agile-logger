@@ -50,6 +50,16 @@ public class AgileLoggerSpringProperties {
     // RPC
     private Rpc rpc = new Rpc();
 
+    // Config for others
+    private Config config = new Config();
+
+    @Getter
+    @Setter
+    public static class Config {
+        private String trackIdName;
+        private String versionName;
+    }
+
     @Getter
     @Setter
     public static class Rpc {

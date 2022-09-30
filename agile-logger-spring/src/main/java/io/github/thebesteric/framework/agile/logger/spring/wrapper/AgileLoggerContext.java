@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.spring.wrapper;
 
 import io.github.thebesteric.framework.agile.logger.commons.exception.InvalidDataException;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
+import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUtils;
 import io.github.thebesteric.framework.agile.logger.core.domain.LogMode;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.processor.*;
@@ -77,6 +78,16 @@ public class AgileLoggerContext {
         AgileLoggerContext.parentId.remove();
         return id;
     }
+
+    public static void setTrackId(String trackId) {
+        TransactionUtils.set(trackId);
+    }
+
+    public static String getTrackId() {
+        return TransactionUtils.get();
+    }
+
+
 
     public int getServerPort() {
         String serverPort = this.environment.getProperty("server.port", "8080");

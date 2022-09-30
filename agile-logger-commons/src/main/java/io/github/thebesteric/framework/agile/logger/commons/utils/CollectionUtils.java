@@ -104,9 +104,7 @@ public class CollectionUtils {
 
     @SafeVarargs
     public static <T> Set<T> createSet(T... items) {
-        if (items == null || items.length == 0) {
-            return new HashSet<>();
-        }
+        if (items == null || items.length == 0) return new HashSet<>();
         return Stream.of(items).collect(Collectors.toSet());
     }
 
