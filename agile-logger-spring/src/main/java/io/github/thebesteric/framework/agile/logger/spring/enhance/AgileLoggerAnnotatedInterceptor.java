@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.spring.enhance;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.SignatureUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
@@ -11,10 +12,12 @@ import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.domain.VersionerInfo;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
 import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.InvokeLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ResponseSuccessDefineProcessor;
-import io.github.thebesteric.framework.agile.logger.spring.versionner.annotation.Versioner;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -52,7 +55,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         // Check whether intercept is required
         // If parentId is null, the Controller layer is filtered
         String parentId = AgileLoggerContext.getParentId();
-        if (!needProxy(method.getDeclaringClass(), method) || parentId == null) {
+        if (!needProxy(method) || parentId == null) {
             AgileLoggerContext.setParentId(parentId);
             return methodProxy.invokeSuper(obj, args);
         }
@@ -76,6 +79,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         String durationTag = null;
         Object result = null;
         String exception = null;
+        boolean mock = false;
 
         try {
             // Star watcher
@@ -88,8 +92,23 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             ResponseSuccessDefineProcessor responseSuccessDefineProcessor = agileLoggerContext.getResponseSuccessDefineProcessor();
             exception = responseSuccessDefineProcessor.processor(method, result);
 
+            // Mocker
+            if (method.isAnnotationPresent(Mocker.class) && agileLoggerContext.getProperties().getConfig().isMockEnable()) {
+                Mocker mocker = method.getAnnotation(Mocker.class);
+                if (mocker != null && mocker.enable()) {
+                    MockProcessor currentMethodMockProcessor = agileLoggerContext.getCurrentMethodMockProcessor(mocker, method);
+                    if (currentMethodMockProcessor != null) {
+                        Object mockResult = currentMethodMockProcessor.process(mocker, method);
+                        if (mockResult != null) {
+                            result = mockResult;
+                            mock = true;
+                        }
+                    }
+                }
+            }
+
             // Versioner: handler response
-            if (versionerInfo != null) {
+            if (!mock && versionerInfo != null) {
                 VersionerInfo.MethodInfo responseMethodInfo = versionerInfo.getResponseMethodInfo(result);
                 if (responseMethodInfo != null) {
                     result = responseMethodInfo.invoke();
@@ -106,7 +125,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             DurationWatcher.Duration duration = DurationWatcher.stop(durationTag);
             // Build InvokeLog
             InvokeLoggerProcessor invokeLoggerProcessor = agileLoggerContext.getInvokeLoggerProcessor();
-            InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parentId, method, args, result, exception, duration);
+            InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parentId, method, args, result, exception, duration, mock);
             // Record InvokeLog
             this.agileLoggerContext.getCurrentRecordProcessor().processor(invokeLog);
 
@@ -117,14 +136,16 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      * Check whether intercept is required
      * <p>If true is returned, the proxy is required
      *
-     * @param type   Class<?>
      * @param method Method
      * @return boolean
      */
-    private boolean needProxy(Class<?> type, Method method) {
-        String fullyQualifiedName = type.getName() + "#" + method.getName();
+    private boolean needProxy(Method method) {
+        String fullyQualifiedName = SignatureUtils.methodSignature(method);
+        ;
         Boolean methodStatus = checkedMethodsCache.get(fullyQualifiedName);
         if (methodStatus == null) {
+
+            Class<?> type = method.getDeclaringClass();
 
             // Check IgnoreMethodProcessor in configuration
             IgnoreMethodProcessor ignoreMethodProcessor = agileLoggerContext.getIgnoreMethodProcessor();

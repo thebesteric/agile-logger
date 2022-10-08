@@ -12,5 +12,5 @@ import java.lang.reflect.Method;
  * @since 1.0
  */
 public interface InvokeLoggerProcessor {
-    InvokeLog processor(String logId, String parentId, Method method, Object[] args, Object result, String exception, DurationWatcher.Duration duration);
+    InvokeLog processor(String logId, String parentId, Method method, Object[] args, Object result, String exception, DurationWatcher.Duration duration, boolean mock);
 }

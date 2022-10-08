@@ -1,9 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.boot.starter.config;
 
-import io.github.thebesteric.framework.agile.logger.commons.utils.ClassPathScanner;
-import io.github.thebesteric.framework.agile.logger.commons.utils.ClassPathUtils;
-import io.github.thebesteric.framework.agile.logger.commons.utils.ClassUtils;
-import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
+import io.github.thebesteric.framework.agile.logger.commons.utils.*;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.utils.DefaultIdGenerator;
 import io.github.thebesteric.framework.agile.logger.core.utils.IdGenerator;
@@ -49,7 +46,7 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
         // Print mapping between print urls and methods
         if (log.isTraceEnabled()) {
             LoggerPrinter.debug(log, "Scan project path is {}", projectPath);
-            AbstractAgileLoggerFilter.URL_MAPPING.forEach((url, method) -> LoggerPrinter.debug(log, "Mapping: {} => {}", url, ClassUtils.getMethodQualifiedName(method)));
+            AbstractAgileLoggerFilter.URL_MAPPING.forEach((url, method) -> LoggerPrinter.debug(log, "Mapping: {} => {}", url, SignatureUtils.methodSignature(method)));
         }
 
         String asyncMessage = properties.isAsync() ? "Async: " + properties.getAsyncParams() : "Sync";

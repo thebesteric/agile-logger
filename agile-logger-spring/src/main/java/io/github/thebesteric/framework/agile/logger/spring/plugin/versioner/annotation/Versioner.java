@@ -1,6 +1,6 @@
-package io.github.thebesteric.framework.agile.logger.spring.versionner.annotation;
+package io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation;
 
-import io.github.thebesteric.framework.agile.logger.spring.versionner.VersionAdapter;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.VersionAdapter;
 
 import java.lang.annotation.*;
 

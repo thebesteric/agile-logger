@@ -5,7 +5,6 @@ package io.github.thebesteric.framework.agile.logger.commons.exception;
  *
  * @author Eric Joe
  * @version 1.0
- * @since 2022-08-09 14:52:43
  */
 public class InvalidDataException extends RuntimeException {
     public InvalidDataException() {

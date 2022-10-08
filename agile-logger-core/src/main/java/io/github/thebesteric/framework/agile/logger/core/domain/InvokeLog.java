@@ -53,6 +53,9 @@ public class InvokeLog extends AbstractEntity {
     @Column(length = 64, comment = "执行线程名称")
     protected String threadName = Thread.currentThread().getName();
 
+    @Column(type = Column.Type.TINY_INT, comment = "是否是模拟数据")
+    protected boolean mock = false;
+
     public InvokeLog() {
         if (AgileContext.idGenerator == null) {
             AgileContext.idGenerator = DefaultIdGenerator.getInstance();
@@ -146,6 +149,11 @@ public class InvokeLog extends AbstractEntity {
 
         public Builder threadName(String threadName) {
             this.invokeLog.threadName = threadName;
+            return this;
+        }
+
+        public Builder mock(boolean mock) {
+            this.invokeLog.mock = mock;
             return this;
         }
 
@@ -248,5 +256,13 @@ public class InvokeLog extends AbstractEntity {
 
     public void setThreadName(String threadName) {
         this.threadName = threadName;
+    }
+
+    public boolean isMock() {
+        return mock;
+    }
+
+    public void setMock(boolean mock) {
+        this.mock = mock;
     }
 }

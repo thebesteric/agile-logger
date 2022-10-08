@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  */
 public abstract class AbstractInvokeLoggerProcessor implements InvokeLoggerProcessor {
     @Override
-    public InvokeLog processor(String logId, String parentId, Method method, Object[] args, Object result, String exception, DurationWatcher.Duration duration) {
+    public InvokeLog processor(String logId, String parentId, Method method, Object[] args, Object result, String exception, DurationWatcher.Duration duration, boolean mock) {
         // Initialize the invokeLog
         InvokeLog invokeLog = new InvokeLog(logId, parentId);
 
@@ -35,6 +35,7 @@ public abstract class AbstractInvokeLoggerProcessor implements InvokeLoggerProce
                 .exception(exception)
                 .result(result)
                 .level(StringUtils.isNotEmpty(exception) ? InvokeLog.LEVEL_ERROR : syntheticAgileLogger.getLevel())
+                .mock(mock)
                 .build();
 
         return doAfterProcessor(invokeLog);

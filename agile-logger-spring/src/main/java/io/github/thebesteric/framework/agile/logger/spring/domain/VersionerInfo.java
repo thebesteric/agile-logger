@@ -1,7 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.spring.domain;
 
-import io.github.thebesteric.framework.agile.logger.spring.versionner.VersionAdapter;
-import io.github.thebesteric.framework.agile.logger.spring.versionner.annotation.Versioner;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.VersionAdapter;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
 import lombok.Getter;
 import lombok.Setter;
 

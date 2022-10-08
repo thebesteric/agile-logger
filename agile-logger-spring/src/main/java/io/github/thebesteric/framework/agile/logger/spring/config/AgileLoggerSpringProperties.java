@@ -58,6 +58,7 @@ public class AgileLoggerSpringProperties {
     public static class Config {
         private String trackIdName;
         private String versionName;
+        private boolean mockEnable = true;
     }
 
     @Getter

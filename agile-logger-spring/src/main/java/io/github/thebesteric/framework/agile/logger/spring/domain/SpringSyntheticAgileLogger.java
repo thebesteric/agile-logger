@@ -1,6 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.spring.domain;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.SignatureUtils;
 import io.github.thebesteric.framework.agile.logger.core.domain.AbstractEntity;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ public class SpringSyntheticAgileLogger extends SyntheticAgileLogger {
     }
 
     public static SpringSyntheticAgileLogger getSpringSyntheticAgileLogger(Method method) {
-        String key = method.getDeclaringClass().getName() + "#" + method.getName();
+        String key = SignatureUtils.methodSignature(method);
         SpringSyntheticAgileLogger cachedSyntheticAgileLogger = cache.get(key);
         if (cachedSyntheticAgileLogger == null) {
             synchronized (SpringSyntheticAgileLogger.class) {

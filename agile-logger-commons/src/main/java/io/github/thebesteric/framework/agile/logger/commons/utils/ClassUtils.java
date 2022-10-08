@@ -1,7 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.commons.utils;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 /**
  * ClassUtils
@@ -29,10 +28,6 @@ public class ClassUtils {
             }
         }
         return cl;
-    }
-
-    public static String getMethodQualifiedName(Method method) {
-        return method.getDeclaringClass().getName() + "#" + method.getName();
     }
 
     public static Class<?> forName(String className) {

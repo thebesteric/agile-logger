@@ -50,6 +50,22 @@ public class ObjectUtils {
         return org.apache.commons.lang3.ObjectUtils.isNotEmpty(object);
     }
 
+    public static boolean allNotNull(Object... objs) {
+        return org.apache.commons.lang3.ObjectUtils.allNotNull(objs);
+    }
+
+    public static boolean allNull(Object... objs) {
+        return org.apache.commons.lang3.ObjectUtils.allNull(objs);
+    }
+
+    public static boolean anyNotNull(Object... objs) {
+        return org.apache.commons.lang3.ObjectUtils.anyNotNull(objs);
+    }
+
+    public static boolean anyNull(Object... objs) {
+        return org.apache.commons.lang3.ObjectUtils.anyNull(objs);
+    }
+
     public static <T> T requireNonNull(T obj) {
         if (obj == null)
             throw new NullPointerException();

@@ -64,6 +64,18 @@ public class ReflectUtils {
         return clazz.isPrimitive();
     }
 
+    public static boolean isPrimitiveOrWarp(Field field) {
+        return isPrimitiveOrWarp(field.getType());
+    }
+
+    public static boolean isPrimitiveOrWarp(Class<?> clazz) {
+        try {
+            return clazz.isPrimitive() || ((Class<?>) clazz.getField("TYPE").get(null)).isPrimitive();
+        } catch (Exception ignore) {
+            return false;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T getDefaultValue(Class<T> clazz) {
         return (T) Array.get(Array.newInstance(clazz, 1), 0);
@@ -71,6 +83,28 @@ public class ReflectUtils {
 
     public static Object getDefaultValue(Field field) {
         return getDefaultValue(field.getType());
+    }
+
+    public static Object parsePrimitiveOrWarpByType(String value, Class<?> clazz) {
+        Object result = value;
+        if (clazz == char.class || clazz == Character.class) {
+            result = value.charAt(0);
+        } else if (clazz == byte.class || clazz == Byte.class) {
+            result = Byte.parseByte(value);
+        } else if (clazz == short.class || clazz == Short.class) {
+            result = Short.parseShort(value);
+        } else if (clazz == int.class || clazz == Integer.class) {
+            result = Integer.parseInt(value);
+        } else if (clazz == long.class || clazz == Long.class) {
+            result = Long.parseLong(value);
+        } else if (clazz == float.class || clazz == Float.class) {
+            result = Float.parseFloat(value);
+        } else if (clazz == double.class || clazz == Double.class) {
+            result = Double.parseDouble(value);
+        } else if (clazz == boolean.class || clazz == Boolean.class) {
+            result = Boolean.parseBoolean(value);
+        }
+        return result;
     }
 
     public static String[] getModifiers(Class<?> clazz) {

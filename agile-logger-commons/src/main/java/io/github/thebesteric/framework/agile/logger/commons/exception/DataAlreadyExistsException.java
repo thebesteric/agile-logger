@@ -5,7 +5,6 @@ package io.github.thebesteric.framework.agile.logger.commons.exception;
  *
  * @author Eric Joe
  * @version 1.0
- * @since 2022/7/22
  */
 public class DataAlreadyExistsException extends RuntimeException {
     public DataAlreadyExistsException() {

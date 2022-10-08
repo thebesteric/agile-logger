@@ -1,4 +1,4 @@
-package io.github.thebesteric.framework.agile.logger.spring.versionner;
+package io.github.thebesteric.framework.agile.logger.spring.plugin.versioner;
 
 import lombok.Getter;
 

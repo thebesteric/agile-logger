@@ -1,9 +1,9 @@
 package agile.logger.example.web.quickstart.version;
 
-import agile.logger.example.web.quickstart.TestController;
+import agile.logger.example.web.quickstart.Identity;
 import agile.logger.example.web.quickstart.UserInfo;
-import io.github.thebesteric.framework.agile.logger.spring.domain.R;
-import io.github.thebesteric.framework.agile.logger.spring.versionner.AbstractVersionAdapter;
+import io.github.thebesteric.framework.agile.logger.commons.utils.VersionUtils;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.AbstractVersionAdapter;
 
 /**
  * LoginVersion
@@ -11,15 +11,19 @@ import io.github.thebesteric.framework.agile.logger.spring.versionner.AbstractVe
  * @author Eric Joe
  * @version 1.0
  */
-public class LoginVersion extends AbstractVersionAdapter<UserInfo, R> {
+public class LoginVersion extends AbstractVersionAdapter<Identity, UserInfo> {
     @Override
-    public void request(UserInfo userInfo) {
-        userInfo.setPassword("******");
+    public void request(Identity identity) {
+        if (VersionUtils.compareLessThan(VersionUtils.get(), "9.1.0")) {
+            identity.setIdentity("customer");
+        } else {
+            identity.setIdentity("vip");
+        }
     }
 
     @Override
-    public Object response(R result) {
-        result.setMessage(TestController.version.get());
-        return result;
+    public UserInfo response(UserInfo userInfo) {
+        userInfo.setPassword("******");
+        return userInfo;
     }
 }

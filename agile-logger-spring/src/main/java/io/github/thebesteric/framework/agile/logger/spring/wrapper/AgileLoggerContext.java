@@ -2,9 +2,13 @@ package io.github.thebesteric.framework.agile.logger.spring.wrapper;
 
 import io.github.thebesteric.framework.agile.logger.commons.exception.InvalidDataException;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
+import io.github.thebesteric.framework.agile.logger.commons.utils.SignatureUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUtils;
 import io.github.thebesteric.framework.agile.logger.core.domain.LogMode;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockInfo;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
 import io.github.thebesteric.framework.agile.logger.spring.processor.*;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ignore.DefaultIgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ignore.DefaultIgnoreUriProcessor;
@@ -21,6 +25,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.Environment;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +48,7 @@ public class AgileLoggerContext {
     public final GenericApplicationContext applicationContext;
 
     private static final ThreadLocal<String> parentId = new ThreadLocal<>();
+    private static final ThreadLocal<MockInfo> mockInfo = new ThreadLocal<>();
 
     private final AgileLoggerSpringProperties properties;
     private final IgnoreMethodProcessor ignoreMethodProcessor;
@@ -51,11 +58,13 @@ public class AgileLoggerContext {
     private final InvokeLoggerProcessor invokeLoggerProcessor;
     private final ExecutorService recordLoggerThreadPool;
     private final Environment environment;
-
+    private final List<MockProcessor> mockProcessors;
     private List<RecordProcessor> recordProcessors;
 
     @Setter
     private RecordProcessor currentRecordProcessor;
+
+    private static final Map<String, MockProcessor> methodMockProcessorCache = new HashMap<>(32);
 
     public AgileLoggerContext(ApplicationContext applicationContext) {
         this.applicationContext = (GenericApplicationContext) applicationContext;
@@ -67,6 +76,17 @@ public class AgileLoggerContext {
         this.invokeLoggerProcessor = getBeanOrDefault(InvokeLoggerProcessor.class, new DefaultInvokeLoggerProcessor());
         this.recordLoggerThreadPool = generateExecutorService();
         this.environment = getBean(Environment.class);
+        this.mockProcessors = new ArrayList<>(getBeans(MockProcessor.class).values());
+    }
+
+    public static void setMockInfo(MockInfo mockInfo) {
+        AgileLoggerContext.mockInfo.set(mockInfo);
+    }
+
+    public static MockInfo getMockInfo() {
+        MockInfo mockInfo = AgileLoggerContext.mockInfo.get();
+        AgileLoggerContext.mockInfo.remove();
+        return mockInfo;
     }
 
     public static void setParentId(String id) {
@@ -74,9 +94,9 @@ public class AgileLoggerContext {
     }
 
     public static String getParentId() {
-        String id = AgileLoggerContext.parentId.get();
+        String parentId = AgileLoggerContext.parentId.get();
         AgileLoggerContext.parentId.remove();
-        return id;
+        return parentId;
     }
 
     public static void setTrackId(String trackId) {
@@ -86,8 +106,6 @@ public class AgileLoggerContext {
     public static String getTrackId() {
         return TransactionUtils.get();
     }
-
-
 
     public int getServerPort() {
         String serverPort = this.environment.getProperty("server.port", "8080");
@@ -110,6 +128,26 @@ public class AgileLoggerContext {
             throw new IllegalArgumentException(errorMsg);
         }
         return this.currentRecordProcessor;
+    }
+
+    /**
+     * Get Current method mock processor
+     *
+     * @return MockProcessor
+     */
+    public MockProcessor getCurrentMethodMockProcessor(Mocker mocker, Method method) {
+        String key = SignatureUtils.methodSignature(method);
+        MockProcessor methodMockProcessor = methodMockProcessorCache.get(key);
+        if (methodMockProcessor == null) {
+            synchronized (AgileLoggerContext.class) {
+                methodMockProcessor = this.mockProcessors.stream().filter(p -> p.match(mocker)).findFirst().orElse(null);
+                if (methodMockProcessor != null) {
+                    methodMockProcessorCache.put(key, methodMockProcessor);
+                }
+            }
+        }
+        return methodMockProcessor;
+
     }
 
     /**
