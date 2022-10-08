@@ -161,15 +161,20 @@ public class ReflectUtils {
     }
 
     public static boolean isAnnotationPresent(Class<?> objectClass, Class<? extends Annotation> annotationClass) {
+        return isAnnotationPresent(objectClass, annotationClass, false);
+    }
+
+    public static boolean isAnnotationPresent(Class<?> objectClass, Class<? extends Annotation> annotationClass, boolean typeAndMethod) {
         if (allAnnotationPresent(objectClass, annotationClass)) {
             return true;
-        } else {
+        } else if (typeAndMethod) {
             for (Method method : objectClass.getDeclaredMethods()) {
                 if (allAnnotationPresent(method, annotationClass)) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 

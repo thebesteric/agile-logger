@@ -3,6 +3,8 @@ package io.github.thebesteric.framework.agile.logger.spring.enhance;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.Enhancer;
@@ -37,8 +39,10 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
     }
 
     protected boolean needEnhance(Class<?> clazz) {
-        return ReflectUtils.isAnnotationPresent(clazz, AgileLogger.class)
-                || ReflectUtils.anyAnnotationPresent(clazz, RestController.class, Controller.class);
+        return ReflectUtils.isAnnotationPresent(clazz, AgileLogger.class, true)
+                || ReflectUtils.anyAnnotationPresent(clazz, RestController.class, Controller.class)
+                || ReflectUtils.isAnnotationPresent(clazz, Versioner.class, true)
+                || ReflectUtils.isAnnotationPresent(clazz, Mocker.class, true);
     }
 
     protected boolean isSpringInternalClass(Class<?> clazz) {
