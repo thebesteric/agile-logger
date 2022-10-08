@@ -1,13 +1,13 @@
 package io.github.thebesteric.framework.agile.logger.spring.domain;
 
+import io.github.thebesteric.framework.agile.logger.commons.exception.ClassNotFoundException;
+import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.VersionAdapter;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 /**
  * VersionInfo
@@ -30,12 +30,10 @@ public class VersionerInfo {
         this.instance.args(args);
     }
 
-    public MethodInfo getRequestMethodInfo() throws NoSuchMethodException {
-        ParameterizedType parameterizedType = (ParameterizedType) this.instance.getClass().getGenericSuperclass();
-        Type requestType = parameterizedType.getActualTypeArguments()[0];
-
+    public MethodInfo getRequestMethodInfo() throws NoSuchMethodException, ClassNotFoundException {
+        Class<?> requestType = ReflectUtils.getActualTypeArguments(this.instance.getClass(), VersionAdapter.class).get(0);
         for (Object arg : this.args) {
-            if (arg.getClass().isAssignableFrom((Class<?>) requestType)) {
+            if (arg.getClass().isAssignableFrom(requestType)) {
                 Method requestMethod = instance.getClass().getMethod(Versioner.REQUEST_METHOD_NAME, arg.getClass());
                 return new MethodInfo(instance, requestMethod, arg);
             }
@@ -43,12 +41,9 @@ public class VersionerInfo {
         return null;
     }
 
-    public MethodInfo getResponseMethodInfo(Object result) throws NoSuchMethodException {
-
-        ParameterizedType parameterizedType = (ParameterizedType) this.instance.getClass().getGenericSuperclass();
-        Type responseType = parameterizedType.getActualTypeArguments()[1];
-
-        Method responseMethod = instance.getClass().getMethod(Versioner.RESPONSE_METHOD_NAME, (Class<?>) responseType);
+    public MethodInfo getResponseMethodInfo(Object result) throws NoSuchMethodException, ClassNotFoundException {
+        Class<?> responseType = ReflectUtils.getActualTypeArguments(this.instance.getClass(), VersionAdapter.class).get(1);
+        Method responseMethod = instance.getClass().getMethod(Versioner.RESPONSE_METHOD_NAME, responseType);
         return new MethodInfo(instance, responseMethod, result);
     }
 

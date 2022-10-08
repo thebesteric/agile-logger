@@ -1,5 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.commons.utils;
 
+import io.github.thebesteric.framework.agile.logger.commons.exception.ClassNotFoundException;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.ArrayList;
@@ -210,6 +212,25 @@ public class ReflectUtils {
             list.addAll(Arrays.asList(IndefiniteParams));
         }
         return list;
+    }
+
+    public static List<Class<?>> getActualTypeArguments(Class<?> clazz, Class<?> actualTypeClass) throws ClassNotFoundException {
+        Type genericClass = clazz.getGenericSuperclass();
+        if (genericClass == Object.class) {
+            genericClass = Arrays.stream(clazz.getGenericInterfaces())
+                    .filter(genericInterface -> ((ParameterizedType) genericInterface).getRawType() == actualTypeClass)
+                    .findFirst().orElse(null);
+            if (genericClass == null) {
+                throw new ClassNotFoundException("Can not found class: %s", actualTypeClass.getName());
+            }
+        }
+        ParameterizedType parameterizedType = (ParameterizedType) genericClass;
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+        List<Class<?>> classes = new ArrayList<>();
+        for (Type type : actualTypeArguments) {
+            classes.add((Class<?>) type);
+        }
+        return classes;
     }
 
     public static void set(Field field, Object target, Object value) throws IllegalAccessException {

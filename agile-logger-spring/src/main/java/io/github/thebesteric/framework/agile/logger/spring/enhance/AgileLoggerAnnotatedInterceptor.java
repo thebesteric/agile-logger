@@ -55,7 +55,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         // Check whether intercept is required
         // If parentId is null, the Controller layer is filtered
         String parentId = AgileLoggerContext.getParentId();
-        if (!needIntercept(method) || parentId == null) {
+        if (!needLogIntercept(method) || parentId == null) {
             AgileLoggerContext.setParentId(parentId);
             // Versioner: invoke versioner request method if you need to
             VersionerInfo versionerInfo = invokeVersionerRequestMethod(method, args);
@@ -98,6 +98,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             Object mockResult = invokeMocker(method, result);
             if (result != mockResult) {
                 mock = true;
+                result = mockResult;
                 return mockResult;
             }
 
@@ -115,7 +116,6 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parentId, method, args, result, exception, duration, mock);
             // Record InvokeLog
             this.agileLoggerContext.getCurrentRecordProcessor().processor(invokeLog);
-
         }
     }
 
@@ -126,7 +126,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      * @param method Method
      * @return boolean
      */
-    private boolean needIntercept(Method method) {
+    private boolean needLogIntercept(Method method) {
         String fullyQualifiedName = SignatureUtils.methodSignature(method);
         ;
         Boolean methodStatus = checkedMethodsCache.get(fullyQualifiedName);

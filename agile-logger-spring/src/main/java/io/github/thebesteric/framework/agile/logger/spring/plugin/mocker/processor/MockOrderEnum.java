@@ -8,7 +8,7 @@ package io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.proces
  */
 public enum MockOrderEnum {
 
-    VALUE_ORDER(1), TARGET_ORDER(2);
+    VALUE_ORDER(1), TYPE_ORDER(2), TARGET_ORDER(3);
 
     private final int order;
 

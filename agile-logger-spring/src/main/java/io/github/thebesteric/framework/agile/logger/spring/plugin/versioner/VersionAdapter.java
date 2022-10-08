@@ -9,5 +9,5 @@ package io.github.thebesteric.framework.agile.logger.spring.plugin.versioner;
 public interface VersionAdapter<V, R> {
     void args(Object[] args);
     void request(V v);
-    Object response(R result);
+    R response(R result);
 }

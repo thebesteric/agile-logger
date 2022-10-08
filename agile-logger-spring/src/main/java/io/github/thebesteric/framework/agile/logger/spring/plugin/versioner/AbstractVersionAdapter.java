@@ -23,7 +23,7 @@ public abstract class AbstractVersionAdapter<V, R> implements VersionAdapter<V, 
     }
 
     @Override
-    public Object response(R result) {
+    public R response(R result) {
         return result;
     }
 }

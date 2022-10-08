@@ -9,6 +9,7 @@ import io.github.thebesteric.framework.agile.logger.spring.enhance.AgileLoggerAn
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockCache;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.processor.TargetMockProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.processor.TypeMockProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.processor.ValueMockProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.MappingProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
@@ -137,6 +138,11 @@ public class AgileLoggerAutoConfiguration {
         @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "TargetMockProcessor")
         public MockProcessor targetMockProcessor(MockCache mockCache) {
             return new TargetMockProcessor(mockCache);
+        }
+
+        @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "TypeMockProcessor")
+        public MockProcessor typeMockProcessor(MockCache mockCache) {
+            return new TypeMockProcessor(mockCache);
         }
     }
 

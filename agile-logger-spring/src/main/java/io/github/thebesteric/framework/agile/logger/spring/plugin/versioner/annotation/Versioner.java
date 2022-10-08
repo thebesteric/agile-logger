@@ -11,6 +11,9 @@ public @interface Versioner {
     String REQUEST_METHOD_NAME = "request";
     String RESPONSE_METHOD_NAME = "response";
 
+    /**
+     * Specify the VersionAdapter
+     */
     @SuppressWarnings("rawtypes")
     Class<? extends VersionAdapter> type();
 }
