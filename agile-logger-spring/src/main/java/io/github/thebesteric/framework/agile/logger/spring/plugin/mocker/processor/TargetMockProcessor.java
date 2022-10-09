@@ -3,11 +3,11 @@ package io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.proces
 import io.github.thebesteric.framework.agile.logger.commons.exception.DataNotExistsException;
 import io.github.thebesteric.framework.agile.logger.commons.exception.HttpException;
 import io.github.thebesteric.framework.agile.logger.commons.exception.InvalidDataException;
-import io.github.thebesteric.framework.agile.logger.commons.utils.HttpUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
+import io.github.thebesteric.framework.agile.logger.spring.domain.R;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.HttpClient;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockCache;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
-import org.apache.http.HttpStatus;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -27,11 +27,11 @@ public class TargetMockProcessor extends AbstractCachedMockProcessor {
     public static final String HTTP_PROTOCOL = "http://";
     public static final String HTTPS_PROTOCOL = "https://";
 
-    private final HttpUtils httpUtils;
+    private final HttpClient httpClient;
 
-    public TargetMockProcessor(MockCache mockCache) {
+    public TargetMockProcessor(MockCache mockCache, HttpClient httpClient) {
         super(mockCache);
-        this.httpUtils = HttpUtils.getInstance();
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -65,11 +65,11 @@ public class TargetMockProcessor extends AbstractCachedMockProcessor {
         return MockOrderEnum.TARGET_ORDER.order();
     }
 
-    private Object processRemoteTarget(String target, Method method) throws IOException {
-        HttpUtils.ResponseEntry responseEntry = httpUtils.doGet(target);
-        if (responseEntry.getCode() == HttpStatus.SC_OK) {
-            String httpStr = responseEntry.getHttpStr();
-            return handleMockValue(httpStr, method.getReturnType());
+    private Object processRemoteTarget(String target, Method method) throws Exception {
+        HttpClient.ResponseEntry responseEntry = httpClient.doGet(target);
+        if (responseEntry.getCode() == R.HttpStatus.OK.getCode()) {
+            String body = responseEntry.getBody();
+            return handleMockValue(body, method.getReturnType());
         }
         throw new HttpException("http request error: %s, code: %d", target, responseEntry.getCode());
     }

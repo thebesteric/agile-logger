@@ -6,8 +6,10 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.ClassPathScann
 import io.github.thebesteric.framework.agile.logger.spring.AgileLoggerFilter;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.enhance.AgileLoggerAnnotatedEnhancer;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.HttpClient;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockCache;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.http.DefaultHttpClient;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.processor.TargetMockProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.processor.TypeMockProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.processor.ValueMockProcessor;
@@ -27,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.List;
@@ -128,7 +131,7 @@ public class AgileLoggerAutoConfiguration {
         @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "MockCache")
         public MockCache mockCache(AgileLoggerSpringProperties properties) {
             AgileLoggerSpringProperties.Mock mock = properties.getConfig().getMock();
-            MockCache.CacheConfiguration configuration =  MockCache.CacheConfiguration.builder()
+            MockCache.CacheConfiguration configuration = MockCache.CacheConfiguration.builder()
                     .expireAfterWrite(mock.getExpireAfterWrite())
                     .expireAfterAccess(mock.getExpireAfterAccess())
                     .build();
@@ -141,8 +144,11 @@ public class AgileLoggerAutoConfiguration {
         }
 
         @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "TargetMockProcessor")
-        public MockProcessor targetMockProcessor(MockCache mockCache) {
-            return new TargetMockProcessor(mockCache);
+        public MockProcessor targetMockProcessor(MockCache mockCache, @Nullable HttpClient httpClient) {
+            if (httpClient == null) {
+                httpClient = new DefaultHttpClient();
+            }
+            return new TargetMockProcessor(mockCache, httpClient);
         }
 
         @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "TypeMockProcessor")
