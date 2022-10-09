@@ -2,6 +2,7 @@ package agile.logger.example.web.quickstart;
 
 import agile.logger.example.web.quickstart.version.LoginVersion;
 import io.github.thebesteric.framework.agile.logger.spring.domain.R;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,7 @@ public class TestController {
     // @Mocker("{username: lisi, password: 1234, greeting: hello}")
     // @Mocker(target = "classpath:/mock/userInfo.json")
     // @Mocker(target = "file:/Users/keisun/demo/userInfo.json")
-    // @Mocker(target = "https://yapi.shuinfo.tech/mock/398/breast-coach-api/userInfo")
+    @Mocker(target = "https://yapi.shuinfo.tech/mock/398/breast-coach-api/userInfo")
     // @Mocker(type = LoginMockAdapter.class)
     @PostMapping("/mock")
     public UserInfo mock(@RequestBody Identity identity) {
