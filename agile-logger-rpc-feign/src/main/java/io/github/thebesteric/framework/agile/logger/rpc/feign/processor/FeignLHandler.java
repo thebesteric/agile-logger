@@ -222,7 +222,7 @@ public class FeignLHandler extends feign.Logger {
             // Exception & Level
             ResponseSuccessDefineProcessor responseSuccessDefineProcessor = agileLoggerContext.getResponseSuccessDefineProcessor();
             String exception = responseSuccessDefineProcessor.processor(requestTemplate.methodMetadata().method(), result);
-            if (exception != null || response.status() != R.HttpStatusCode.SUCCESS.getCode()) {
+            if (exception != null || response.status() != R.HttpStatus.OK.getCode()) {
                 requestLog.setLevel(RequestLog.LEVEL_ERROR);
                 requestLog.setException(exception);
             }

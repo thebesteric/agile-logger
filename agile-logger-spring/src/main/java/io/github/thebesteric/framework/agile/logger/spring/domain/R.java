@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.spring.domain;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUtils;
 import lombok.Data;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -61,12 +62,12 @@ public class R {
 
     public R setCode(int code) {
         this.code = code;
-        this.message = HttpStatusCode.SUCCESS.message;
+        this.message = HttpStatus.OK.memo;
         return this;
     }
 
-    public R setCode(HttpStatusCode httpStatusCode) {
-        return setCode(httpStatusCode.code);
+    public R setCode(HttpStatus httpStatus) {
+        return setCode(httpStatus.code);
     }
 
     public R setMessage(String message) {
@@ -84,31 +85,31 @@ public class R {
     }
 
     public static R success() {
-        return success(HttpStatusCode.SUCCESS);
+        return success(HttpStatus.OK);
     }
 
     public static R success(String message) {
-        return success(HttpStatusCode.SUCCESS, message);
+        return success(HttpStatus.OK, message);
     }
 
     public static R success(Object data) {
         return success(null, data);
     }
 
-    public static R success(HttpStatusCode httpStatusCode) {
-        return success(httpStatusCode, null);
+    public static R success(HttpStatus httpStatus) {
+        return success(httpStatus, null);
     }
 
-    public static R success(HttpStatusCode httpStatusCode, String message) {
-        return success(httpStatusCode, message, null);
+    public static R success(HttpStatus httpStatus, String message) {
+        return success(httpStatus, message, null);
     }
 
     public static R success(String message, Object data) {
-        return success(HttpStatusCode.SUCCESS, message, data);
+        return success(HttpStatus.OK, message, data);
     }
 
-    public static R success(HttpStatusCode httpStatusCode, String message, Object data) {
-        return success(httpStatusCode.code, null != message ? message : httpStatusCode.message, data);
+    public static R success(HttpStatus httpStatus, String message, Object data) {
+        return success(httpStatus.code, null != message ? message : httpStatus.memo, data);
     }
 
     public static R success(int code, String message, Object data) {
@@ -120,31 +121,31 @@ public class R {
     }
 
     public static R error() {
-        return error(HttpStatusCode.ERROR);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public static R error(String message) {
-        return error(HttpStatusCode.ERROR, message);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
 
     public static R error(Object data) {
-        return error(HttpStatusCode.ERROR, null, data);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, null, data);
     }
 
     public static R error(String message, Object data) {
-        return error(HttpStatusCode.ERROR, message, data);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, message, data);
     }
 
-    public static R error(HttpStatusCode httpStatusCode) {
-        return error(httpStatusCode, httpStatusCode.getMessage());
+    public static R error(HttpStatus httpStatus) {
+        return error(httpStatus, httpStatus.memo);
     }
 
-    public static R error(HttpStatusCode httpStatusCode, String message) {
-        return error(httpStatusCode, message, null);
+    public static R error(HttpStatus httpStatus, String message) {
+        return error(httpStatus, message, null);
     }
 
-    public static R error(HttpStatusCode httpStatusCode, String message, Object data) {
-        return error(httpStatusCode.code, null != message ? message : httpStatusCode.message, data);
+    public static R error(HttpStatus httpStatus, String message, Object data) {
+        return error(httpStatus.code, null != message ? message : httpStatus.memo, data);
     }
 
     public static R error(int code, String message, Object data) {
@@ -158,55 +159,81 @@ public class R {
     /**
      * HTTP Response 状态码
      */
-    public enum HttpStatusCode {
-        CONTINUE(100, "CONTINUE", "继续"),
-        CHANGE_PROTOCOL(101, "CHANGE_PROTOCOL", "切换协议"),
-        SUCCESS(200, "SUCCEED", "执行成功"),
-        CREATED(201, "CREATED", "已创建"),
-        ACCEPTED(202, "ACCEPTED", "已接受"),
-        AUTH_ILLEGALITY(203, "AUTH_ILLEGALITY", "非授权信息"),
-        EMPTY_CONTENT(204, "EMPTY_CONTENT", "无内容"),
-        RESET_CONTENT(205, "RESET_CONTENT", "重置内容"),
-        PART_CONTENT(206, "PART_CONTENT", "部分内容"),
-        MANY_CHOICE(300, "MANY_CHOICE", "多种选择"),
-        FOREVER_MOVED(301, "FOREVER_MOVED", "永久移动"),
-        TEMP_MOVED(302, "TEMP_MOVED", "临时移动"),
-        LOOK_FOR_OTHER(303, "LOOK_FOR_OTHER", "查看其他位置"),
-        UN_MODIFY(304, "UN_MODIFY", "未修改"),
-        USE_PROXY(305, "USE_PROXY", "使用代理"),
-        TEMP_REDIRECT(307, "TEMP_REDIRECT", "临时重定向"),
-        BAD_REQUEST(400, "BAD_REQUEST", "错误请求"),
-        UN_AUTH(401, "UN_AUTHORIZATION", "未授权"),
-        VALIDATE_ERROR(402, "VALIDATE_ERROR", "校验错误"),
-        FORBIDDEN(403, "FORBIDDEN", "禁止"),
-        NOT_FOUND(404, "NOT_FOUND", "未找到"),
-        METHOD_NOT_ALLOW(405, "METHOD_NOT_ALLOW", "方法禁用"),
-        UN_ACCEPT(406, "UN_ACCEPT", "不接受"),
-        NEED_PROXY_AUTH(407, "NEED_PROXY_AUTH", "需要代理授权"),
-        TIMEOUT(408, "TIMEOUT", "请求超时"),
-        CONFLICT(409, "CONFLICT", "冲突"),
-        DELETED(410, "DELETED", "已删除"),
-        LENGTH_INVALID(411, "LENGTH_INVALID", "需要有效长度"),
-        UNSATISFIED_PRECONDITION(412, "UNSATISFIED_PRECONDITION", "未满足前提条件"),
-        BODY_TOO_LONG(413, "BODY_TOO_LONG", "请求实体过大"),
-        URI_TOO_LONG(414, "URI_TOO_LONG", "请求路径过长"),
-        UN_SUPPORT_MEDIA_MIME(414, "UN_SUPPORT_MEDIA_MIME", "不支持的媒体类型"),
-        SCOPE_INVALID(416, "SCOPE_INVALID", "请求范围不符合要求"),
-        UN_SATISFY_EXPECT(417, "UN_SATISFY_EXPECT", "未满足期望值"),
-        ERROR(500, "ERROR", "执行失败"),
-        UN_IMPLEMENTS(501, "UN IMPLEMENTS", "尚未实施"),
-        GATEWAY_ERROR(502, "GATEWAY_ERROR", "错误网关"),
-        NOT_AVAILABLE(503, "NOT_AVAILABLE", "服务不可用"),
-        GATEWAY_TIMEOUT(504, "GATEWAY_TIMEOUT", "网关超时"),
-        UN_SUPPORT_PROTOCOL(505, "UN_SUPPORT_PROTOCOL", "请求协议版本不受支持");
+    public enum HttpStatus {
+
+        CONTINUE(100, HttpStatus.Series.INFORMATIONAL, "Continue"),
+        SWITCHING_PROTOCOLS(101, HttpStatus.Series.INFORMATIONAL, "Switching Protocols"),
+        PROCESSING(102, HttpStatus.Series.INFORMATIONAL, "Processing"),
+        CHECKPOINT(103, HttpStatus.Series.INFORMATIONAL, "Checkpoint"),
+        OK(200, HttpStatus.Series.SUCCESSFUL, "OK"),
+        CREATED(201, HttpStatus.Series.SUCCESSFUL, "Created"),
+        ACCEPTED(202, HttpStatus.Series.SUCCESSFUL, "Accepted"),
+        NON_AUTHORITATIVE_INFORMATION(203, HttpStatus.Series.SUCCESSFUL, "Non-Authoritative Information"),
+        NO_CONTENT(204, HttpStatus.Series.SUCCESSFUL, "No Content"),
+        RESET_CONTENT(205, HttpStatus.Series.SUCCESSFUL, "Reset Content"),
+        PARTIAL_CONTENT(206, HttpStatus.Series.SUCCESSFUL, "Partial Content"),
+        MULTI_STATUS(207, HttpStatus.Series.SUCCESSFUL, "Multi-Status"),
+        ALREADY_REPORTED(208, HttpStatus.Series.SUCCESSFUL, "Already Reported"),
+        IM_USED(226, HttpStatus.Series.SUCCESSFUL, "IM Used"),
+        MULTIPLE_CHOICES(300, HttpStatus.Series.REDIRECTION, "Multiple Choices"),
+        MOVED_PERMANENTLY(301, HttpStatus.Series.REDIRECTION, "Moved Permanently"),
+        FOUND(302, HttpStatus.Series.REDIRECTION, "Found"),
+        SEE_OTHER(303, HttpStatus.Series.REDIRECTION, "See Other"),
+        NOT_MODIFIED(304, HttpStatus.Series.REDIRECTION, "Not Modified"),
+        USE_PROXY(305, HttpStatus.Series.REDIRECTION, "Use Proxy"),
+        TEMPORARY_REDIRECT(307, HttpStatus.Series.REDIRECTION, "Temporary Redirect"),
+        PERMANENT_REDIRECT(308, HttpStatus.Series.REDIRECTION, "Permanent Redirect"),
+        BAD_REQUEST(400, HttpStatus.Series.CLIENT_ERROR, "Bad Request"),
+        UNAUTHORIZED(401, HttpStatus.Series.CLIENT_ERROR, "Unauthorized"),
+        PAYMENT_REQUIRED(402, HttpStatus.Series.CLIENT_ERROR, "Payment Required"),
+        FORBIDDEN(403, HttpStatus.Series.CLIENT_ERROR, "Forbidden"),
+        NOT_FOUND(404, HttpStatus.Series.CLIENT_ERROR, "Not Found"),
+        METHOD_NOT_ALLOWED(405, HttpStatus.Series.CLIENT_ERROR, "Method Not Allowed"),
+        NOT_ACCEPTABLE(406, HttpStatus.Series.CLIENT_ERROR, "Not Acceptable"),
+        PROXY_AUTHENTICATION_REQUIRED(407, HttpStatus.Series.CLIENT_ERROR, "Proxy Authentication Required"),
+        REQUEST_TIMEOUT(408, HttpStatus.Series.CLIENT_ERROR, "Request Timeout"),
+        CONFLICT(409, HttpStatus.Series.CLIENT_ERROR, "Conflict"),
+        GONE(410, HttpStatus.Series.CLIENT_ERROR, "Gone"),
+        LENGTH_REQUIRED(411, HttpStatus.Series.CLIENT_ERROR, "Length Required"),
+        PRECONDITION_FAILED(412, HttpStatus.Series.CLIENT_ERROR, "Precondition Failed"),
+        PAYLOAD_TOO_LARGE(413, HttpStatus.Series.CLIENT_ERROR, "Payload Too Large"),
+        URI_TOO_LONG(414, HttpStatus.Series.CLIENT_ERROR, "URI Too Long"),
+        UNSUPPORTED_MEDIA_TYPE(415, HttpStatus.Series.CLIENT_ERROR, "Unsupported Media Type"),
+        REQUESTED_RANGE_NOT_SATISFIABLE(416, HttpStatus.Series.CLIENT_ERROR, "Requested range not satisfiable"),
+        EXPECTATION_FAILED(417, HttpStatus.Series.CLIENT_ERROR, "Expectation Failed"),
+        I_AM_A_TEAPOT(418, HttpStatus.Series.CLIENT_ERROR, "I'm a teapot"),
+        INSUFFICIENT_SPACE_ON_RESOURCE(419, HttpStatus.Series.CLIENT_ERROR, "Insufficient Space On Resource"),
+        METHOD_FAILURE(420, HttpStatus.Series.CLIENT_ERROR, "Method Failure"),
+        DESTINATION_LOCKED(421, HttpStatus.Series.CLIENT_ERROR, "Destination Locked"),
+        UNPROCESSABLE_ENTITY(422, HttpStatus.Series.CLIENT_ERROR, "Unprocessable Entity"),
+        LOCKED(423, HttpStatus.Series.CLIENT_ERROR, "Locked"),
+        FAILED_DEPENDENCY(424, HttpStatus.Series.CLIENT_ERROR, "Failed Dependency"),
+        TOO_EARLY(425, HttpStatus.Series.CLIENT_ERROR, "Too Early"),
+        UPGRADE_REQUIRED(426, HttpStatus.Series.CLIENT_ERROR, "Upgrade Required"),
+        PRECONDITION_REQUIRED(428, HttpStatus.Series.CLIENT_ERROR, "Precondition Required"),
+        TOO_MANY_REQUESTS(429, HttpStatus.Series.CLIENT_ERROR, "Too Many Requests"),
+        REQUEST_HEADER_FIELDS_TOO_LARGE(431, HttpStatus.Series.CLIENT_ERROR, "Request Header Fields Too Large"),
+        UNAVAILABLE_FOR_LEGAL_REASONS(451, HttpStatus.Series.CLIENT_ERROR, "Unavailable For Legal Reasons"),
+        INTERNAL_SERVER_ERROR(500, HttpStatus.Series.SERVER_ERROR, "Internal Server Error"),
+        NOT_IMPLEMENTED(501, HttpStatus.Series.SERVER_ERROR, "Not Implemented"),
+        BAD_GATEWAY(502, HttpStatus.Series.SERVER_ERROR, "Bad Gateway"),
+        SERVICE_UNAVAILABLE(503, HttpStatus.Series.SERVER_ERROR, "Service Unavailable"),
+        GATEWAY_TIMEOUT(504, HttpStatus.Series.SERVER_ERROR, "Gateway Timeout"),
+        HTTP_VERSION_NOT_SUPPORTED(505, HttpStatus.Series.SERVER_ERROR, "HTTP Version not supported"),
+        VARIANT_ALSO_NEGOTIATES(506, HttpStatus.Series.SERVER_ERROR, "Variant Also Negotiates"),
+        INSUFFICIENT_STORAGE(507, HttpStatus.Series.SERVER_ERROR, "Insufficient Storage"),
+        LOOP_DETECTED(508, HttpStatus.Series.SERVER_ERROR, "Loop Detected"),
+        BANDWIDTH_LIMIT_EXCEEDED(509, HttpStatus.Series.SERVER_ERROR, "Bandwidth Limit Exceeded"),
+        NOT_EXTENDED(510, HttpStatus.Series.SERVER_ERROR, "Not Extended"),
+        NETWORK_AUTHENTICATION_REQUIRED(511, HttpStatus.Series.SERVER_ERROR, "Network Authentication Required");
 
         final int code;
-        final String message;
+        final Series series;
         final String memo;
 
-        HttpStatusCode(int code, String message, String memo) {
+        HttpStatus(int code, Series series, String memo) {
             this.code = code;
-            this.message = message;
+            this.series = series;
             this.memo = memo;
         }
 
@@ -214,12 +241,51 @@ public class R {
             return this.code;
         }
 
-        public String getMessage() {
-            return this.message;
+        public Series getSeries() {
+            return this.series;
         }
 
         public String getMemo() {
             return this.memo;
+        }
+
+        public enum Series {
+            INFORMATIONAL(1),
+            SUCCESSFUL(2),
+            REDIRECTION(3),
+            CLIENT_ERROR(4),
+            SERVER_ERROR(5);
+
+            private final int value;
+
+            private Series(int value) {
+                this.value = value;
+            }
+
+            public int value() {
+                return this.value;
+            }
+
+            public static HttpStatus.Series valueOf(int statusCode) {
+                HttpStatus.Series series = resolve(statusCode);
+                if (series == null) {
+                    throw new IllegalArgumentException("No matching constant for [" + statusCode + "]");
+                } else {
+                    return series;
+                }
+            }
+
+            @Nullable
+            public static HttpStatus.Series resolve(int statusCode) {
+                int seriesCode = statusCode / 100;
+                HttpStatus.Series[] values = values();
+                for (Series series : values) {
+                    if (series.value == seriesCode) {
+                        return series;
+                    }
+                }
+                return null;
+            }
         }
     }
 }
