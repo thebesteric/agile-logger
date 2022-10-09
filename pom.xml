@@ -49,13 +49,13 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.deploy.skip>true</maven.deploy.skip>
         <skipTests>true</skipTests>
-        <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <aspectj-maven-plugin.version>1.13.1</aspectj-maven-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <spring.boot.version>2.7.1</spring.boot.version>
+        <spring.boot.version>2.7.4</spring.boot.version>
         <lombok.version>1.18.24</lombok.version>
-        <slf4j.version>1.7.36</slf4j.version>
-        <jackson.version>2.13.3</jackson.version>
+        <slf4j.version>2.0.3</slf4j.version>
+        <jackson.version>2.14.0-rc1</jackson.version>
         <cglib.version>3.3.0</cglib.version>
         <aspectj.version>1.9.9.1</aspectj.version>
         <apache.commons.lang3>3.12.0</apache.commons.lang3>
@@ -65,6 +65,8 @@
         <skywalking.version>8.12.0</skywalking.version>
         <netty.version>4.1.80.Final</netty.version>
         <feign.version>11.9.1</feign.version>
+        <snakeyaml.version>1.33</snakeyaml.version>
+        <guava.version>31.1-jre</guava.version>
     </properties>
 
     <modules>
@@ -162,12 +164,12 @@
             <type>maven-plugin</type>
         </dependency>
 
-        <!-- https://search.maven.org/artifact/dev.aspectj/aspectj-maven-plugin -->
+        <!-- https://search.maven.org/artifact/org.yaml/snakeyaml -->
+        <!-- fix-version: spring-boot-starter-web -->
         <dependency>
-            <groupId>dev.aspectj</groupId>
-            <artifactId>aspectj-maven-plugin</artifactId>
-            <version>${aspectj-maven-plugin.version}</version>
-            <type>maven-plugin</type>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
         </dependency>
 
     </dependencies>
@@ -272,6 +274,13 @@
                 <groupId>io.github.openfeign</groupId>
                 <artifactId>feign-core</artifactId>
                 <version>${feign.version}</version>
+            </dependency>
+
+            <!-- https://search.maven.org/artifact/com.google.guava/guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
 
         </dependencies>

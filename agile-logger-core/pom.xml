@@ -46,6 +46,12 @@
             <artifactId>aspectjtools</artifactId>
         </dependency>
 
+        <!-- https://search.maven.org/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
