@@ -13,4 +13,12 @@ public class TestAdapter {
         return "hello " + name + " at " + date.toLocaleString();
     }
 
+    public String sayHi(String name, Date date) {
+        return "hi " + name + " at " + date.toLocaleString();
+    }
+
+    // @Mocker(type = LoginMockAdapter.class)
+    public UserInfo login(Identity identity) {
+        return new UserInfo(identity.getUsername(), identity.getPassword(), identity.getIdentity());
+    }
 }

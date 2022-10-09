@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @AgileLogger
 public class FooUtils {
 
-    @Autowired
+    //@Autowired
     private AgileLoggerSpringProperties properties;
 
     String foo() {

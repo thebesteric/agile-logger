@@ -1,12 +1,16 @@
 sourceflag:
   agile-logger:
     enable: true
-    log-mode: stdout
+    log-mode: custom
     use-sky-walking-trace: false
     async: true
     async-params:
       core-pool-size: 1
       maximum-pool-size: 2
+    url-filter:
+      url-patterns: ["/*"]
+      includes: [".*"]
+      excludes: []
     response-success-define:
       code-fields:
         - name: errcode
@@ -15,7 +19,6 @@ sourceflag:
           value: 200
         - name: code
           value: 100
-
       message-fields: message, msg
     plugins:
       database:
@@ -42,3 +45,10 @@ sourceflag:
     rpc:
       feign:
         enable: true
+    config:
+      track-id-name: x-track-id
+      version-name: version
+      mock:
+        enable: true
+        expire-after-write: 600
+        expire-after-access: 600
