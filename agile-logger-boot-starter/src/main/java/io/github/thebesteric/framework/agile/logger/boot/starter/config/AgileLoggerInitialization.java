@@ -51,7 +51,12 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
 
         String asyncMessage = properties.isAsync() ? "Async: " + properties.getAsyncParams() : "Sync";
         String traceMessage = properties.isUseSkyWalkingTrace() ? "SkyWalking Trace" : "Local Generator";
-        LoggerPrinter.info(log, "Log Mode is {}, Running in {}, TrackIdGenerator: {}",
-                properties.getLogMode(), asyncMessage, traceMessage);
+        LoggerPrinter.info(log, "Log Mode is {}, Running in {}, TrackIdGenerator: {}", properties.getLogMode(), asyncMessage, traceMessage);
+
+        AgileLoggerSpringProperties.Config config = properties.getConfig();
+        String mockStatus = config.getMock().isEnable() ? config.getMock().toString() : "Disabled";
+        String trackIdName = StringUtils.isNotEmpty(config.getTrackIdName()) ? config.getTrackIdName() : "USE_DEFAULT";
+        String versionName = StringUtils.isNotEmpty(config.getVersionName()) ? config.getVersionName() : "USE_DEFAULT";
+        LoggerPrinter.info(log, "Config: global mock is {}, track-id name: {}, version name: {}", mockStatus, trackIdName, versionName);
     }
 }

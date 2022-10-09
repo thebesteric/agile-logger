@@ -122,12 +122,17 @@ public class AgileLoggerAutoConfiguration {
 
     // Mock Processor
     @Configuration
-    @ConditionalOnProperty(prefix = AgileLoggerConstant.PROPERTIES_PREFIX, name = "config.mock-enable", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = AgileLoggerConstant.PROPERTIES_PREFIX, name = "config.mock.enable", havingValue = "true", matchIfMissing = true)
     public static class MockProcessorConfiguration {
         // Mock processor
         @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "MockCache")
-        public MockCache mockCache() {
-            return new MockCache();
+        public MockCache mockCache(AgileLoggerSpringProperties properties) {
+            AgileLoggerSpringProperties.Mock mock = properties.getConfig().getMock();
+            MockCache.CacheConfiguration configuration =  MockCache.CacheConfiguration.builder()
+                    .expireAfterWrite(mock.getExpireAfterWrite())
+                    .expireAfterAccess(mock.getExpireAfterAccess())
+                    .build();
+            return new MockCache(configuration);
         }
 
         @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "ValueMockProcessor")

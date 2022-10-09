@@ -58,7 +58,24 @@ public class AgileLoggerSpringProperties {
     public static class Config {
         private String trackIdName;
         private String versionName;
-        private boolean mockEnable = true;
+        private Mock mock = new Mock();
+    }
+
+    @Getter
+    @Setter
+    public static class Mock {
+        private boolean enable = true;
+        private int expireAfterWrite = 600;
+        private int expireAfterAccess = 600;
+
+        @Override
+        public String toString() {
+            return "[" +
+                    "enable=" + enable + ", " +
+                    "expireAfterWrite=" + expireAfterWrite + "s, " +
+                    "expireAfterAccess=" + expireAfterAccess + "s" +
+                    "]";
+        }
     }
 
     @Getter

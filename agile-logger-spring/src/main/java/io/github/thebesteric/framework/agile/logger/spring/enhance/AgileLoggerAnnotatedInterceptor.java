@@ -242,7 +242,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      */
     private Object invokeMocker(Method method, Object result) throws Throwable {
         Object mockResult = result;
-        if (method.isAnnotationPresent(Mocker.class) && agileLoggerContext.getProperties().getConfig().isMockEnable()) {
+        if (method.isAnnotationPresent(Mocker.class) && agileLoggerContext.getProperties().getConfig().getMock().isEnable()) {
             Mocker mocker = method.getAnnotation(Mocker.class);
             if (mocker != null && mocker.enable()) {
                 MockProcessor currentMethodMockProcessor = agileLoggerContext.getCurrentMethodMockProcessor(mocker, method);
