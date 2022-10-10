@@ -1,9 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.spring.enhance;
 
-import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
-import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
-import io.github.thebesteric.framework.agile.logger.commons.utils.SignatureUtils;
-import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.*;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod;
@@ -105,7 +102,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             // Versioner: invoke versioner response method if you need to
             return invokeVersionerResponseMethod(versionerInfo, result);
         } catch (Exception ex) {
-            exception = ex.getMessage();
+            exception = ExceptionUtils.getSimpleMessage(ex, 1024);
             syntheticAgileLogger.setLevel(InvokeLog.LEVEL_ERROR);
             throw ex;
         } finally {
