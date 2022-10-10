@@ -54,14 +54,13 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
     public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 
         Class<?> beanClass = bean.getClass();
-
-        // Beans that does not require an agent
-        if (!agileLoggerContext.getProperties().isEnable() || !needEnhance(beanClass) || isSpringInternalClass(beanClass)) {
-            return bean;
-        }
-
         String originClassName = getOriginClassName(beanClass);
         Class<?> originClass = ClassUtils.forName(originClassName, false);
+
+        // Beans that does not require to enhance
+        if (!agileLoggerContext.getProperties().isEnable() || !needEnhance(originClass) || isSpringInternalClass(originClass)) {
+            return bean;
+        }
 
         // Maybe something error about the origin class
         if (originClass == null) {
