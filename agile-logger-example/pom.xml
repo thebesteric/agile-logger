@@ -13,11 +13,6 @@
 
     <artifactId>agile-logger-example</artifactId>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
-
     <dependencies>
 
         <!-- https://search.maven.org/artifact/org.springframework.boot/spring-boot-starter-web -->

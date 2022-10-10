@@ -156,14 +156,6 @@
             <type>maven-plugin</type>
         </dependency>
 
-        <!-- https://search.maven.org/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>${maven-compiler-plugin.version}</version>
-            <type>maven-plugin</type>
-        </dependency>
-
         <!-- https://search.maven.org/artifact/org.yaml/snakeyaml -->
         <!-- fix-version: spring-boot-starter-web -->
         <dependency>
@@ -366,7 +358,6 @@
                     <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
                 </repository>
             </distributionManagement>
-
         </profile>
     </profiles>
 
