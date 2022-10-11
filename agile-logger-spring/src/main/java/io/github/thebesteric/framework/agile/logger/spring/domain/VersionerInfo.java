@@ -1,6 +1,5 @@
 package io.github.thebesteric.framework.agile.logger.spring.domain;
 
-import io.github.thebesteric.framework.agile.logger.commons.exception.ClassNotFoundException;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.VersionAdapter;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
@@ -20,31 +19,53 @@ public class VersionerInfo {
     private final VersionAdapter instance;
     private final Object[] args;
 
-    public VersionerInfo(Versioner versioner, Object[] args) throws Exception {
-        assert versioner != null;
+    public VersionerInfo(Method method, Object[] args) throws Exception {
+        Versioner versioner = method.getAnnotation(Versioner.class);
         Class<? extends VersionAdapter> versionAdapter = versioner.type();
         this.instance = versionAdapter.getDeclaredConstructor().newInstance();
         this.args = args;
 
-        // Call args method
+        // Call method & args method
+        this.instance.method(method);
         this.instance.args(args);
     }
 
-    public MethodInfo getRequestMethodInfo() throws NoSuchMethodException, ClassNotFoundException {
+    /**
+     * Get Versioner Request Method
+     *
+     * @return {@link MethodInfo}
+     */
+    public MethodInfo getRequestMethodInfo() throws Exception {
         Class<?> requestType = ReflectUtils.getActualTypeArguments(this.instance.getClass(), VersionAdapter.class).get(0);
         for (Object arg : this.args) {
             if (arg.getClass().isAssignableFrom(requestType)) {
-                Method requestMethod = instance.getClass().getMethod(Versioner.REQUEST_METHOD_NAME, arg.getClass());
-                return new MethodInfo(instance, requestMethod, arg);
+                try {
+                    Method requestMethod = instance.getClass().getMethod(Versioner.REQUEST_METHOD_NAME, arg.getClass());
+                    return new MethodInfo(instance, requestMethod, arg);
+                } catch (NoSuchMethodException ignored) {
+                    // The request method is not overridden
+                    return null;
+                }
             }
         }
         return null;
     }
 
-    public MethodInfo getResponseMethodInfo(Object result) throws NoSuchMethodException, ClassNotFoundException {
+    /**
+     * Get Versioner Response Method
+     *
+     * @param result result
+     * @return {@link MethodInfo}
+     */
+    public MethodInfo getResponseMethodInfo(Object result) throws Exception {
         Class<?> responseType = ReflectUtils.getActualTypeArguments(this.instance.getClass(), VersionAdapter.class).get(1);
-        Method responseMethod = instance.getClass().getMethod(Versioner.RESPONSE_METHOD_NAME, responseType);
-        return new MethodInfo(instance, responseMethod, result);
+        try {
+            Method responseMethod = instance.getClass().getMethod(Versioner.RESPONSE_METHOD_NAME, responseType);
+            return new MethodInfo(instance, responseMethod, result);
+        } catch (NoSuchMethodException ignored) {
+            // The response method is not overridden
+            return null;
+        }
     }
 
     @Getter
