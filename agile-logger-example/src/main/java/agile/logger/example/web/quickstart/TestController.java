@@ -46,10 +46,10 @@ public class TestController {
         return userInfo;
     }
 
-    // @Mocker("{username: lisi, password: 1234, greeting: hello}")
+    @Mocker("{username: lisi, password: 1234, greeting: hello}")
     // @Mocker(target = "classpath:/mock/userInfo.json")
     // @Mocker(target = "file:/Users/keisun/demo/userInfo.json")
-    @Mocker(target = "https://yapi.shuinfo.tech/mock/398/breast-coach-api/userInfo")
+    // @Mocker(target = "https://yapi.shuinfo.tech/mock/398/breast-coach-api/userInfo")
     // @Mocker(type = LoginMockAdapter.class)
     @PostMapping("/mock")
     public UserInfo mock(@RequestBody Identity identity) {
