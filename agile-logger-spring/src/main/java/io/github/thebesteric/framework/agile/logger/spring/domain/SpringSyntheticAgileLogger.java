@@ -27,7 +27,7 @@ public class SpringSyntheticAgileLogger extends SyntheticAgileLogger {
     public static final String TAG_REPOSITORY = "repository";
     public static final String TAG_COMPONENT = "component";
 
-    public static Map<String, SpringSyntheticAgileLogger> cache = new HashMap<>(128);
+    public static Map<Integer, SpringSyntheticAgileLogger> cache = new HashMap<>(128);
 
     private SpringSyntheticAgileLogger(Method method) {
         super(method);
@@ -35,7 +35,7 @@ public class SpringSyntheticAgileLogger extends SyntheticAgileLogger {
     }
 
     public static SpringSyntheticAgileLogger getSpringSyntheticAgileLogger(Method method) {
-        String key = SignatureUtils.methodSignature(method);
+        int key = SignatureUtils.methodSignatureHashCode(method);
         SpringSyntheticAgileLogger cachedSyntheticAgileLogger = cache.get(key);
         if (cachedSyntheticAgileLogger == null) {
             synchronized (SpringSyntheticAgileLogger.class) {

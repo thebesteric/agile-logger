@@ -40,7 +40,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
     public static Map<String, Set<String>> ignoreMethodsCache = new HashMap<>();
 
     // Records whether the method requires an proxies or does not
-    public static Map<String, Boolean> checkedMethodsCache = new HashMap<>(64);
+    public static Map<Integer, Boolean> checkedMethodsCache = new HashMap<>(64);
 
     public AgileLoggerAnnotatedInterceptor(AgileLoggerContext agileLoggerContext) {
         this.agileLoggerContext = agileLoggerContext;
@@ -124,9 +124,8 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      * @return boolean
      */
     private boolean needLogIntercept(Method method) {
-        String fullyQualifiedName = SignatureUtils.methodSignature(method);
-        ;
-        Boolean methodStatus = checkedMethodsCache.get(fullyQualifiedName);
+        int key = SignatureUtils.methodSignatureHashCode(method);
+        Boolean methodStatus = checkedMethodsCache.get(key);
         if (methodStatus == null) {
 
             Class<?> type = method.getDeclaringClass();
@@ -135,7 +134,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             IgnoreMethodProcessor ignoreMethodProcessor = agileLoggerContext.getIgnoreMethodProcessor();
             if (ignoreMethodProcessor.matching(IgnoreMethodProcessor.IgnoreMethod.builder()
                     .clazz(type).method(method).build())) {
-                checkedMethodsCache.put(fullyQualifiedName, false);
+                checkedMethodsCache.put(key, false);
                 return false;
             }
 
@@ -145,7 +144,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             if (agileLoggerAnnoOnType == null && agileLoggerAnnoOnMethod == null) {
                 // Check is @RestController or @Controller
                 if (!ReflectUtils.anyAnnotationPresent(type, RestController.class, Controller.class)) {
-                    checkedMethodsCache.put(fullyQualifiedName, false);
+                    checkedMethodsCache.put(key, false);
                     return false;
                 }
             }
@@ -165,7 +164,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             }
             for (String ignoreMethodPattern : ignoreMethods) {
                 if (Pattern.matches(ignoreMethodPattern, method.getName())) {
-                    checkedMethodsCache.put(fullyQualifiedName, false);
+                    checkedMethodsCache.put(key, false);
                     return false;
                 }
             }
@@ -173,7 +172,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             // Check the @IgnoreMethod on the method
             IgnoreMethod ignoreMethodAnno = method.getAnnotation(IgnoreMethod.class);
             if (ignoreMethodAnno != null) {
-                checkedMethodsCache.put(fullyQualifiedName, false);
+                checkedMethodsCache.put(key, false);
                 return false;
             }
 
@@ -181,13 +180,13 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             if (agileLoggerContext.getProperties().isUseSkyWalkingTrace() && StringUtils.isEquals("setSkyWalkingDynamicField", method.getName())) {
                 Class<?>[] parameterTypes = method.getParameterTypes();
                 if (parameterTypes.length == 1 && parameterTypes[0].getName().equals("java.lang.Object")) {
-                    checkedMethodsCache.put(fullyQualifiedName, false);
+                    checkedMethodsCache.put(key, false);
                     return false;
                 }
             }
 
             // Methods that require proxies
-            checkedMethodsCache.put(fullyQualifiedName, true);
+            checkedMethodsCache.put(key, true);
         }
 
         return methodStatus == null || methodStatus;
