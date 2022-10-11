@@ -203,8 +203,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
     private VersionerInfo invokeVersionerRequestMethod(Method method, Object[] args) throws Exception {
         VersionerInfo versionerInfo = null;
         if (method.isAnnotationPresent(Versioner.class)) {
-            Versioner versioner = method.getAnnotation(Versioner.class);
-            versionerInfo = new VersionerInfo(versioner, args);
+            versionerInfo = new VersionerInfo(method, args);
             VersionerInfo.MethodInfo requestMethodInfo = versionerInfo.getRequestMethodInfo();
             if (requestMethodInfo != null) {
                 requestMethodInfo.invoke();
