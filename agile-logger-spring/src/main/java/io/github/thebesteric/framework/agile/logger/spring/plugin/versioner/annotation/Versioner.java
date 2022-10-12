@@ -1,6 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation;
 
-import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.VersionAdapter;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.VersionerAdapter;
 
 import java.lang.annotation.*;
 
@@ -12,8 +12,8 @@ public @interface Versioner {
     String RESPONSE_METHOD_NAME = "response";
 
     /**
-     * Specify the VersionAdapter
+     * Specify the VersionerAdapter
      */
     @SuppressWarnings("rawtypes")
-    Class<? extends VersionAdapter> type();
+    Class<? extends VersionerAdapter> type();
 }
