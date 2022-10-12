@@ -640,7 +640,7 @@ public class AppConfiguration {
 ### 6.1 版本控制
 > 方法上使用 `@Versioner` 注解，可以对请求参数或响应结果进行变更  
 > 适用于：通过版本判断，根据不通的版本处理不通的请求或响应  
-> `@Versioner` 中的 type 指定的的类必须实现 `VersionAdapter<V, R>` 或继承 `AbstractVersionAdapter<V, R>`  
+> `@Versioner` 中的 type 指定的的类必须实现 `VersionerAdapter<V, R>` 或继承 `AbstractVersionerAdapter<V, R>`  
 > 其中 `V`: 代表需要进行版本控制的请求参数，`R`: 代表方法的返回值类型  
 > 实现或重写 `public void request(V v)`: 当方法执行之前，回调用该方法，传入：实际的请求参数  
 > 实现或重写 `Object response(R result)`: 当方法返回结果之前，回调用该方法，传入：当前方法的返回值
@@ -660,7 +660,7 @@ public class LoginController {
     }
 }
 
-public class LoginVersion extends AbstractVersionAdapter<Identity, UserInfo> {
+public class LoginVersion extends AbstractVersionerAdapter<Identity, UserInfo> {
     @Override
     public void request(Identity identity) {
         if (VersionUtils.compareLessThan(VersionUtils.get(), "9.1.0")) {
