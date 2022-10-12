@@ -30,7 +30,7 @@ public class MetricsRequestLoggerProcessor extends AbstractRequestLoggerProcesso
         if (metrics == null) {
             metrics = new MetricsRequestLog.Metrics();
         }
-        metrics.calc(requestLog.getDuration());
+        metrics.calc(requestLog);
         cache.put(requestLog.getUri(), metrics);
         return new MetricsRequestLog(requestLog, metrics);
     }

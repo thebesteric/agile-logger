@@ -32,16 +32,21 @@ public class MetricsRequestLog extends RequestLog {
         private long maxResponseTime = 0L;
         @JsonIgnore
         private long totalResponseTime = 0L;
+        private String maxResponseTrackId;
+        private String minResponseTrackId;
 
-        public synchronized void calc(Long duration) {
+        public synchronized void calc(RequestLog requestLog) {
+            Long duration = requestLog.getDuration();
             totalRequest++;
             totalResponseTime += duration;
             avgResponseTime = totalResponseTime / totalRequest;
             if (duration > maxResponseTime) {
                 maxResponseTime = duration;
+                maxResponseTrackId = requestLog.getTrackId();
             }
             if (duration < minResponseTime || minResponseTime == 0L) {
                 minResponseTime = duration;
+                minResponseTrackId = requestLog.getTrackId();
             }
         }
     }
