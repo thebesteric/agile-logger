@@ -569,7 +569,7 @@ public class AppConfiguration {
 }
 ```
 > PS: 框架提供了一个 `MetricsRequestLoggerProcessor` 的 `RequestLoggerProcessor` 的实现类  
-> 可以用于统计接口调用情况，包括：调用次数、平均响应时间、最小响应时间、最大响应时间
+> 可以用于统计接口调用情况，包括：调用次数、平均响应时间、最小响应时间、最大响应时间、最小响应TrackId、最大响应TrackId
 ```java
 @Configuration
 public class AppConfiguration {
@@ -581,7 +581,16 @@ public class AppConfiguration {
 ```
 添加后，日志后会增加 `metrics` 属性
 ```json
-{"metrics":{"total_request":15,"avg_response_time":59,"min_response_time":29,"max_response_time":126}}
+{
+  "metrics": {
+    "total_request": 15,
+    "avg_response_time": 59,
+    "min_response_time": 29,
+    "max_response_time": 126,
+    "min_response_track_id": "220f9b1b-0bd9-4e9f-b53f-b57f7ea131ba",
+    "max_response_track_id": "7310353b-5d5d-45de-bff7-5dc1e459bf1b"
+  }
+}
 ```
 #### 5.3.2 调用日志拦截器
 > 调用日志指: Controller 层调用其他层的日志信息  
@@ -627,9 +636,9 @@ public class AppConfiguration {
             public void doProcess(InvokeLog invokeLog) throws Throwable {
                 if (invokeLog instanceof RequestLog) {
                     RequestLog requestLog = (RequestLog) invokeLog;
-                    System.out.println("This is a request log: " + requestLog);
+                    System.out.println("This is a Request-Log: " + requestLog);
                 } else {
-                    System.out.println("This is a invoke log: " + invokeLog);
+                    System.out.println("This is a Invoke-Log: " + invokeLog);
                 }
             }
         };
