@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * JsonUtils
@@ -215,22 +217,53 @@ public class ReflectUtils {
     }
 
     public static List<Class<?>> getActualTypeArguments(Class<?> clazz, Class<?> actualTypeClass) throws ClassNotFoundException {
-        Type genericClass = clazz.getGenericSuperclass();
+        Type genericClass = getSuperclassOnType(clazz, actualTypeClass);
         if (genericClass == Object.class) {
-            genericClass = Arrays.stream(clazz.getGenericInterfaces())
-                    .filter(genericInterface -> ((ParameterizedType) genericInterface).getRawType() == actualTypeClass)
-                    .findFirst().orElse(null);
+            genericClass = getInterfaceClassOnType(clazz, actualTypeClass);
             if (genericClass == null) {
                 throw new ClassNotFoundException("Can not found class: %s", actualTypeClass.getName());
             }
         }
-        ParameterizedType parameterizedType = (ParameterizedType) genericClass;
-        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-        List<Class<?>> classes = new ArrayList<>();
-        for (Type type : actualTypeArguments) {
-            classes.add((Class<?>) type);
+        ParameterizedType parameterizedType;
+        try {
+            if (genericClass != null) {
+                parameterizedType = (ParameterizedType) genericClass;
+            } else {
+                parameterizedType = (ParameterizedType) getInterfaceClassOnType(clazz, actualTypeClass);
+            }
+        } catch (Exception ex) {
+            parameterizedType = (ParameterizedType) getInterfaceClassOnType(clazz, actualTypeClass);
         }
-        return classes;
+
+        return Arrays.stream(parameterizedType.getActualTypeArguments())
+                .flatMap(type -> Stream.of((Class<?>) type)).collect(Collectors.toList());
+    }
+
+    public static Type getSuperclassOnType(Class<?> type, Class<?> clazz) {
+        Class<?> superClass;
+        Type genericSuperclass = type.getGenericSuperclass();
+        if(genericSuperclass instanceof Class) {
+            superClass = (Class<?>) genericSuperclass;
+        } else {
+            superClass = (Class<?>) ((ParameterizedType) genericSuperclass).getRawType();
+        }
+        do {
+            if (clazz.isAssignableFrom(superClass)) {
+                return genericSuperclass;
+            }
+            Type targetType = getInterfaceClassOnType(superClass, clazz);
+            if (targetType != null && ((ParameterizedType) targetType).getRawType() == clazz) {
+                return targetType;
+            }
+            superClass = (Class<?>) superClass.getGenericSuperclass();
+        } while (superClass != Object.class && superClass != null);
+        return null;
+    }
+
+    public static Type getInterfaceClassOnType(Class<?> type, Class<?> interfaceClazz) {
+        return Arrays.stream(type.getGenericInterfaces())
+                .filter(genericInterface -> ((ParameterizedType) genericInterface).getRawType() == interfaceClazz)
+                .findFirst().orElse(null);
     }
 
     public static void set(Field field, Object target, Object value) throws IllegalAccessException {

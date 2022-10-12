@@ -54,21 +54,20 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         String parentId = AgileLoggerContext.getParentId();
         if (!needLogIntercept(method) || parentId == null) {
             AgileLoggerContext.setParentId(parentId);
-            // Versioner: invoke versioner request method if you need to
-            VersionerInfo versionerInfo = invokeVersionerRequestMethod(method, args);
-            // Invoke
-            Object result = methodProxy.invokeSuper(obj, args);
-            // Mocker: invoke mocker result if you need to
-            Object mockResult = invokeMocker(method, result);
-            if (result != mockResult) {
-                return mockResult;
-            }
-            // Versioner: invoke versioner response method if you need to
-            return invokeVersionerResponseMethod(versionerInfo, result);
-        }
 
-        // Versioner: invoke versioner request method if you need to
-        VersionerInfo versionerInfo = invokeVersionerRequestMethod(method, args);
+            // Mocker: invoke mocker result if you need to
+            Object result = invokeMockerIfNecessary(method);
+            if (result != null) {
+                return result;
+            }
+
+            // Versioner: invoke versioner request method if you need to
+            VersionerInfo versionerInfo = invokeVersionerRequestMethodIfNecessary(method, args);
+            // Invoke
+            result = methodProxy.invokeSuper(obj, args);
+            // Versioner: invoke versioner response method if you need to
+            return invokeVersionerResponseMethodIfNecessary(versionerInfo, result);
+        }
 
         String logId = AgileContext.idGenerator.generate();
         AgileLoggerContext.setParentId(logId);
@@ -81,26 +80,31 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         boolean mock = false;
 
         try {
+            // Mocker: invoke mocker result if you need to
+            result = invokeMockerIfNecessary(method);
+            if (result != null) {
+                mock = true;
+            }
+
             // Star watcher
             durationTag = DurationWatcher.start();
 
-            // Invoke
-            result = methodProxy.invokeSuper(obj, args);
+            VersionerInfo versionerInfo = null;
+            // Without mock
+            if (!mock) {
+                // Versioner: invoke versioner request method if you need to
+                versionerInfo = invokeVersionerRequestMethodIfNecessary(method, args);
+
+                // Invoke if without mock
+                result = methodProxy.invokeSuper(obj, args);
+            }
 
             // Process non-program exceptions, For example: code != 200
             ResponseSuccessDefineProcessor responseSuccessDefineProcessor = agileLoggerContext.getResponseSuccessDefineProcessor();
             exception = responseSuccessDefineProcessor.processor(method, result);
 
-            // Mocker: invoke mocker result if you need to
-            Object mockResult = invokeMocker(method, result);
-            if (result != mockResult) {
-                mock = true;
-                result = mockResult;
-                return mockResult;
-            }
-
             // Versioner: invoke versioner response method if you need to
-            return invokeVersionerResponseMethod(versionerInfo, result);
+            return mock ? result : invokeVersionerResponseMethodIfNecessary(versionerInfo, result);
         } catch (Exception ex) {
             exception = ExceptionUtils.getSimpleMessage(ex, 1024);
             syntheticAgileLogger.setLevel(InvokeLog.LEVEL_ERROR);
@@ -199,7 +203,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      * @param args   args
      * @return {@link VersionerInfo}
      */
-    private VersionerInfo invokeVersionerRequestMethod(Method method, Object[] args) throws Exception {
+    private VersionerInfo invokeVersionerRequestMethodIfNecessary(Method method, Object[] args) throws Exception {
         VersionerInfo versionerInfo = null;
         if (method.isAnnotationPresent(Versioner.class)) {
             versionerInfo = new VersionerInfo(method, args);
@@ -218,7 +222,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      * @param result        result
      * @return Object
      */
-    private Object invokeVersionerResponseMethod(VersionerInfo versionerInfo, Object result) throws Exception {
+    private Object invokeVersionerResponseMethodIfNecessary(VersionerInfo versionerInfo, Object result) throws Exception {
         if (versionerInfo != null) {
             VersionerInfo.MethodInfo responseMethodInfo = versionerInfo.getResponseMethodInfo(result);
             if (responseMethodInfo != null) {
@@ -232,20 +236,16 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      * Mocker: invoke mocker result if you need to
      *
      * @param method method
-     * @param result result
      * @return Object
      */
-    private Object invokeMocker(Method method, Object result) throws Throwable {
-        Object mockResult = result;
+    private Object invokeMockerIfNecessary(Method method) throws Throwable {
+        Object mockResult = null;
         if (method.isAnnotationPresent(Mocker.class) && agileLoggerContext.getProperties().getConfig().getMock().isEnable()) {
             Mocker mocker = method.getAnnotation(Mocker.class);
             if (mocker != null && mocker.enable()) {
                 MockProcessor currentMethodMockProcessor = agileLoggerContext.getCurrentMethodMockProcessor(mocker, method);
                 if (currentMethodMockProcessor != null) {
                     mockResult = currentMethodMockProcessor.process(mocker, method);
-                    if (mockResult == null) {
-                        mockResult = result;
-                    }
                 }
             }
         }
