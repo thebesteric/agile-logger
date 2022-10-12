@@ -1,6 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.spring.processor;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
+import io.github.thebesteric.framework.agile.logger.core.domain.AbstractEntity;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
@@ -25,8 +26,8 @@ public interface RequestLoggerProcessor {
     default void buildSyntheticAgileLogger(Method method, InvokeLog invokeLog) {
         SyntheticAgileLogger syntheticAgileLogger = SpringSyntheticAgileLogger.getSpringSyntheticAgileLogger(method);
         invokeLog.setLevel(syntheticAgileLogger.getLevel());
-        invokeLog.setTag(syntheticAgileLogger.getTag());
         invokeLog.setExtra(syntheticAgileLogger.getExtra());
+        invokeLog.setTag(AbstractEntity.TAG_DEFAULT);
     }
 
     default Method getMethod(String uri) {
