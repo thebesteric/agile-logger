@@ -3,6 +3,7 @@ package io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.proces
 import io.github.thebesteric.framework.agile.logger.commons.exception.DataNotExistsException;
 import io.github.thebesteric.framework.agile.logger.commons.exception.HttpException;
 import io.github.thebesteric.framework.agile.logger.commons.exception.InvalidDataException;
+import io.github.thebesteric.framework.agile.logger.commons.utils.FileUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
 import io.github.thebesteric.framework.agile.logger.spring.domain.R;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.HttpClient;
@@ -78,7 +79,7 @@ public class TargetMockProcessor extends AbstractCachedMockProcessor {
         target = target.substring(FILE_PROTOCOL.length());
         File file = new File(target);
         if (file.exists()) {
-            String mockValue = read(new FileInputStream(file));
+            String mockValue = FileUtils.read(file);
             if (StringUtils.isNotEmpty(mockValue)) {
                 return handleMockValue(mockValue, method.getReturnType());
             }
@@ -90,26 +91,12 @@ public class TargetMockProcessor extends AbstractCachedMockProcessor {
         target = target.substring(CLASSPATH_PROTOCOL.length());
         Resource resource = new ClassPathResource(target);
         if (resource.exists()) {
-            String mockValue = read(resource.getInputStream());
+            String mockValue = FileUtils.read(resource.getInputStream());
             if (StringUtils.isNotEmpty(mockValue)) {
                 return handleMockValue(mockValue, method.getReturnType());
             }
         }
         throw new DataNotExistsException("%s is not found in local", target);
-    }
-
-    private String read(InputStream in) throws IOException {
-        String mockValue;
-        try (InputStreamReader isr = new InputStreamReader(in)) {
-            BufferedReader br = new BufferedReader(isr);
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                builder.append(line);
-            }
-            mockValue = builder.toString();
-        }
-        return mockValue;
     }
 
     public String getTargetProtocol(String target) {
