@@ -819,6 +819,8 @@ public class LoginController {
 
 ##### 6.2.4.3 target 的 http(s) 关键字
 > `@Mocker(target = "https://xxxx/mock/userInfo")`: 读取网络的某个接口
+> 默认会使用系统自带的 DefaultHttpClient 客户端，发送 GET 请求 target 的 URL 地址  
+> 如想自定义请求规则，可实现 `HttpClient` 接口，实现 `execute(String url, Method method, Object[] args)` 方法
 ```java
 @RestController
 public class LoginController {
@@ -831,6 +833,20 @@ public class LoginController {
     public UserInfo login(@RequestBody Identity identity) {
         UserInfo userInfo = loginService.login(identity);
         return userInfo;
+    }
+}
+
+@Configuration
+public class AppConfiguration {
+    @Bean
+    public HttpClient httpClient() {
+        return new HttpClient() {
+            @Override
+            public ResponseEntry execute(String url, Method method, Object[] args) throws Exception {
+                // send http request...
+                return new ResponseEntry(200, content);
+            }
+        };
     }
 }
 ```

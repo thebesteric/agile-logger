@@ -13,3 +13,5 @@
 - Perf: Optimize @Mocker execution timing
 - Perf: RequestLog default tag name is "default", You can use RequestLogProcessor to change it
 - Style: `VersionAdapter` rename to `VersionerAdapter`, `AbstractVersionAdapter` rename to `AbstractVersionerAdapter`
+### v1.0.4
+- Perf: Optimize @Mocker target http/https mode add method and args parameters
