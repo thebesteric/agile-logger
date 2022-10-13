@@ -32,6 +32,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -154,6 +157,17 @@ public class AgileLoggerAutoConfiguration {
         @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "TypeMockProcessor")
         public MockProcessor typeMockProcessor(MockCache mockCache) {
             return new TypeMockProcessor(mockCache);
+        }
+
+        @Bean
+        public HttpClient httpClient() {
+            return new HttpClient() {
+                @Override
+                public ResponseEntry execute(String url, Method method, Object[] args) throws Exception {
+                    // ...
+                    return new ResponseEntry(200, content);
+                }
+            };
         }
     }
 

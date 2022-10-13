@@ -25,7 +25,7 @@ public class ValueMockProcessor extends AbstractCachedMockProcessor {
     }
 
     @Override
-    public Object doProcess(Mocker mocker, Method method) throws Throwable {
+    public Object doProcess(Mocker mocker, Method method, Object[] args) throws Throwable {
         String mockStr = mocker.value();
         Class<?> returnType = method.getReturnType();
         if (StringUtils.isNotEmpty(mockStr)) {

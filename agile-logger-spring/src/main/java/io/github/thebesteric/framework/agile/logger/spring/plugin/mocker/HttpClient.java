@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import java.util.Map;
  */
 public interface HttpClient {
 
-    ResponseEntry doGet(String url) throws Exception;
+    ResponseEntry execute(String url, Method method, Object[] args) throws Exception;
 
     /**
      * Merge url parameters

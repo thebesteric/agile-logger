@@ -14,7 +14,7 @@ public interface MockProcessor {
 
     boolean match(Mocker mocker);
 
-    Object process(Mocker mocker, Method method) throws Throwable;
+    Object process(Mocker mocker, Method method, Object[] args) throws Throwable;
 
     int order();
 }

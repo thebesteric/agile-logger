@@ -41,7 +41,7 @@ public class TargetMockProcessor extends AbstractCachedMockProcessor {
     }
 
     @Override
-    public Object doProcess(Mocker mocker, Method method) throws Throwable {
+    public Object doProcess(Mocker mocker, Method method, Object[] args) throws Throwable {
         String target = mocker.target();
         String protocol = getTargetProtocol(target);
         Object result = null;
@@ -54,7 +54,7 @@ public class TargetMockProcessor extends AbstractCachedMockProcessor {
                 break;
             case HTTP_PROTOCOL:
             case HTTPS_PROTOCOL:
-                result = processRemoteTarget(target, method);
+                result = processRemoteTarget(target, method, args);
                 break;
         }
 
@@ -66,8 +66,8 @@ public class TargetMockProcessor extends AbstractCachedMockProcessor {
         return MockOrderEnum.TARGET_ORDER.order();
     }
 
-    private Object processRemoteTarget(String target, Method method) throws Exception {
-        HttpClient.ResponseEntry responseEntry = httpClient.doGet(target);
+    private Object processRemoteTarget(String target, Method method, Object[] args) throws Exception {
+        HttpClient.ResponseEntry responseEntry = httpClient.execute(target, method, args);
         if (responseEntry.getCode() == R.HttpStatus.OK.getCode()) {
             String body = responseEntry.getBody();
             return handleMockValue(body, method.getReturnType());

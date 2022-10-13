@@ -33,7 +33,7 @@ public class TypeMockProcessor extends AbstractCachedMockProcessor {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public Object doProcess(Mocker mocker, Method method) throws Throwable {
+    public Object doProcess(Mocker mocker, Method method, Object[] args) throws Throwable {
         Class<? extends MockerAdapter> mockType = mocker.type();
         Class<?> actualType = ReflectUtils.getActualTypeArguments(mockType, MockerAdapter.class).get(0);
         Class<?> returnType = method.getReturnType();

@@ -56,7 +56,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             AgileLoggerContext.setParentId(parentId);
 
             // Mocker: invoke mocker result if you need to
-            Object result = invokeMockerIfNecessary(method);
+            Object result = invokeMockerIfNecessary(method, args);
             if (result != null) {
                 return result;
             }
@@ -81,7 +81,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
         try {
             // Mocker: invoke mocker result if you need to
-            result = invokeMockerIfNecessary(method);
+            result = invokeMockerIfNecessary(method, args);
             if (result != null) {
                 mock = true;
             }
@@ -238,14 +238,14 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      * @param method method
      * @return Object
      */
-    private Object invokeMockerIfNecessary(Method method) throws Throwable {
+    private Object invokeMockerIfNecessary(Method method, Object[] args) throws Throwable {
         Object mockResult = null;
         if (method.isAnnotationPresent(Mocker.class) && agileLoggerContext.getProperties().getConfig().getMock().isEnable()) {
             Mocker mocker = method.getAnnotation(Mocker.class);
             if (mocker != null && mocker.enable()) {
                 MockProcessor currentMethodMockProcessor = agileLoggerContext.getCurrentMethodMockProcessor(mocker, method);
                 if (currentMethodMockProcessor != null) {
-                    mockResult = currentMethodMockProcessor.process(mocker, method);
+                    mockResult = currentMethodMockProcessor.process(mocker, method, args);
                 }
             }
         }
