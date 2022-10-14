@@ -17,8 +17,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * AbstractAnnotatedEnhancer
@@ -103,14 +101,7 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
         Parameter[] parameters = constructor.getParameters();
         Object[] args = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            Map<String, ?> beansOfType = this.agileLoggerContext.getBeans(parameters[i].getType());
-            if (beansOfType.size() == 1) {
-                Optional<?> optional = beansOfType.values().stream().findFirst();
-                args[i] = optional.get();
-            } else {
-                Object obj = this.agileLoggerContext.getBean(parameters[i].getName(), parameters[i].getType());
-                args[i] = obj;
-            }
+            args[i] = this.agileLoggerContext.getCorrectBean(parameters[i].getName(), parameters[i].getType());
         }
         return args;
     }
@@ -137,6 +128,13 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
                     // Copy property if source field value is not null
                     Object sourceFieldValue = sourceField.get(source);
                     Object targetFieldValue = sourceField.get(target);
+                    if (sourceFieldValue == null && targetFieldValue == null) {
+                        sourceFieldValue = this.agileLoggerContext.getCorrectBean(sourceField.getName(), sourceField.getType());
+                        if (sourceFieldValue != null) {
+                            // Join to source
+                            sourceField.set(source, sourceFieldValue);
+                        }
+                    }
                     if (sourceFieldValue != targetFieldValue && sourceFieldValue != null) {
                         ReflectUtils.set(sourceField, target, source);
                     }
@@ -146,6 +144,7 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
             }
             currentClass = currentClass.getSuperclass();
         } while (currentClass != null && currentClass != Object.class);
+
         return target;
     }
 }

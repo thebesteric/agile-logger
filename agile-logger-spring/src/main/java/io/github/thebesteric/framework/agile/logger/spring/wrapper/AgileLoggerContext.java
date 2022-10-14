@@ -162,13 +162,14 @@ public class AgileLoggerContext {
     /**
      * Get bean, using the default value if null
      *
-     * @param clazz Class<T>
+     * @param beanType     Class<T>
+     * @param defaultValue defaultValue
      * @return T
      */
-    public <T> T getBeanOrDefault(Class<T> clazz, T defaultValue) {
+    public <T> T getBeanOrDefault(Class<T> beanType, T defaultValue) {
         T obj = null;
         try {
-            obj = this.applicationContext.getBean(clazz);
+            obj = this.applicationContext.getBean(beanType);
         } catch (Exception e) {
             if (defaultValue != null) {
                 obj = defaultValue;
@@ -182,13 +183,15 @@ public class AgileLoggerContext {
     /**
      * Get bean, using the default value if null
      *
-     * @param clazz Class<T>
+     * @param beanName     beanName
+     * @param beanType     Class<T>
+     * @param defaultValue defaultValue
      * @return T
      */
-    public <T> T getBeanOrDefault(String name, Class<T> clazz, T defaultValue) {
+    public <T> T getBeanOrDefault(String beanName, Class<T> beanType, T defaultValue) {
         T obj = null;
         try {
-            obj = this.applicationContext.getBean(name, clazz);
+            obj = this.applicationContext.getBean(beanName, beanType);
         } catch (Exception e) {
             if (defaultValue != null) {
                 obj = defaultValue;
@@ -202,37 +205,60 @@ public class AgileLoggerContext {
     /**
      * Get bean for type
      *
-     * @param clazz Class<T>
+     * @param beanType Class<T>
      * @return T
      */
-    public <T> T getBean(Class<T> clazz) {
-        return getBeanOrDefault(clazz, null);
+    public <T> T getBean(Class<T> beanType) {
+        return getBeanOrDefault(beanType, null);
     }
 
     /**
      * Get bean for name and type
      *
-     * @param name String
+     * @param beanName beanName
+     * @param beanType Class<T>
      * @return T
      */
-    public <T> T getBean(String name, Class<T> clazz) {
-        return getBeanOrDefault(name, clazz, null);
+    public <T> T getBean(String beanName, Class<T> beanType) {
+        return getBeanOrDefault(beanName, beanType, null);
     }
 
     /**
      * Get beans for type
      *
-     * @param clazz Class<T>
+     * @param beanType Class<T>
      * @return T
      */
-    public <T> Map<String, T> getBeans(Class<T> clazz) {
+    public <T> Map<String, T> getBeans(Class<T> beanType) {
         Map<String, T> beansOfType = new HashMap<>();
         try {
-            beansOfType = this.applicationContext.getBeansOfType(clazz);
+            beansOfType = this.applicationContext.getBeansOfType(beanType);
         } catch (Exception e) {
             LoggerPrinter.info(log, e.getMessage());
         }
         return beansOfType;
+    }
+
+    /**
+     * Get correct bean
+     * <p>
+     * Different from {@link #getBean(String, Class)}
+     * it determines the type first and then looks it up by name and type
+     * make sure the current bean is reachable
+     *
+     * @param beanName beanName
+     * @param beanType Class<T>
+     * @return T
+     */
+    public <T> T getCorrectBean(String beanName, Class<T> beanType) {
+        T bean;
+        Map<String, T> beansOfType = this.getBeans(beanType);
+        if (beansOfType.size() == 1) {
+            bean = beansOfType.values().stream().findFirst().get();
+        } else {
+            bean = this.getBean(beanName, beanType);
+        }
+        return bean;
     }
 
     /**
