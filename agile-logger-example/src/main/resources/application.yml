@@ -52,3 +52,8 @@ sourceflag:
         enable: true
         expire-after-write: 600
         expire-after-access: 600
+
+domain:
+  oms-url: oms
+  oc-url: oc
+  ic-url: ic
