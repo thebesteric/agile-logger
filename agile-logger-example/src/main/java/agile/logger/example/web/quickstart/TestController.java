@@ -4,7 +4,6 @@ import agile.logger.example.web.quickstart.version.LoginVersion;
 import io.github.thebesteric.framework.agile.logger.spring.domain.R;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +16,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/test")
-@RequiredArgsConstructor
 public class TestController {
 
     // @Autowired
     private final TestService testService;
+
+    public TestController(TestService testService) {
+        this.testService = testService;
+    }
 
     @Value("${domain.oms-url:default}")
     private String omsUrl;

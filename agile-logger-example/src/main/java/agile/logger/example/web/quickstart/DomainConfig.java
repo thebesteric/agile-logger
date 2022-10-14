@@ -1,6 +1,5 @@
 package agile.logger.example.web.quickstart;
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +11,32 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties(prefix = "domain")
-@Data
 public class DomainConfig {
     private String omsUrl;
     private String ocUrl;
     private String icUrl;
+
+    public String getOmsUrl() {
+        return omsUrl;
+    }
+
+    public void setOmsUrl(String omsUrl) {
+        this.omsUrl = omsUrl;
+    }
+
+    public String getOcUrl() {
+        return ocUrl;
+    }
+
+    public void setOcUrl(String ocUrl) {
+        this.ocUrl = ocUrl;
+    }
+
+    public String getIcUrl() {
+        return icUrl;
+    }
+
+    public void setIcUrl(String icUrl) {
+        this.icUrl = icUrl;
+    }
 }
