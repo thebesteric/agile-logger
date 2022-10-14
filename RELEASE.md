@@ -14,4 +14,5 @@
 - Perf: RequestLog default tag name is "default", You can use RequestLogProcessor to change it
 - Style: `VersionAdapter` rename to `VersionerAdapter`, `AbstractVersionAdapter` rename to `AbstractVersionerAdapter`
 ### v1.0.4
+- Fixed: An issue when enhance where properties could not be injected
 - Perf: Optimize @Mocker target http/https mode add method and args parameters
