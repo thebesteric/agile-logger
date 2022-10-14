@@ -20,6 +20,22 @@ import java.util.stream.Stream;
  */
 public class ReflectUtils {
 
+    public static void setAccessible(Method method, boolean accessible) {
+        method.setAccessible(accessible);
+    }
+
+    public static void setAccessible(Method method) {
+        setAccessible(method, true);
+    }
+
+    public static void setAccessible(Field field, boolean accessible) {
+        field.setAccessible(accessible);
+    }
+
+    public static void setAccessible(Field field) {
+        setAccessible(field, true);
+    }
+
     public static boolean isPublic(Class<?> clazz) {
         return Modifier.isPublic(clazz.getModifiers());
     }
@@ -242,7 +258,7 @@ public class ReflectUtils {
     public static Type getSuperclassOnType(Class<?> type, Class<?> clazz) {
         Class<?> superClass;
         Type genericSuperclass = type.getGenericSuperclass();
-        if(genericSuperclass instanceof Class) {
+        if (genericSuperclass instanceof Class) {
             superClass = (Class<?>) genericSuperclass;
         } else {
             superClass = (Class<?>) ((ParameterizedType) genericSuperclass).getRawType();

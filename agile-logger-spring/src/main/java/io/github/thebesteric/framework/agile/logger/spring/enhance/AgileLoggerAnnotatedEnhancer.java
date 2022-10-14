@@ -76,17 +76,22 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
         enhancer.setSuperclass(originClass);
         enhancer.setCallback(callback);
 
+        boolean enhanced = false;
+
         Object object = bean;
         // 1. Deal the no argument constructor
         for (Constructor<?> constructor : originClass.getDeclaredConstructors()) {
             if (constructor.getParameterCount() == 0) {
                 object = enhancer.create();
+                enhanced = true;
                 break;
             }
         }
 
         // 2. Deal the has arguments constructor
-        if (object == bean) {
+        if (!enhanced) {
+
+            // 2.1. Collect all constructors
             Map<Constructor<?>, Integer> constructors = new HashMap<>();
             for (Constructor<?> constructor : originClass.getDeclaredConstructors()) {
                 int parameterCount = constructor.getParameterCount();
@@ -95,35 +100,38 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
                 }
             }
 
-            // All constructors are in reverse order of the number of parameters
+            // 2.2. In reverse order of the number of arguments to the constructors
             List<? extends Constructor<?>> sortedConstructors = constructors.entrySet().stream()
                     .sorted((o1, o2) -> o2.getValue() - o1.getValue()).map(Map.Entry::getKey).collect(Collectors.toList());
 
 
-            // 1. There is only one constructor that checks whether the parameter can be injected
+            // 2.3. There is only one constructor that checks whether the parameter can be injected
+            Constructor<?> usedConstructor = null;
             if (sortedConstructors.size() == 1) {
-                Constructor<?> constructor = sortedConstructors.get(0);
-                Object[] args = getConstructorArguments(constructor);
-                object = enhancer.create(constructor.getParameterTypes(), args);
+                usedConstructor = sortedConstructors.get(0);
             }
-            // 2. If there are more than one constructor, filter out the constructor that contains the @Autowired annotation
+            // 2.4. If there are more than one constructor, filter out the constructor that contains the @Autowired annotation
             else {
                 // Gets the @Autowired constructor with the highest number of arguments
-                Constructor<?> longestConstructor = null;
                 for (Constructor<?> constructor : sortedConstructors) {
                     if (constructor.isAnnotationPresent(Autowired.class)) {
-                        longestConstructor = constructor;
+                        // longest constructor
+                        usedConstructor = constructor;
                         break;
                     }
                 }
-                assert longestConstructor != null;
-                Object[] args = getConstructorArguments(longestConstructor);
-                object = enhancer.create(longestConstructor.getParameterTypes(), args);
+            }
+
+            // 3. Enhancer
+            if (usedConstructor != null) {
+                Object[] args = getConstructorArguments(usedConstructor);
+                object = enhancer.create(usedConstructor.getParameterTypes(), args);
+                enhanced = true;
             }
         }
 
         // Attribute assignment
-        if (object != bean) {
+        if (enhanced) {
             this.agileLoggerContext.getBeanFactory().registerSingleton(beanName, copyProperties(originClass, bean, object));
         }
 

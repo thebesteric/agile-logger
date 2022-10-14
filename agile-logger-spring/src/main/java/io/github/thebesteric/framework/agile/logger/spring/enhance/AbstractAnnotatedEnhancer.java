@@ -133,7 +133,13 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
                     if (ReflectUtils.isStatic(sourceField) && ReflectUtils.isFinal(sourceField)) {
                         continue;
                     }
-                    ReflectUtils.set(sourceField, target, source);
+                    ReflectUtils.setAccessible(sourceField);
+                    // Copy property if source field value is not null
+                    Object sourceFieldValue = sourceField.get(source);
+                    Object targetFieldValue = sourceField.get(target);
+                    if (sourceFieldValue != targetFieldValue && sourceFieldValue != null) {
+                        ReflectUtils.set(sourceField, target, source);
+                    }
                 } catch (Exception ex) {
                     LoggerPrinter.error(log, ex.getMessage());
                 }
