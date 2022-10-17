@@ -26,11 +26,8 @@ public class AgileLoggerSpringProperties {
     // LOG, STDOUT, CACHE, REDIS, ES, DATABASE
     private LogMode logMode = LogMode.STDOUT;
 
-    // Decide whether to use a thread pool
-    private boolean async = true;
-
-    // Thread pool parameters
-    private AsyncParams asyncParams = new AsyncParams();
+    // Async mode
+    private Async async = new Async();
 
     // Support Maven and Gradle build tools
     private List<String> compilePaths = ClassPathUtils.compilePaths;
@@ -52,6 +49,15 @@ public class AgileLoggerSpringProperties {
 
     // Config for others
     private Config config = new Config();
+
+    @Getter
+    @Setter
+    public static class Async {
+        // Decide whether to use a thread pool
+        private boolean enable = true;
+        // Thread pool parameters
+        private AsyncParams asyncParams = new AsyncParams();
+    }
 
     @Getter
     @Setter
@@ -109,7 +115,8 @@ public class AgileLoggerSpringProperties {
     public static class Cache {
         private int initialCapacity = 2000;
         private int maximumSize = 20000;
-        private int expiredTime = 1000 * 60 * 60;;
+        private int expiredTime = 1000 * 60 * 60;
+        ;
 
         @Override
         public String toString() {
@@ -173,8 +180,8 @@ public class AgileLoggerSpringProperties {
     @Setter
     public static class AsyncParams {
         private int corePoolSize = 1;
-        private int maximumPoolSize = 1;
-        private int keepAliveTime = 0;
+        private int maximumPoolSize = Runtime.getRuntime().availableProcessors() * 2;
+        private int keepAliveTime = 60 * 1000;
         private int queueSize = 1024;
         private String threadNamePrefix = AgileLoggerConstant.THREAD_POOL_NAME;
 
@@ -183,8 +190,8 @@ public class AgileLoggerSpringProperties {
             return "[" +
                     "corePoolSize=" + corePoolSize + ", " +
                     "maximumPoolSize=" + maximumPoolSize + ", " +
-                    "keepAliveTime=" + keepAliveTime + ", " +
-                    "queueSize=" + queueSize +
+                    "queueSize=" + queueSize  + ", " +
+                    "keepAliveTime=" + MathUtils.divStripTrailingZeros((double) keepAliveTime, 1000D) + "s" +
                     "]";
         }
     }

@@ -298,8 +298,9 @@ public class AgileLoggerContext {
     }
 
     public ExecutorService generateExecutorService() {
-        if (this.properties.isAsync()) {
-            AgileLoggerSpringProperties.AsyncParams asyncParams = this.properties.getAsyncParams();
+        AgileLoggerSpringProperties.Async async = this.properties.getAsync();
+        if (async.isEnable()) {
+            AgileLoggerSpringProperties.AsyncParams asyncParams = async.getAsyncParams();
             int corePoolSize = asyncParams.getCorePoolSize();
             int maximumPoolSize = asyncParams.getMaximumPoolSize();
             if (corePoolSize > maximumPoolSize) {

@@ -21,7 +21,7 @@ public abstract class AbstractThreadPoolRecordProcessor implements RecordProcess
 
     public AbstractThreadPoolRecordProcessor(AgileLoggerContext agileLoggerContext) {
         this.agileLoggerContext = agileLoggerContext;
-        if (agileLoggerContext.getProperties().isAsync()) {
+        if (agileLoggerContext.getProperties().getAsync().isEnable()) {
             this.recordLoggerThreadPool = agileLoggerContext.getRecordLoggerThreadPool();
         }
     }

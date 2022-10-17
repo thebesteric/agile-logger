@@ -48,7 +48,8 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
             AbstractAgileLoggerFilter.URL_MAPPING.forEach((url, method) -> LoggerPrinter.debug(log, "Mapping: {} => {}", url, SignatureUtils.methodSignature(method)));
         }
 
-        String asyncMessage = properties.isAsync() ? "Async: " + properties.getAsyncParams() : "Sync";
+        AgileLoggerSpringProperties.Async async = properties.getAsync();
+        String asyncMessage = async.isEnable() ? "Async: " + async.getAsyncParams() : "Sync";
         String traceMessage = properties.isUseSkyWalkingTrace() ? "SkyWalking Trace" : "Local Generator";
         LoggerPrinter.info(log, "Log Mode is {}, Running in {}, TrackIdGenerator: {}", properties.getLogMode(), asyncMessage, traceMessage);
 
