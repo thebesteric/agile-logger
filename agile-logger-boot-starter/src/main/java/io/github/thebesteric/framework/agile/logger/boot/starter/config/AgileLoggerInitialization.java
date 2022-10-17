@@ -9,7 +9,6 @@ import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpr
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AbstractAgileLoggerFilter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
 
         // Scanner @Controller and @SwitchLogger and so on
         for (ClassPathScanner classPathScanner : classPathScanners) {
-            classPathScanner.doScan(new File(projectPath + "/"), properties.getCompilePaths());
+            classPathScanner.scan(projectPath, properties.getCompilePaths());
         }
 
         // Set idGenerator & trackIdGenerator
