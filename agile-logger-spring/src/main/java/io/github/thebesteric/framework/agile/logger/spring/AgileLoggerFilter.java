@@ -51,12 +51,15 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
 
         // Check ignore Method
         Method method = AbstractAgileLoggerFilter.URL_MAPPING.get(uri);
-        IgnoreMethodProcessor.IgnoreMethod ignoreMethod = IgnoreMethodProcessor.IgnoreMethod.builder()
-                .clazz(method.getDeclaringClass()).method(method).build();
-        if (ignoreMethodProcessor.matching(ignoreMethod)) {
+        IgnoreMethodProcessor.IgnoreMethod ignoreMethod = null;
+        if (method != null) {
+            ignoreMethod = IgnoreMethodProcessor.IgnoreMethod.builder().clazz(method.getDeclaringClass()).method(method).build();
+        }
+        if (ignoreMethod == null || ignoreMethodProcessor.matching(ignoreMethod)) {
             filterChain.doFilter(request, response);
             return;
         }
+
 
         // Check URI legal
         if (!checkLegalUri(uri)) {
