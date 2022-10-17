@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
  *
  * @author Eric Joe
  * @version 1.0
- * @since 2022-07-27 23:06:28
  */
 public class ObjectUtils {
 
