@@ -103,6 +103,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- https://search.maven.org/artifact/org.slf4j/slf4j-simple -->
@@ -110,6 +111,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- https://search.maven.org/artifact/org.apache.commons/commons-lang3 -->
