@@ -37,9 +37,9 @@ public class VersionerInfo {
     public MethodInfo getRequestMethodInfo() throws Exception {
         Class<?> requestType = ReflectUtils.getActualTypeArguments(this.instance.getClass(), VersionerAdapter.class).get(0);
         for (Object arg : this.args) {
-            if (arg.getClass().isAssignableFrom(requestType)) {
+            if (requestType.isAssignableFrom(arg.getClass())) {
                 try {
-                    Method requestMethod = instance.getClass().getMethod(Versioner.REQUEST_METHOD_NAME, arg.getClass());
+                    Method requestMethod = instance.getClass().getMethod(Versioner.REQUEST_METHOD_NAME, requestType);
                     return new MethodInfo(instance, requestMethod, arg);
                 } catch (NoSuchMethodException ignored) {
                     // The request method is not overridden

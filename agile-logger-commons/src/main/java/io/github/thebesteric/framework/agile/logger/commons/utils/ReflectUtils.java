@@ -252,7 +252,15 @@ public class ReflectUtils {
         }
 
         return Arrays.stream(parameterizedType.getActualTypeArguments())
-                .flatMap(type -> Stream.of((Class<?>) type)).collect(Collectors.toList());
+                .flatMap(type -> {
+                    Class<?> typeClass;
+                    if (type instanceof ParameterizedType) {
+                        typeClass = (Class<?>) ((ParameterizedType) type).getRawType();
+                    } else {
+                        typeClass = (Class<?>) type;
+                    }
+                    return Stream.of(typeClass);
+                }).collect(Collectors.toList());
     }
 
     public static Type getSuperclassOnType(Class<?> type, Class<?> clazz) {

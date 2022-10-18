@@ -8,7 +8,7 @@ import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
-import io.github.thebesteric.framework.agile.logger.spring.domain.VersionerInfo;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.VersionerInfo;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
@@ -39,7 +39,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
     // Records the method regular expressions on the class that need to be ignored
     public static Map<String, Set<String>> ignoreMethodsCache = new HashMap<>();
 
-    // Records whether the method requires an proxies or does not
+    // Records whether the method requires a proxies or does not
     public static Map<Integer, Boolean> checkedMethodsCache = new HashMap<>(64);
 
     public AgileLoggerAnnotatedInterceptor(AgileLoggerContext agileLoggerContext) {
