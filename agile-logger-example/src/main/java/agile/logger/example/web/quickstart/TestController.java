@@ -1,11 +1,16 @@
 package agile.logger.example.web.quickstart;
 
+import agile.logger.example.web.quickstart.mock.LoginMockAdapter;
+import agile.logger.example.web.quickstart.mock.MultiMethodMockAdapter;
 import agile.logger.example.web.quickstart.version.LoginVersion;
+import agile.logger.example.web.quickstart.version.MapVersion;
 import io.github.thebesteric.framework.agile.logger.spring.domain.R;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * TestController
@@ -53,13 +58,31 @@ public class TestController {
         return userInfo;
     }
 
-    @Mocker("{username: lisi, password: 1234, greeting: hello}")
+    @PostMapping("/map")
+    @Versioner(type = MapVersion.class)
+    public R map(@RequestBody Map<String, Object> map) {
+        return R.success(map);
+    }
+
+    // @Mocker("{username: lisi, password: 1234, greeting: hello}")
     // @Mocker(target = "classpath:/mock/userInfo.json")
     // @Mocker(target = "file:/Users/keisun/demo/userInfo.json")
     // @Mocker(target = "https://yapi.shuinfo.tech/mock/398/breast-coach-api/userInfo")
-    // @Mocker(type = LoginMockAdapter.class)
+    @Mocker(type = LoginMockAdapter.class)
     @PostMapping("/mock")
     public UserInfo mock(@RequestBody Identity identity) {
         return testService.login(identity);
+    }
+
+    @Mocker(type = MultiMethodMockAdapter.class)
+    @PostMapping("/mock1")
+    public UserInfo mock1(@RequestBody Identity identity) {
+        return testService.login(identity);
+    }
+
+    @Mocker(type = MultiMethodMockAdapter.class)
+    @PostMapping("/mock2")
+    public R mock2(@RequestBody Identity identity) {
+        return R.success(testService.login(identity));
     }
 }

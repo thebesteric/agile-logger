@@ -3,12 +3,12 @@ sourceflag:
     enable: true
     log-mode: custom
     use-sky-walking-trace: false
-    async: true
-    async-params:
-      core-pool-size: 1
-      maximum-pool-size: 2
+    async:
+      enable: true
+      async-params:
+        core-pool-size: 1
+        maximum-pool-size: 2
     url-filter:
-      url-patterns: ["/*"]
       includes: [".*"]
       excludes: []
     response-success-define:
