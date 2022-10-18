@@ -52,7 +52,6 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
      *
      * @param beanClass {@link Class}
      * @return String
-     * @author Eric
      */
     protected String getOriginClassName(Class<?> beanClass) {
         String beanClassName = beanClass.getName();
@@ -71,7 +70,6 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
      *
      * @param clazz {@link Class}
      * @return boolean
-     * @author Eric
      */
     protected boolean checkLegal(Class<?> clazz) {
         return clazz != null && ReflectUtils.isPublic(clazz) && !ReflectUtils.isStatic(clazz) && !ReflectUtils.isFinal(clazz);
@@ -83,7 +81,6 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
      *
      * @param method {@link Method}
      * @return boolean
-     * @author Eric
      */
     protected boolean checkLegal(Method method) {
         return method != null && ReflectUtils.isPublic(method) && !ReflectUtils.isStatic(method) && !ReflectUtils.isFinal(method);
@@ -95,7 +92,6 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
      *
      * @param constructor {@link Constructor}
      * @return Object[] args
-     * @author Eric
      */
     protected Object[] getConstructorArguments(Constructor<?> constructor) {
         Parameter[] parameters = constructor.getParameters();
@@ -113,8 +109,6 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
      * @param source      原始对象
      * @param target      代理对象
      * @return java.lang.Object
-     * @author Eric
-     * @date 2021/5/26 17:57
      */
     protected synchronized Object copyProperties(Class<?> originClass, Object source, Object target) {
         Class<?> currentClass = originClass;

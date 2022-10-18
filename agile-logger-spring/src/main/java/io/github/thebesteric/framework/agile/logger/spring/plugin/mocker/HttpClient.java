@@ -20,10 +20,14 @@ public interface HttpClient {
 
     /**
      * Merge url parameters
+     * <p>
+     * url: url?a=1&b=2
+     * query: parameters: params{c=3, d=4}
+     * return url?a=1&b=2&c=3&d=4
      *
-     * @param url    url: url?a=1&b=2
-     * @param params query parameters: params{c=3, d=4}
-     * @return url?a=1&b=2&c=3&d=4
+     * @param url    url
+     * @param params params
+     * @return String
      */
     default String mergeUrlParams(String url, Map<String, Object> params) {
         if (params == null) {
