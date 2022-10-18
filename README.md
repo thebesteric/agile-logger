@@ -125,7 +125,8 @@ public class TestAdapter {
         "content_type": "响应内容类型 => String",
         "locale": "语言 => String",
         "headers": "响应头信息 => Map<String, String>"
-    }
+    },
+    "mock": "是否是模拟数据 => boolean"
 }
 ```
 ### 2.2 方法调用层日志格式
@@ -151,7 +152,8 @@ public class TestAdapter {
     "result": "方法返回值 => Object",
     "exception": "异常信息 => String",
     "extra": "扩展信息，可自定义 => String",
-    "thread_name": "执行线程名 => String"
+    "thread_name": "执行线程名 => String",
+    "mock": "是否是模拟数据 => boolean"
 }
 ```
 
@@ -308,11 +310,13 @@ sourceflag:
   agile-logger:
     enable: true
     log-mode: stdout
-    async: true # 开启异步，默认：true
-    async-params:
-      core-pool-size: 1 # 核心线程数量
-      maximum-pool-size: 2 # 最大线程数量
-      keep-alive-time: 60000 # 线程空闲时间，单位：毫秒
+    async: 
+      enable: true # 开启异步，默认：true
+      async-params:
+        core-pool-size: 1 # 核心线程数量
+        maximum-pool-size: 8 # 最大线程数量，默认：CPU 核心数
+        queue-size: 1024 # 队列大小，默认：1024
+        keep-alive-time: 60000 # 线程空闲时间，单位：毫秒
 ```
 ### 3.6 使用 sky-walking traceId 替代默认 tackId
 > 开启 sky-walking traceId 的时候，需要注意是否连接上 OAP Server  
@@ -396,7 +400,6 @@ public class Application {
 @Service
 @AgileLogger(tag = "service", ignoreMethods = {"^foo.*"})
 public class TestService {
-
     @Autowired
     private TestAdapter testAdapter;
 
@@ -429,7 +432,6 @@ public class TestService {
 @AgileLogger(tag = "service", ignoreMethods = {"^foo.*"})
 @IgnoreMethods({"^bar.*"})
 public class TestService {
-
     @Autowired
     private TestAdapter testAdapter;
 
@@ -456,7 +458,6 @@ public class TestService {
 @Service
 @AgileLogger(tag = "service")
 public class TestService {
-
     @Autowired
     private TestAdapter testAdapter;
     
@@ -652,12 +653,12 @@ public class AppConfiguration {
 > `@Versioner` 中的 type 指定的的类必须实现 `VersionerAdapter<V, R>` 或继承 `AbstractVersionerAdapter<V, R>`  
 > 其中 `V`: 代表需要进行版本控制的请求参数，`R`: 代表方法的返回值类型  
 > 实现或重写 `public void request(V v)`: 当方法执行之前，回调用该方法，传入：实际的请求参数  
-> 实现或重写 `Object response(R result)`: 当方法返回结果之前，回调用该方法，传入：当前方法的返回值
-
+> 实现或重写 `Object response(R result)`: 当方法返回结果之前，回调用该方法，传入：当前方法的返回值  
+> 如果只关注入参，可以继承 `RequestVersionerAdapter<V>` 重写 `public void request(V v)` 方法    
+> 如果只关注出参，可以继承 `ResponseVersionerAdapter<R>` 重写 `public R response(R result)` 方法
 ```java
 @RestController
 public class LoginController {
-
     @Autowired
     private LoginService loginService;
 
@@ -720,7 +721,6 @@ sourceflag:
 ```java
 @RestController
 public class LoginController {
-
     @Autowired
     private LoginService loginService;
 
@@ -738,7 +738,6 @@ public class LoginController {
 ```java
 @RestController
 public class LoginController {
-
     @Autowired
     private LoginService loginService;
 
@@ -753,11 +752,11 @@ public class LoginController {
 #### 6.2.3 @Mocker 的 type 属性
 > `@Mocker(type="xxx.class")`: 编码方式产生 mock 数据
 > 读取本地文件或网络数据，都设置的情况下，优先级低于 value 属性  
-> `@Mocker` 中的 type 指定的的类必须实现 `MockAdapter<R>` 接口，`R`: 代表方法的返回值类型  
+> `@Mocker` 中的 type 指定的的类必须实现 `MockAdapter<R>` 接口或继承 `AbstractMockerAdapter<R>`  
+> 其中 `R`: 代表方法的返回值类型
 ```java
 @RestController
 public class LoginController {
-
     @Autowired
     private LoginService loginService;
 
@@ -774,6 +773,39 @@ public class LoginMockAdapter implements MockerAdapter<UserInfo> {
   public UserInfo mock() {
     return new UserInfo("lucy", "9988", "vip");
   }
+}
+```
+> 如果期望一个类实现多个方法的 mock，可以继承 `MethodsMockerAdapter`, mock 数据的方法名必须与实际的方法名称一致，没有任何方法参数
+```java
+@RestController
+@RequestMapping("/test")
+public class TestController {
+    @Autowired
+    private LoginService loginService;
+  
+    @Mocker(type = MultiMethodMockAdapter.class)
+    @PostMapping("/mock1")
+    public UserInfo mock1(@RequestBody Identity identity) {
+      return loginService.login(identity);
+    }
+
+    @Mocker(type = MultiMethodMockAdapter.class)
+    @PostMapping("/mock2")
+    public R mock2(@RequestBody Identity identity) {
+      return R.success(loginService.login(identity));
+    }
+}
+
+public class MultiMethodMockAdapter extends MethodsMockerAdapter {
+
+  public UserInfo mock1() {
+    return new UserInfo("mock1", "***", "hello mock1");
+  }
+
+  public R mock2() {
+    return R.success(new UserInfo("mock2", "***", "hello mock2"));
+  }
+
 }
 ```
 

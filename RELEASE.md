@@ -9,10 +9,20 @@
 - Perf: Optimized the `SignatureUtils.methodSignature` calculation mode
 ### v1.0.3
 - Fixed: Repair `ReflectUtils.getActualTypeArguments` to find the problem of incomplete
-- Feature: `MetricsRequestLoggerProcessor` support `maxResponseTrackId` and `minResponseTrackId`
 - Perf: Optimize @Mocker execution timing
 - Perf: RequestLog default tag name is "default", You can use RequestLogProcessor to change it
 - Style: `VersionAdapter` rename to `VersionerAdapter`, `AbstractVersionAdapter` rename to `AbstractVersionerAdapter`
+- Feature: `MetricsRequestLoggerProcessor` support `maxResponseTrackId` and `minResponseTrackId`
 ### v1.0.4
 - Fixed: An issue when enhance where properties could not be injected
-- Perf: Optimize @Mocker target http/https mode add method and args parameters
+- Perf: Optimize `@Mocker` target http/https mode add method and args parameters when used custom `HttpClient`
+### v1.0.5
+- Fixed: Fix jar files that cannot be scanned in `ClassPathScanner` issue
+- Fixed: An issue when `AbstractAgileLoggerFilter.URL_MAPPING.get(uri)` return null, throws NullPointerException
+- Perf: Modify the async mode default thread maximum-pool-size is cup core size
+- Perf: Async config parameters adjustment
+- Perf: `VersionerAdapter` supports Map, List, Set parameters
+- Feature: Provide `AbstractMockerAdapter` support get currently method and args
+- Feature: Provide `MethodsMockerAdapter` support for calling by method name
+- Feature: Provide `RequestVersionerAdapter` to enable you to override only the request method
+- Feature: Provide `ResponseVersionerAdapter` to enable you to override only the response method
