@@ -240,6 +240,7 @@ public class ReflectUtils {
                 throw new ClassNotFoundException("Can not found class: %s", actualTypeClass.getName());
             }
         }
+
         ParameterizedType parameterizedType;
         try {
             if (genericClass != null) {
@@ -248,19 +249,28 @@ public class ReflectUtils {
                 parameterizedType = (ParameterizedType) getInterfaceClassOnType(clazz, actualTypeClass);
             }
         } catch (Exception ex) {
-            parameterizedType = (ParameterizedType) getInterfaceClassOnType(clazz, actualTypeClass);
+            if (genericClass instanceof Class<?>) {
+                parameterizedType = null;
+            } else {
+                parameterizedType = (ParameterizedType) getInterfaceClassOnType(clazz, actualTypeClass);
+            }
         }
 
-        return Arrays.stream(parameterizedType.getActualTypeArguments())
-                .flatMap(type -> {
-                    Class<?> typeClass;
-                    if (type instanceof ParameterizedType) {
-                        typeClass = (Class<?>) ((ParameterizedType) type).getRawType();
-                    } else {
-                        typeClass = (Class<?>) type;
-                    }
-                    return Stream.of(typeClass);
-                }).collect(Collectors.toList());
+        List<Type> actualTypeArguments;
+        if (parameterizedType == null) {
+            actualTypeArguments = CollectionUtils.createList(Object.class);
+        } else {
+            actualTypeArguments = Arrays.asList(parameterizedType.getActualTypeArguments());
+        }
+        return actualTypeArguments.stream().flatMap(type -> {
+            Class<?> typeClass;
+            if (type instanceof ParameterizedType) {
+                typeClass = (Class<?>) ((ParameterizedType) type).getRawType();
+            } else {
+                typeClass = (Class<?>) type;
+            }
+            return Stream.of(typeClass);
+        }).collect(Collectors.toList());
     }
 
     public static Type getSuperclassOnType(Class<?> type, Class<?> clazz) {

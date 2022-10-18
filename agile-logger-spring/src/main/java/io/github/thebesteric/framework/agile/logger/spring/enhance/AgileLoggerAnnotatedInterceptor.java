@@ -80,14 +80,15 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         boolean mock = false;
 
         try {
+
+            // Star watcher
+            durationTag = DurationWatcher.start();
+
             // Mocker: invoke mocker result if you need to
             result = invokeMockerIfNecessary(method, args);
             if (result != null) {
                 mock = true;
             }
-
-            // Star watcher
-            durationTag = DurationWatcher.start();
 
             VersionerInfo versionerInfo = null;
             // Without mock
