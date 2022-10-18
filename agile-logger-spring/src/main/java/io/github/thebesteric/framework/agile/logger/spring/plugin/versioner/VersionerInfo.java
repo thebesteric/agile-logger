@@ -1,11 +1,13 @@
 package io.github.thebesteric.framework.agile.logger.spring.plugin.versioner;
 
+import io.github.thebesteric.framework.agile.logger.commons.utils.CollectionUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * VersionInfo
@@ -35,11 +37,16 @@ public class VersionerInfo {
      * @return {@link MethodInfo}
      */
     public MethodInfo getRequestMethodInfo() throws Exception {
-        Class<?> requestType = ReflectUtils.getActualTypeArguments(this.instance.getClass(), VersionerAdapter.class).get(0);
+        Class<? extends VersionerAdapter> versionAdapterClass = this.instance.getClass();
+        if (versionAdapterClass.getSuperclass() == ResponseVersionerAdapter.class) {
+            // It's ResponseVersionerAdapter<R> must skip it
+            return null;
+        }
+        Class<?> requestType = ReflectUtils.getActualTypeArguments(versionAdapterClass, VersionerAdapter.class).get(0);
         for (Object arg : this.args) {
             if (requestType.isAssignableFrom(arg.getClass())) {
                 try {
-                    Method requestMethod = instance.getClass().getMethod(Versioner.REQUEST_METHOD_NAME, requestType);
+                    Method requestMethod = versionAdapterClass.getMethod(Versioner.REQUEST_METHOD_NAME, requestType);
                     return new MethodInfo(instance, requestMethod, arg);
                 } catch (NoSuchMethodException ignored) {
                     // The request method is not overridden
@@ -57,14 +64,24 @@ public class VersionerInfo {
      * @return {@link MethodInfo}
      */
     public MethodInfo getResponseMethodInfo(Object result) throws Exception {
-        Class<?> responseType = ReflectUtils.getActualTypeArguments(this.instance.getClass(), VersionerAdapter.class).get(1);
-        try {
-            Method responseMethod = instance.getClass().getMethod(Versioner.RESPONSE_METHOD_NAME, responseType);
-            return new MethodInfo(instance, responseMethod, result);
-        } catch (NoSuchMethodException ignored) {
-            // The response method is not overridden
+        Class<? extends VersionerAdapter> versionAdapterClass = this.instance.getClass();
+        if (versionAdapterClass.getSuperclass() == RequestVersionerAdapter.class) {
+            // It's RequestVersionerAdapter<V> must skip it
             return null;
         }
+        List<Class<?>> actualTypeArguments = ReflectUtils.getActualTypeArguments(versionAdapterClass, VersionerAdapter.class);
+        if (CollectionUtils.isNotEmpty(actualTypeArguments)) {
+            // When actualTypeArguments == 0 is ResponseVersionerAdapter<R>
+            Class<?> responseType = actualTypeArguments.size() > 1 ? actualTypeArguments.get(1) : actualTypeArguments.get(0);
+            try {
+                Method responseMethod = versionAdapterClass.getMethod(Versioner.RESPONSE_METHOD_NAME, responseType);
+                return new MethodInfo(instance, responseMethod, result);
+            } catch (NoSuchMethodException ignored) {
+                // The response method is not overridden
+                return null;
+            }
+        }
+        return null;
     }
 
     @Getter
