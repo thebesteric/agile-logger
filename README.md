@@ -3,7 +3,7 @@ A flexible logging plug-in
 > 基于 Spring Boot 的一款全局日志记录插件
 
 ## 1. Quick start
-[Download By Maven Center](https://search.maven.org/search?q=g:io.github.thebesteric.framework.switchlogger)
+[Download By Maven Center](https://search.maven.org/search?q=io.github.thebesteric.framework.agile)
 ```xml
 <dependency>
     <groupId>io.github.thebesteric.framework.agile</groupId>
@@ -45,7 +45,7 @@ public class TestController {
 }
 
 @Component
-@SwitchLogger(tag = "service")
+@AgileLogger(tag = "service")
 public class TestService {
 
     @Autowired
@@ -58,7 +58,7 @@ public class TestService {
 }
 
 @Component
-@SwitchLogger(tag = "adapter")
+@AgileLogger(tag = "adapter")
 public class TestAdapter {
     
     public String sayHello(String name, Date date) {
