@@ -56,7 +56,7 @@ public class JsonUtils {
         return null;
     }
 
-    public <T> T toObject(Object obj, Class<T> clazz) {
+    public static <T> T toObject(Object obj, Class<T> clazz) {
         return toObject(toJson(obj), clazz);
     }
 
@@ -73,7 +73,7 @@ public class JsonUtils {
         return null;
     }
 
-    public <T> List<T> toList(Object obj, Class<T> clazz) {
+    public static <T> List<T> toList(Object obj, Class<T> clazz) {
         return toList(toJson(obj), clazz);
     }
 
