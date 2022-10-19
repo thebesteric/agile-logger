@@ -2,7 +2,6 @@ sourceflag:
   agile-logger:
     enable: true
     log-mode: custom
-    use-sky-walking-trace: false
     async:
       enable: true
       async-params:
@@ -46,12 +45,17 @@ sourceflag:
       feign:
         enable: true
     config:
-      track-id-name: x-track-id
-      version-name: version
+      track:
+        use-sky-walking-trace: false
+        name: x-track-id
+      version:
+        name: version
       mock:
         enable: true
         expire-after-write: 600
         expire-after-access: 600
+      curl:
+        enable: true
 
 domain:
   oms-url: oms
