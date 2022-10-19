@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * SpringSyntheticAgileLogger
@@ -27,7 +28,7 @@ public class SpringSyntheticAgileLogger extends SyntheticAgileLogger {
     public static final String TAG_REPOSITORY = "repository";
     public static final String TAG_COMPONENT = "component";
 
-    public static Map<Integer, SpringSyntheticAgileLogger> cache = new HashMap<>(128);
+    public static Map<String, SpringSyntheticAgileLogger> cache = new HashMap<>(128);
 
     private SpringSyntheticAgileLogger(Method method) {
         super(method);
@@ -35,9 +36,9 @@ public class SpringSyntheticAgileLogger extends SyntheticAgileLogger {
     }
 
     public static SpringSyntheticAgileLogger getSpringSyntheticAgileLogger(Method method) {
-        int key = SignatureUtils.methodSignatureHashCode(method);
+        String key = SignatureUtils.methodSignature(method);
         SpringSyntheticAgileLogger cachedSyntheticAgileLogger = cache.get(key);
-        if (cachedSyntheticAgileLogger == null) {
+        if (cachedSyntheticAgileLogger == null || Objects.equals(cachedSyntheticAgileLogger.level, AbstractEntity.LEVEL_ERROR)) {
             synchronized (SpringSyntheticAgileLogger.class) {
                 cachedSyntheticAgileLogger = new SpringSyntheticAgileLogger(method);
                 cache.put(key, cachedSyntheticAgileLogger);

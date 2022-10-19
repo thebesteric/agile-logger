@@ -40,7 +40,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
     public static Map<String, Set<String>> ignoreMethodsCache = new HashMap<>();
 
     // Records whether the method requires a proxies or does not
-    public static Map<Integer, Boolean> checkedMethodsCache = new HashMap<>(64);
+    public static Map<String, Boolean> checkedMethodsCache = new HashMap<>(64);
 
     public AgileLoggerAnnotatedInterceptor(AgileLoggerContext agileLoggerContext) {
         this.agileLoggerContext = agileLoggerContext;
@@ -129,7 +129,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      * @return boolean
      */
     private boolean needLogIntercept(Method method) {
-        int key = SignatureUtils.methodSignatureHashCode(method);
+        String key = SignatureUtils.methodSignature(method);
         Boolean methodStatus = checkedMethodsCache.get(key);
         if (methodStatus == null) {
 

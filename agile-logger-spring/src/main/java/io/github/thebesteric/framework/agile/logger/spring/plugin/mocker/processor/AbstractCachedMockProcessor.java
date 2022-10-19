@@ -26,7 +26,7 @@ public abstract class AbstractCachedMockProcessor implements MockProcessor {
 
     @Override
     public Object process(Mocker mocker, Method method, Object[] args) throws Throwable {
-        int key = SignatureUtils.methodSignatureHashCode(method);
+        String key = SignatureUtils.methodSignature(method);
         Object mockInstance;
         if (mocker.cache()) {
             mockInstance = mockCache.get(key);

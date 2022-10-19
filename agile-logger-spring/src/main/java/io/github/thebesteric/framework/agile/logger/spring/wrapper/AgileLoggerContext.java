@@ -64,7 +64,7 @@ public class AgileLoggerContext {
     @Setter
     private RecordProcessor currentRecordProcessor;
 
-    private static final Map<Integer, MockProcessor> methodMockProcessorCache = new HashMap<>(32);
+    private static final Map<String, MockProcessor> methodMockProcessorCache = new HashMap<>(32);
 
     public AgileLoggerContext(ApplicationContext applicationContext) {
         this.applicationContext = (GenericApplicationContext) applicationContext;
@@ -136,7 +136,7 @@ public class AgileLoggerContext {
      * @return MockProcessor
      */
     public MockProcessor getCurrentMethodMockProcessor(Mocker mocker, Method method) {
-        int key = SignatureUtils.methodSignatureHashCode(method);
+        String key = SignatureUtils.methodSignature(method);
         MockProcessor methodMockProcessor = methodMockProcessorCache.get(key);
         if (methodMockProcessor == null) {
             synchronized (AgileLoggerContext.class) {

@@ -78,7 +78,6 @@ public class SyntheticAgileLogger {
 
     public void setLevel(String level) {
         this.level = StringUtils.blankToNull(level);
-        ;
     }
 
     public String[] getIgnoreMethods() {

@@ -12,10 +12,6 @@ import java.lang.reflect.Method;
  */
 public class SignatureUtils {
 
-    public static int methodSignatureHashCode(Method method) {
-        return methodSignature(method).hashCode();
-    }
-
     public static String methodSignature(Method method) {
         String modifiers = StringUtils.join(ReflectUtils.getModifiers(method), " ");
         StringBuilder args = new StringBuilder();
