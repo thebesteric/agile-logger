@@ -60,8 +60,8 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
 
 
         String mockStatus = mock.isEnable() ? mock.toString() : "Disabled";
-        String trackIdName = StringUtils.isNotEmpty(track.getTrackIdName()) ? track.getTrackIdName() : "USE_DEFAULT";
-        String versionName = StringUtils.isNotEmpty(version.getVersionName()) ? version.getVersionName() : "USE_DEFAULT";
+        String trackIdName = StringUtils.isNotEmpty(track.getName()) ? track.getName() : "USE_DEFAULT";
+        String versionName = StringUtils.isNotEmpty(version.getName()) ? version.getName() : "USE_DEFAULT";
         LoggerPrinter.info(log, "Config: mock is {}, version name is: {}, track-id name is: {}", mockStatus, versionName, trackIdName);
     }
 }

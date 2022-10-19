@@ -74,14 +74,14 @@ public class AgileLoggerSpringProperties {
     @Getter
     @Setter
     public static class Version {
-        private String versionName;
+        private String name;
     }
 
     @Getter
     @Setter
     public static class Track {
         // Set the name of the custom trackId
-        private String trackIdName;
+        private String name;
         // Decide whether to use SkyWalking trace id
         private boolean useSkyWalkingTrace = false;
     }
