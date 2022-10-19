@@ -32,9 +32,6 @@ public class AgileLoggerSpringProperties {
     // Support Maven and Gradle build tools
     private List<String> compilePaths = ClassPathUtils.compilePaths;
 
-    // Decide whether to use SkyWalking trace id
-    private boolean useSkyWalkingTrace = false;
-
     // Url filter
     private UrlFilter urlFilter = new UrlFilter();
 
@@ -62,9 +59,31 @@ public class AgileLoggerSpringProperties {
     @Getter
     @Setter
     public static class Config {
-        private String trackIdName;
-        private String versionName;
+        private Version version = new Version();
         private Mock mock = new Mock();
+        private Track track = new Track();
+        private Curl curl = new Curl();
+    }
+
+    @Getter
+    @Setter
+    public static class Curl {
+        private boolean enable = true;
+    }
+
+    @Getter
+    @Setter
+    public static class Version {
+        private String versionName;
+    }
+
+    @Getter
+    @Setter
+    public static class Track {
+        // Set the name of the custom trackId
+        private String trackIdName;
+        // Decide whether to use SkyWalking trace id
+        private boolean useSkyWalkingTrace = false;
     }
 
     @Getter
@@ -190,7 +209,7 @@ public class AgileLoggerSpringProperties {
             return "[" +
                     "corePoolSize=" + corePoolSize + ", " +
                     "maximumPoolSize=" + maximumPoolSize + ", " +
-                    "queueSize=" + queueSize  + ", " +
+                    "queueSize=" + queueSize + ", " +
                     "keepAliveTime=" + MathUtils.divStripTrailingZeros((double) keepAliveTime, 1000D) + "s" +
                     "]";
         }

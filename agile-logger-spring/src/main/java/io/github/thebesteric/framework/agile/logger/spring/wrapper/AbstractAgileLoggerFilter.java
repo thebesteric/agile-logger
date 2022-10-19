@@ -77,7 +77,12 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
         if (AgileContext.trackIdGenerator == null) {
             AgileContext.trackIdGenerator = DefaultIdGenerator.getInstance();
         }
-        if (this.properties.isUseSkyWalkingTrace() && useSkyWalkingTrace) {
+
+        AgileLoggerSpringProperties.Config config = this.properties.getConfig();
+        AgileLoggerSpringProperties.Track track = config.getTrack();
+        AgileLoggerSpringProperties.Version version = config.getVersion();
+
+        if (track.isUseSkyWalkingTrace() && useSkyWalkingTrace) {
             if (StringUtils.isEmpty(TraceContext.traceId()) || "Ignored_Trace".equalsIgnoreCase(TraceContext.traceId())) {
                 LoggerPrinter.warn(log, "Please check Sky Walking agent setting are correct or OAP Server are running that the local track id will be used instead");
                 LoggerPrinter.warn(log, "Make sure add VM options, " +
@@ -93,13 +98,13 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
         }
 
         // Specify the track-id name
-        if (this.properties.getConfig() != null && this.properties.getConfig().getTrackIdName() != null) {
-            TransactionUtils.TRACK_ID_NAMES.add(this.properties.getConfig().getTrackIdName());
+        if (track.getTrackIdName() != null) {
+            TransactionUtils.TRACK_ID_NAMES.add(track.getTrackIdName());
         }
 
         // Specify the version name
-        if (this.properties.getConfig() != null && this.properties.getConfig().getVersionName() != null) {
-            VersionUtils.VERSION_NAMES.add(this.properties.getConfig().getVersionName());
+        if (version.getVersionName() != null) {
+            VersionUtils.VERSION_NAMES.add(version.getVersionName());
         }
 
         // Find default value for config properties

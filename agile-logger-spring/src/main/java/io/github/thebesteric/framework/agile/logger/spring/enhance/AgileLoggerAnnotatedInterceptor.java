@@ -182,7 +182,8 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             }
 
             // SkyWalking's setSkyWalkingDynamicField(Object arg) method is ignored
-            if (agileLoggerContext.getProperties().isUseSkyWalkingTrace() && StringUtils.isEquals("setSkyWalkingDynamicField", method.getName())) {
+            if (agileLoggerContext.getProperties().getConfig().getTrack().isUseSkyWalkingTrace()
+                    && StringUtils.isEquals("setSkyWalkingDynamicField", method.getName())) {
                 Class<?>[] parameterTypes = method.getParameterTypes();
                 if (parameterTypes.length == 1 && parameterTypes[0].getName().equals("java.lang.Object")) {
                     checkedMethodsCache.put(key, false);

@@ -48,15 +48,20 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
             AbstractAgileLoggerFilter.URL_MAPPING.forEach((url, method) -> LoggerPrinter.debug(log, "Mapping: {} => {}", url, SignatureUtils.methodSignature(method)));
         }
 
+        AgileLoggerSpringProperties.Config config = properties.getConfig();
+        AgileLoggerSpringProperties.Mock mock = config.getMock();
+        AgileLoggerSpringProperties.Track track = config.getTrack();
+        AgileLoggerSpringProperties.Version version = config.getVersion();
+
         AgileLoggerSpringProperties.Async async = properties.getAsync();
         String asyncMessage = async.isEnable() ? "Async: " + async.getAsyncParams() : "Sync";
-        String traceMessage = properties.isUseSkyWalkingTrace() ? "SkyWalking Trace" : "Local Generator";
+        String traceMessage = track.isUseSkyWalkingTrace() ? "SkyWalking Trace" : "Local Generator";
         LoggerPrinter.info(log, "Log Mode is {}, Running in {}, TrackIdGenerator: {}", properties.getLogMode(), asyncMessage, traceMessage);
 
-        AgileLoggerSpringProperties.Config config = properties.getConfig();
-        String mockStatus = config.getMock().isEnable() ? config.getMock().toString() : "Disabled";
-        String trackIdName = StringUtils.isNotEmpty(config.getTrackIdName()) ? config.getTrackIdName() : "USE_DEFAULT";
-        String versionName = StringUtils.isNotEmpty(config.getVersionName()) ? config.getVersionName() : "USE_DEFAULT";
-        LoggerPrinter.info(log, "Config: global mock is {}, track-id name: {}, version name: {}", mockStatus, trackIdName, versionName);
+
+        String mockStatus = mock.isEnable() ? mock.toString() : "Disabled";
+        String trackIdName = StringUtils.isNotEmpty(track.getTrackIdName()) ? track.getTrackIdName() : "USE_DEFAULT";
+        String versionName = StringUtils.isNotEmpty(version.getVersionName()) ? version.getVersionName() : "USE_DEFAULT";
+        LoggerPrinter.info(log, "Config: mock is {}, version name is: {}, track-id name is: {}", mockStatus, versionName, trackIdName);
     }
 }
