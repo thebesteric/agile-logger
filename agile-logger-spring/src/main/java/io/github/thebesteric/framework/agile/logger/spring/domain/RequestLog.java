@@ -87,6 +87,9 @@ public class RequestLog extends InvokeLog {
     @Column(type = Column.Type.JSON, comment = "响应信息")
     private Response response;
 
+    @Column(length = 4096, comment = "CURL")
+    private String curl;
+
     public RequestLog() {
         super();
     }

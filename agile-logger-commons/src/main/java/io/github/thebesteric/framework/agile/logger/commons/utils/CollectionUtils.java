@@ -15,6 +15,22 @@ import java.util.stream.Stream;
  */
 public class CollectionUtils {
 
+    public static boolean isArray(Object obj) {
+        return null != obj && obj.getClass().isArray();
+    }
+
+    public static boolean isMap(Object obj) {
+        return obj instanceof Map;
+    }
+
+    public static boolean isList(Object obj) {
+        return obj instanceof List;
+    }
+
+    public static boolean isSet(Object obj) {
+        return obj instanceof Set;
+    }
+
     public static boolean isEmpty(Object[] arr) {
         return ArrayUtils.isEmpty(arr);
     }
@@ -88,12 +104,19 @@ public class CollectionUtils {
     }
 
     public static boolean isEmpty(Collection<?> collection) {
-        if (collection == null) return true;
-        return org.apache.commons.collections4.CollectionUtils.isEmpty(collection);
+        return collection == null || collection.isEmpty();
     }
 
     public static boolean isNotEmpty(Collection<?> collection) {
         return !isEmpty(collection);
+    }
+
+    public static boolean isEmpty(Map<?, ?> map) {
+        return map == null || map.size() == 0;
+    }
+
+    public static boolean isNotEmpty(Map<?, ?> map) {
+        return !isEmpty(map);
     }
 
     @SafeVarargs
@@ -106,6 +129,10 @@ public class CollectionUtils {
     public static <T> Set<T> createSet(T... items) {
         if (items == null || items.length == 0) return new HashSet<>();
         return Stream.of(items).collect(Collectors.toSet());
+    }
+
+    public static String toString(Object obj) {
+        return ArrayUtils.toString(obj);
     }
 
 }

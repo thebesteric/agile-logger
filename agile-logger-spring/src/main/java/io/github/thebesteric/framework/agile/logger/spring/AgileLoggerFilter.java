@@ -1,5 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.spring;
 
+import io.github.thebesteric.framework.agile.logger.commons.utils.CurlUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
@@ -88,6 +89,9 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
 
             // Create RequestLog
             RequestLog requestLog = this.requestLoggerProcessor.processor(id, requestWrapper, responseWrapper, duration);
+            if (this.properties.getConfig().getCurl().isEnable()) {
+                requestLog.setCurl(CurlUtils.getCurl(requestWrapper));
+            }
 
             // Process non-program exceptions, For example: code != 200
             String exception = this.agileLoggerContext.getResponseSuccessDefineProcessor()

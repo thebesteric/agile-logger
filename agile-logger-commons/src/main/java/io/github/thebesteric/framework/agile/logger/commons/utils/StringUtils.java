@@ -1,5 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.commons.utils;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -15,31 +17,39 @@ public class StringUtils {
     public static boolean isEmpty(String str) {
         return org.apache.commons.lang3.StringUtils.isEmpty(str) || Objects.equals(str, "\"\"");
     }
+
     public static boolean isNotEmpty(String str) {
         return !isEmpty(str);
     }
+
     public static boolean isEquals(String str1, String str2) {
         str1 = nullToBlank(str1);
         str2 = nullToBlank(str2);
         return str1.equals(str2);
     }
+
     public static boolean isNotEquals(String str1, String str2) {
         return !isEquals(str1, str2);
     }
+
     public static boolean isEqualsIgnoreCase(String str1, String str2) {
         str1 = nullToBlank(str1);
         str2 = nullToBlank(str2);
         return str1.equalsIgnoreCase(str2);
     }
+
     public static boolean isNotEqualsIgnoreCase(String str1, String str2) {
         return !isEqualsIgnoreCase(str1, str2);
     }
+
     public static String nullToBlank(String str) {
         return str == null ? "" : str;
     }
+
     public static String blankToNull(String cs) {
         return isEmpty(cs) ? null : cs;
     }
+
     public static String toLowerFirst(String str) {
         if (isNotEmpty(str)) {
             char[] cs = str.toCharArray();
@@ -50,6 +60,7 @@ public class StringUtils {
         }
         return str;
     }
+
     public static String toUpperFirst(String str) {
         if (isNotEmpty(str)) {
             char[] cs = str.toCharArray();
@@ -60,13 +71,149 @@ public class StringUtils {
         }
         return str;
     }
+
     public static String bytesToString(byte[] bytes) {
         return CollectionUtils.isNotEmpty(bytes) ? new String(bytes, StandardCharsets.UTF_8) : null;
     }
+
     public static String limit(String str, int limit) {
         if (str != null && str.length() > limit) {
             str = str.substring(0, limit);
         }
         return str;
+    }
+
+    public static boolean startWith(CharSequence str, CharSequence prefix) {
+        return startWith(str, prefix, true);
+    }
+
+    public static boolean startWith(CharSequence str, CharSequence prefix, boolean ignoreCase) {
+        if (null != str && null != prefix) {
+            return str.toString().regionMatches(ignoreCase, 0, prefix.toString(), 0, prefix.length());
+        } else {
+            return null == str && null == prefix;
+        }
+    }
+
+    public static boolean equals(CharSequence str1, CharSequence str2) {
+        return equals(str1, str2, false);
+    }
+
+    public static boolean equals(CharSequence str1, CharSequence str2, boolean ignoreCase) {
+        if (null == str1) {
+            return str2 == null;
+        } else if (null == str2) {
+            return false;
+        } else {
+            return ignoreCase ? str1.toString().equalsIgnoreCase(str2.toString()) : str1.toString().contentEquals(str2);
+        }
+    }
+
+    public static String toStr(Object obj) {
+        return toStr(obj, CharsetUtils.CHARSET_UTF_8);
+    }
+
+    public static String toStr(Object obj, String charsetName) {
+        return toStr(obj, Charset.forName(charsetName));
+    }
+
+    public static String toStr(Object obj, Charset charset) {
+        if (null == obj) {
+            return null;
+        } else if (obj instanceof String) {
+            return (String) obj;
+        } else if (obj instanceof byte[]) {
+            return toStr((byte[]) obj, charset);
+        } else if (obj instanceof Byte[]) {
+            return toStr((Byte[]) obj, charset);
+        } else if (obj instanceof ByteBuffer) {
+            return toStr(obj, charset);
+        } else {
+            return CollectionUtils.isArray(obj) ? CollectionUtils.toString(obj) : obj.toString();
+        }
+    }
+
+    public static String toStr(byte[] data) {
+        return toStr(data, CharsetUtils.CHARSET_UTF_8);
+    }
+
+    public static String toStr(Byte[] data) {
+        return toStr(data, CharsetUtils.CHARSET_UTF_8);
+    }
+
+    public static String toStr(byte[] bytes, String charset) {
+        return toStr(bytes, CharsetUtils.charset(charset));
+    }
+
+    public static String toStr(Byte[] bytes, String charset) {
+        return toStr(bytes, CharsetUtils.charset(charset));
+    }
+
+    public static String toStr(byte[] data, Charset charset) {
+        if (data == null) {
+            return null;
+        } else {
+            return null == charset ? new String(data) : new String(data, charset);
+        }
+    }
+
+    public static String toStr(Byte[] data, Charset charset) {
+        if (data == null) {
+            return null;
+        } else {
+            byte[] bytes = new byte[data.length];
+            for (int i = 0; i < data.length; ++i) {
+                Byte dataByte = data[i];
+                bytes[i] = null == dataByte ? -1 : dataByte;
+            }
+            return toStr(bytes, charset);
+        }
+    }
+
+    public static String format(String template, Object... params) {
+        return formatWith(template, "{}", params);
+    }
+
+    public static String formatWith(String strPattern, String placeHolder, Object... argArray) {
+        if (StringUtils.isNotEmpty(strPattern) && StringUtils.isNotEmpty(placeHolder) && CollectionUtils.isNotEmpty(argArray)) {
+            int strPatternLength = strPattern.length();
+            int placeHolderLength = placeHolder.length();
+            StringBuilder builder = new StringBuilder(strPatternLength + 50);
+            int handledPosition = 0;
+
+            for (int argIndex = 0; argIndex < argArray.length; ++argIndex) {
+                int delimIndex = strPattern.indexOf(placeHolder, handledPosition);
+                if (delimIndex == -1) {
+                    if (handledPosition == 0) {
+                        return strPattern;
+                    }
+
+                    builder.append(strPattern, handledPosition, strPatternLength);
+                    return builder.toString();
+                }
+
+                if (delimIndex > 0 && strPattern.charAt(delimIndex - 1) == '\\') {
+                    if (delimIndex > 1 && strPattern.charAt(delimIndex - 2) == '\\') {
+                        builder.append(strPattern, handledPosition, delimIndex - 1);
+                        builder.append(StringUtils.toStr(argArray[argIndex]));
+                        handledPosition = delimIndex + placeHolderLength;
+                    } else {
+                        --argIndex;
+                        builder.append(strPattern, handledPosition, delimIndex - 1);
+                        builder.append(placeHolder.charAt(0));
+                        handledPosition = delimIndex + 1;
+                    }
+                } else {
+                    builder.append(strPattern, handledPosition, delimIndex);
+                    builder.append(StringUtils.toStr(argArray[argIndex]));
+                    handledPosition = delimIndex + placeHolderLength;
+                }
+            }
+
+            builder.append(strPattern, handledPosition, strPatternLength);
+            return builder.toString();
+        } else {
+            return strPattern;
+        }
     }
 }
