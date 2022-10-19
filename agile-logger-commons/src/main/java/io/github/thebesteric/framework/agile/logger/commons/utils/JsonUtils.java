@@ -2,11 +2,19 @@ package io.github.thebesteric.framework.agile.logger.commons.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.MapLikeType;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +25,7 @@ import java.util.regex.Pattern;
  * @version 1.0
  * @since 2022-07-27 12:17:15
  */
+@Slf4j
 public class JsonUtils {
 
     private static final Pattern PATTERN = Pattern.compile("\\s*|\t|\r|\n");
@@ -35,7 +44,69 @@ public class JsonUtils {
                 .setSerializationInclusion(JsonInclude.Include.ALWAYS);
     }
 
-    public static String toJsonStr(String str) {
+    public static <T> T toObject(String jsonStr, Class<T> clazz) {
+        if (jsonStr == null) {
+            return null;
+        }
+        try {
+            return mapper.readerFor(clazz).readValue(jsonStr);
+        } catch (JsonProcessingException e) {
+            LoggerPrinter.error(log, ExceptionUtils.getSimpleMessage(e));
+        }
+        return null;
+    }
+
+    public <T> T toObject(Object obj, Class<T> clazz) {
+        return toObject(toJson(obj), clazz);
+    }
+
+    public static <T> List<T> toList(String jsonStr, Class<T> clazz) {
+        if (jsonStr == null) {
+            return null;
+        }
+        try {
+            CollectionType listType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, clazz);
+            return mapper.readValue(jsonStr, listType);
+        } catch (IOException e) {
+            LoggerPrinter.error(log, ExceptionUtils.getSimpleMessage(e));
+        }
+        return null;
+    }
+
+    public <T> List<T> toList(Object obj, Class<T> clazz) {
+        return toList(toJson(obj), clazz);
+    }
+
+    public static <K, V> Map<K, V> toMap(String jsonStr, Class<K> key, Class<V> value) {
+        if (jsonStr == null) {
+            return null;
+        }
+        try {
+            MapLikeType mapType = mapper.getTypeFactory().constructMapLikeType(Map.class, key, value);
+            return mapper.readValue(jsonStr, mapType);
+        } catch (IOException e) {
+            LoggerPrinter.error(log, ExceptionUtils.getSimpleMessage(e));
+        }
+        return null;
+    }
+
+    public static <K, V> Map<K, V> toMap(Object obj, Class<K> key, Class<V> value) {
+        return toMap(toJson(obj), key, value);
+    }
+
+    public static String toJson(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        try {
+            return mapper.writer().writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            LoggerPrinter.error(log, ExceptionUtils.getSimpleMessage(e));
+        }
+        return null;
+    }
+
+    public static String formatJson(String str) {
         Matcher matcher = PATTERN.matcher(str);
         str = matcher.replaceAll("");
         str = str.replaceAll("\"(\\w+)\"", "$1");

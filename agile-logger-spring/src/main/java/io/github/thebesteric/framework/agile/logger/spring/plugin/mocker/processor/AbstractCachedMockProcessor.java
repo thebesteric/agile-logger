@@ -48,7 +48,7 @@ public abstract class AbstractCachedMockProcessor implements MockProcessor {
             } else if (ReflectUtils.isPrimitiveOrWarp(returnType) || returnType == String.class) {
                 return ReflectUtils.parsePrimitiveOrWarpByType(mockValue, returnType);
             }
-            return JsonUtils.mapper.readValue(JsonUtils.toJsonStr(mockValue), returnType);
+            return JsonUtils.mapper.readValue(JsonUtils.formatJson(mockValue), returnType);
         } catch (Throwable throwable) {
             throw new ParseErrorException("Cannot parse %s to %s: %s", mockValue, returnType.getName(), throwable.getMessage());
         }
