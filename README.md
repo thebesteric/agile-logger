@@ -127,7 +127,8 @@ public class TestAdapter {
         "locale": "语言 => String",
         "headers": "响应头信息 => Map<String, String>"
     },
-    "mock": "是否是模拟数据 => boolean"
+    "mock": "是否是模拟数据 => boolean",
+    "curl": "curl 访问地址 => String"
 }
 ```
 ### 2.2 方法调用层日志格式
@@ -329,7 +330,9 @@ sourceflag:
 sourceflag:
   agile-logger:
     enable: true
-    use-sky-walking-trace: true # 开启，默认：false
+    config:
+      track:
+        use-sky-walking-trace: false
 ```
 ### 3.7 全局成功响应字段配置
 通常用于访问上游，或给下游返回数据时，对应的的成功 code 码，以及对应的消息字段，如果 code 对应的成功响应值不符，日志会以异常的形式记录对应的 message 信息
@@ -357,7 +360,8 @@ sourceflag:
 sourceflag:
   agile-logger:
     config:
-      track-id-name: my-track-id
+      track:
+        name: x-track-id
 ```
 ### <span id="3.9">3.9 自定义 version 的名称</span>
 > 系统内置支持："version", "x-version", "app-version", "x-app-version" 字段作为默认版本号名称  
@@ -367,7 +371,8 @@ sourceflag:
 sourceflag:
   agile-logger:
     config:
-      version-name: my-version
+      version:
+        name: my-version
 ```
 
 ## 4. 注解配置
@@ -882,4 +887,14 @@ public class AppConfiguration {
         };
     }
 }
+```
+### 6.3 curl 开关
+> 可以通过配置是否开启 curl 属性，默认：开启  
+> 开启后，`RequestLog` 日志会提供 `curl` 属性，供调试使用  
+```yaml
+sourceflag:
+  agile-logger:
+    config:
+      curl:
+        enable: true # 默认开启
 ```

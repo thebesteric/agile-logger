@@ -17,12 +17,16 @@
 - Fixed: An issue when enhance where properties could not be injected
 - Perf: Optimize `@Mocker` target http/https mode add method and args parameters when used custom `HttpClient`
 ### v1.0.5
+- Refactor: Async config parameters adjustment
 - Fixed: Fix jar files that cannot be scanned in `ClassPathScanner` issue
 - Fixed: An issue when `AbstractAgileLoggerFilter.URL_MAPPING.get(uri)` return null, throws NullPointerException
 - Perf: Modify the async mode default thread maximum-pool-size is cup core size
-- Perf: Async config parameters adjustment
 - Perf: `VersionerAdapter` supports Map, List, Set parameters
 - Feature: Provide `AbstractMockerAdapter` support get currently method and args
 - Feature: Provide `MethodsMockerAdapter` support for calling by method name
 - Feature: Provide `RequestVersionerAdapter` to enable you to override only the request method
 - Feature: Provide `ResponseVersionerAdapter` to enable you to override only the response method
+### v1.0.6
+- Refactor: Properties config file tuning structure
+- Perf: Enhance `JsonUtils` API
+- Feature: `RequestLog` add `curl` prop
