@@ -108,6 +108,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             return mock ? result : invokeVersionerResponseMethodIfNecessary(versionerInfo, result);
         } catch (Exception ex) {
             exception = ExceptionUtils.getSimpleMessage(ex, 1024);
+            // When LEVEL_ERROR cache will remove it
             syntheticAgileLogger.setLevel(InvokeLog.LEVEL_ERROR);
             throw ex;
         } finally {
