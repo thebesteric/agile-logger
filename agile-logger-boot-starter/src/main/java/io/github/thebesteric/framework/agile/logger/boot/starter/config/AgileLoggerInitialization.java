@@ -33,7 +33,7 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
 
         String projectPath = ClassPathUtils.getProjectPath();
 
-        // Scanner @Controller and @SwitchLogger and so on
+        // Scanner @Controller and @AgileLogger and so on
         for (ClassPathScanner classPathScanner : classPathScanners) {
             classPathScanner.scan(projectPath, properties.getCompilePaths());
         }
