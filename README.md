@@ -3,7 +3,8 @@ A flexible logging plug-in
 > 基于 Spring Boot 的一款全局日志记录插件
 
 ## 1. Quick start
-[Download By Maven Center](https://search.maven.org/search?q=io.github.thebesteric.framework.agile)
+- [Home page](https://github.com/thebesteric/agile-logger)  
+- [Download By Maven Center](https://search.maven.org/search?q=io.github.thebesteric.framework.agile)
 ```xml
 <dependency>
     <groupId>io.github.thebesteric.framework.agile</groupId>
