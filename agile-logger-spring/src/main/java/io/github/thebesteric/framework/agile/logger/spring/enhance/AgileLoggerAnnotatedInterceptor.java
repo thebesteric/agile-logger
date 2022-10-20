@@ -114,6 +114,8 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         } finally {
             // End watcher
             DurationWatcher.Duration duration = DurationWatcher.stop(durationTag);
+            // Record exception message
+            syntheticAgileLogger.setException(exception);
             // Build InvokeLog
             InvokeLoggerProcessor invokeLoggerProcessor = agileLoggerContext.getInvokeLoggerProcessor();
             InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parentId, method, args, result, exception, duration, mock);

@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.spring.domain;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.SignatureUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
 import io.github.thebesteric.framework.agile.logger.core.domain.AbstractEntity;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * SpringSyntheticAgileLogger
@@ -38,7 +38,14 @@ public class SpringSyntheticAgileLogger extends SyntheticAgileLogger {
     public static SpringSyntheticAgileLogger getSpringSyntheticAgileLogger(Method method) {
         String key = SignatureUtils.methodSignature(method);
         SpringSyntheticAgileLogger cachedSyntheticAgileLogger = cache.get(key);
-        if (cachedSyntheticAgileLogger == null || Objects.equals(cachedSyntheticAgileLogger.level, AbstractEntity.LEVEL_ERROR)) {
+
+        boolean retryOnErrorWithoutException = false;
+        if (cachedSyntheticAgileLogger != null) {
+            String exception = cachedSyntheticAgileLogger.getException();
+            // When level == ERROR && exception == null then retryOnErrorWithoutException is true else false
+            retryOnErrorWithoutException = AbstractEntity.LEVEL_ERROR.equalsIgnoreCase(cachedSyntheticAgileLogger.level) && StringUtils.isNotEmpty(exception);
+        }
+        if (cachedSyntheticAgileLogger == null || retryOnErrorWithoutException) {
             synchronized (SpringSyntheticAgileLogger.class) {
                 cachedSyntheticAgileLogger = new SpringSyntheticAgileLogger(method);
                 cache.put(key, cachedSyntheticAgileLogger);

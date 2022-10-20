@@ -19,6 +19,7 @@ public class SyntheticAgileLogger {
     protected String tag;
     protected String extra;
     protected String level;
+    protected String exception;
     protected String[] ignoreMethods;
 
     public SyntheticAgileLogger(Method method) {
@@ -78,6 +79,14 @@ public class SyntheticAgileLogger {
 
     public void setLevel(String level) {
         this.level = StringUtils.blankToNull(level);
+    }
+
+    public String getException() {
+        return exception;
+    }
+
+    public void setException(String exception) {
+        this.exception = exception;
     }
 
     public String[] getIgnoreMethods() {
