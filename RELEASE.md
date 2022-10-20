@@ -28,5 +28,6 @@
 - Feature: Provide `ResponseVersionerAdapter` to enable you to override only the response method
 ### v1.0.6
 - Refactor: Properties config file tuning structure
+- Fixed: `SpringSyntheticAgileLogger` cache causes is always triggering level error log problem
 - Perf: Enhance `JsonUtils` API
 - Feature: `RequestLog` add `curl` prop
