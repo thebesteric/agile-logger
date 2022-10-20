@@ -8,7 +8,7 @@
     <groupId>io.github.thebesteric.framework.agile</groupId>
     <artifactId>agile-logger</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 
     <name>agile logger</name>
     <url>https://github.com/thebesteric/agile-logger</url>
@@ -59,8 +59,8 @@
         <jackson.version>2.14.0-rc1</jackson.version>
         <cglib.version>3.3.0</cglib.version>
         <aspectj.version>1.9.9.1</aspectj.version>
-        <apache.commons.lang3>3.12.0</apache.commons.lang3>
-        <apache.commons.collections4>4.4</apache.commons.collections4>
+        <apache.commons.lang3.version>3.12.0</apache.commons.lang3.version>
+        <apache.commons.collections4.version>4.4</apache.commons.collections4.version>
         <jedis.version>4.2.3</jedis.version>
         <caffeine.version>3.1.1</caffeine.version>
         <skywalking.version>8.12.0</skywalking.version>
@@ -119,14 +119,14 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${apache.commons.lang3}</version>
+            <version>${apache.commons.lang3.version}</version>
         </dependency>
 
         <!-- https://search.maven.org/artifact/org.apache.commons/commons-collections4 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>${apache.commons.collections4}</version>
+            <version>${apache.commons.collections4.version}</version>
         </dependency>
 
         <!-- https://search.maven.org/artifact/com.fasterxml.jackson.core/jackson-core -->
