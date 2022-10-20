@@ -20,11 +20,11 @@ public class TestAdapter extends BaseAdapter{
     }
 
     public String sayHello(String name, Date date) {
-        return "hello " + name + " at " + date.toLocaleString();
+        return "hello " + name + " at " + date.toString();
     }
 
     public String sayHi(String name, Date date) {
-        return "hi " + name + " at " + date.toLocaleString();
+        return "hi " + name + " at " + date.toString();
     }
 
     // @Mocker(type = LoginMockAdapter.class)
