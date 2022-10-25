@@ -1,15 +1,25 @@
 package agile.logger.example.web.quickstart;
 
+import agile.logger.example.web.FeignService;
 import agile.logger.example.web.quickstart.mock.LoginMockAdapter;
 import agile.logger.example.web.quickstart.mock.MultiMethodMockAdapter;
 import agile.logger.example.web.quickstart.version.LoginVersion;
 import agile.logger.example.web.quickstart.version.MapVersion;
+import io.github.thebesteric.framework.agile.logger.commons.utils.CharsetUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.JsonUtils;
 import io.github.thebesteric.framework.agile.logger.spring.domain.R;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,6 +35,12 @@ public class TestController {
 
     // @Autowired
     private final TestService testService;
+
+    @Autowired
+    private FeignService feignService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public TestController(TestService testService) {
         this.testService = testService;
@@ -84,5 +100,41 @@ public class TestController {
     @PostMapping("/mock2")
     public R mock2(@RequestBody Identity identity) {
         return R.success(testService.login(identity));
+    }
+
+
+    @GetMapping("/restTemplate")
+    public R restTemplate(@RequestParam String name, @RequestParam Integer age) {
+        // 请求体
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("name", name);
+        requestBody.put("age", age);
+        String body = URLEncoder.encode(JsonUtils.toJson(requestBody), CharsetUtils.CHARSET_UTF_8);
+
+        // 请求头
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("x-name", name);
+
+        HttpEntity<String> request = new HttpEntity<>(body, headers);
+
+        String url = "https://yapi.shuinfo.tech/mock/398/breast-coach-api/userInfo?name="+name;
+        UserInfo userInfo = restTemplate.exchange(url, HttpMethod.GET, request, UserInfo.class).getBody();
+
+        if (userInfo != null) {
+            String wording = testService.param(name, age);
+            userInfo.setGreeting(wording);
+        }
+
+        return R.success(userInfo);
+    }
+
+    @GetMapping("/feign")
+    public R feign(@RequestParam String name, @RequestParam Integer age) {
+        UserInfo userInfo = feignService.getUserInfo();
+        if (userInfo != null) {
+            String wording = testService.param(name, age);
+            userInfo.setGreeting(wording);
+        }
+        return R.success(userInfo);
     }
 }

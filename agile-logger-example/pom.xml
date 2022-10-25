@@ -63,6 +63,13 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- https://search.maven.org/artifact/io.github.thebesteric.framework/agile-logger-core -->
+        <dependency>
+            <groupId>io.github.thebesteric.framework.agile</groupId>
+            <artifactId>agile-logger-rpc-rest-template</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- https://search.maven.org/artifact/io.github.thebesteric.framework/agile-logger-boot-starter -->
         <dependency>
             <groupId>io.github.thebesteric.framework.agile</groupId>

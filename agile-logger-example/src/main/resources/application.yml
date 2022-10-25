@@ -44,6 +44,8 @@ sourceflag:
     rpc:
       feign:
         enable: true
+      rest-template:
+        enable: true
     config:
       track:
         use-sky-walking-trace: false
