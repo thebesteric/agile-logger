@@ -31,3 +31,9 @@
 - Fixed: `SpringSyntheticAgileLogger` cache causes is always triggering level error log problem
 - Perf: Enhance `JsonUtils` API
 - Feature: `RequestLog` add `curl` prop
+### v1.0.7
+- Fixed: Fix the Chinese encoding problem in curl
+- Perf: Optimization When the log level is error, the system can identify the exception
+- Feature: RPC-RestTemplate is supported
+- Perf: Optimization of RPC-Feign
+- Perf: Structure change AgileLoggerContext.parentId to AgileLoggerContext.parent
