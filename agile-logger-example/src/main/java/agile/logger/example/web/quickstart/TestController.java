@@ -128,6 +128,31 @@ public class TestController {
         return R.success(userInfo);
     }
 
+    @PostMapping("/form")
+    public R form(@RequestParam String name, @RequestParam Integer age) {
+        // 请求体
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("name", name);
+        requestBody.put("age", age);
+        String body = URLEncoder.encode(JsonUtils.toJson(requestBody), CharsetUtils.CHARSET_UTF_8);
+
+        // 请求头
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("x-name", name);
+
+        HttpEntity<String> request = new HttpEntity<>(body, headers);
+
+        String url = "https://yapi.shuinfo.tech/mock/398/breast-coach-api/userInfo?name="+name;
+        UserInfo userInfo = restTemplate.exchange(url, HttpMethod.GET, request, UserInfo.class).getBody();
+
+        if (userInfo != null) {
+            String wording = testService.param(name, age);
+            userInfo.setGreeting(wording);
+        }
+
+        return R.success(userInfo);
+    }
+
     @GetMapping("/feign")
     public R feign(@RequestParam String name, @RequestParam Integer age) {
         UserInfo userInfo = feignService.getUserInfo();
