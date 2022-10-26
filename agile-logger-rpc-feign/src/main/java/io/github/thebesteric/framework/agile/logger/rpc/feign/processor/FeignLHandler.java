@@ -3,13 +3,13 @@ package io.github.thebesteric.framework.agile.logger.rpc.feign.processor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import feign.*;
-import io.github.thebesteric.framework.agile.logger.commons.utils.JsonUtils;
-import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
-import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.*;
+import io.github.thebesteric.framework.agile.logger.core.domain.AbstractEntity;
 import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
 import io.github.thebesteric.framework.agile.logger.core.domain.MethodInfo;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
-import io.github.thebesteric.framework.agile.logger.rpc.feign.domain.RequestLogInfo;
+import io.github.thebesteric.framework.agile.logger.rpc.feign.domain.LogWrapper;
+import io.github.thebesteric.framework.agile.logger.spring.domain.Parent;
 import io.github.thebesteric.framework.agile.logger.spring.domain.R;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
@@ -23,7 +23,6 @@ import java.lang.reflect.Parameter;
 import java.net.Inet4Address;
 import java.net.URI;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -35,7 +34,7 @@ import java.util.*;
 @Slf4j
 public class FeignLHandler extends feign.Logger {
 
-    private final static ThreadLocal<RequestLogInfo> requestLogInfoThreadLocal = new ThreadLocal<>();
+    private final static ThreadLocal<LogWrapper> logWrapperThreadLocal = new ThreadLocal<>();
 
     private final AgileLoggerContext agileLoggerContext;
 
@@ -58,17 +57,18 @@ public class FeignLHandler extends feign.Logger {
         }
 
         long timestamp = System.currentTimeMillis();
-        RequestLog requestLog = new RequestLog(AgileLoggerContext.getParentId());
+        Parent parent = AgileLoggerContext.getParent();
+        RequestLog requestLog = new RequestLog(parent.getId());
         requestLog.setCreatedAt(new Date(timestamp));
         requestLog.setMethod(request.httpMethod().name().toUpperCase(Locale.ROOT));
         requestLog.setTrackId(TransactionUtils.get());
 
         // Uri & Url
         String url = requestTemplate.url();
-        requestLog.setUrl(url);
+        requestLog.setUrl(UrlUtils.urlDecode(url));
         String[] arr = url.split("//");
         if (arr.length > 1) {
-            String uri = arr[1].substring(arr[1].indexOf("/"));
+            String uri = UrlUtils.urlDecode(arr[1].substring(arr[1].indexOf("/")));
             requestLog.setUri(uri);
         }
 
@@ -78,7 +78,7 @@ public class FeignLHandler extends feign.Logger {
         requestLog.setServerName(uri.getHost());
         requestLog.setRemoteAddr(uri.getHost());
         requestLog.setRemotePort(uri.getPort());
-        requestLog.setQuery(uri.getQuery());
+        requestLog.setQuery(UrlUtils.urlDecode(uri.getQuery()));
         try {
             String hostAddress = Inet4Address.getLocalHost().getHostAddress();
             requestLog.setIp(hostAddress);
@@ -87,10 +87,10 @@ public class FeignLHandler extends feign.Logger {
         }
         requestLog.setLocalAddr("localhost");
         requestLog.setLocalPort(agileLoggerContext.getServerPort());
-        requestLog.setDomain(requestTemplate.feignTarget().url());
+        requestLog.setDomain(UrlUtils.urlDecode(requestTemplate.feignTarget().url()));
 
         // Request body
-        requestLog.setRawBody(request.body() == null ? null : new String(request.body(), StandardCharsets.UTF_8));
+        requestLog.setRawBody(CollectionUtils.isNotEmpty(request.body()) ? UrlUtils.urlDecode(StringUtils.toStr(request.body())) : null);
         if (requestLog.getRawBody() != null) {
             try {
                 requestLog.setBody(JsonUtils.mapper.readValue(requestLog.getRawBody(), Map.class));
@@ -115,7 +115,7 @@ public class FeignLHandler extends feign.Logger {
         Map<String, String> headers = new HashMap<>();
         requestTemplate.headers().forEach((key, values) -> {
             String value = String.join(",", values);
-            headers.put(key, value);
+            headers.put(key, UrlUtils.urlDecode(value));
         });
         requestLog.setHeaders(headers);
 
@@ -140,7 +140,11 @@ public class FeignLHandler extends feign.Logger {
 
             // Build SyntheticAgileLogger
             SyntheticAgileLogger syntheticAgileLogger = SpringSyntheticAgileLogger.getSpringSyntheticAgileLogger(method);
-            requestLog.setTag(syntheticAgileLogger.getTag());
+            if (StringUtils.equals(AbstractEntity.TAG_DEFAULT, syntheticAgileLogger.getTag())) {
+                requestLog.setTag(agileLoggerContext.getProperties().getRpc().getFeign().getDefaultTag());
+            } else {
+                requestLog.setTag(syntheticAgileLogger.getTag());
+            }
             requestLog.setLevel(syntheticAgileLogger.getLevel());
             requestLog.setExtra(syntheticAgileLogger.getExtra());
 
@@ -177,16 +181,14 @@ public class FeignLHandler extends feign.Logger {
         // Set ExecuteInfo
         requestLog.setExecuteInfo(executeInfo);
 
-        requestLogInfoThreadLocal.set(new RequestLogInfo(requestLog, requestTemplate));
+        logWrapperThreadLocal.set(new LogWrapper(requestLog, parent));
     }
 
     @Override
     protected Response logAndRebufferResponse(String configKey, Level logLevel, Response response, long elapsedTime) throws IOException {
-        final RequestLogInfo requestLogInfo = requestLogInfoThreadLocal.get();
-        final RequestLog requestLog = requestLogInfo.getRequestLog();
-        final RequestTemplate requestTemplate = requestLogInfo.getRequestTemplate();
+        final LogWrapper logWrapper = logWrapperThreadLocal.get();
         try {
-            // Duration
+            final RequestLog requestLog = logWrapper.getRequestLog();
             requestLog.setDuration(elapsedTime);
 
             // Response info
@@ -221,7 +223,7 @@ public class FeignLHandler extends feign.Logger {
 
             // Exception & Level
             ResponseSuccessDefineProcessor responseSuccessDefineProcessor = agileLoggerContext.getResponseSuccessDefineProcessor();
-            String exception = responseSuccessDefineProcessor.processor(requestTemplate.methodMetadata().method(), result);
+            String exception = responseSuccessDefineProcessor.processor(result);
             if (exception != null || response.status() != R.HttpStatus.OK.getCode()) {
                 requestLog.setLevel(RequestLog.LEVEL_ERROR);
                 requestLog.setException(exception);
@@ -230,26 +232,32 @@ public class FeignLHandler extends feign.Logger {
             return response.toBuilder().body(bodyData).build();
 
         } finally {
-            recordAndClean(requestLog);
+            recordLog(logWrapper);
         }
     }
 
     @Override
     protected IOException logIOException(String configKey, Level logLevel, IOException ioe, long elapsedTime) {
-        final RequestLogInfo requestLogInfo = requestLogInfoThreadLocal.get();
-        final RequestLog requestLog = requestLogInfo.getRequestLog();
+        final LogWrapper logWrapper = logWrapperThreadLocal.get();
         try {
+            final RequestLog requestLog = logWrapper.getRequestLog();
             requestLog.setLevel(RequestLog.LEVEL_ERROR);
-            requestLog.setException(ioe.getMessage());
+            requestLog.setException(ExceptionUtils.getSimpleMessage(ioe, 1024));
             requestLog.setDuration(elapsedTime);
         } finally {
-            recordAndClean(requestLog);
+            recordLog(logWrapper);
         }
         return ioe;
     }
 
-    private void recordAndClean(final RequestLog requestLog) {
+    private void recordLog(final LogWrapper logWrapper) {
+        final RequestLog requestLog = logWrapper.getRequestLog();
+        final Parent parent = logWrapper.getParent();
+        // Record Log
         agileLoggerContext.getCurrentRecordProcessor().processor(requestLog);
-        requestLogInfoThreadLocal.remove();
+        // Set Parent
+        AgileLoggerContext.setParent(new Parent(requestLog.getLogId(), parent.getMethod(), parent.getArgs()));
+        // Remove ThreadLocal
+        logWrapperThreadLocal.remove();
     }
 }
