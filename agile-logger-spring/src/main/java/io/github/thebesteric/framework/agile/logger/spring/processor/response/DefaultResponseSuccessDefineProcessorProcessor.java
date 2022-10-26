@@ -6,7 +6,6 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -24,7 +23,7 @@ public class DefaultResponseSuccessDefineProcessorProcessor extends AbstractResp
     }
 
     @Override
-    String doProcessor(Method method, JsonNode resultJsonNode, Object result) {
+    String doProcessor(JsonNode resultJsonNode, Object result) {
         try {
             // Get code fields
             List<AgileLoggerSpringProperties.ResponseSuccessDefine.CodeField> codeFields = this.responseSuccessDefine.getCodeFields();

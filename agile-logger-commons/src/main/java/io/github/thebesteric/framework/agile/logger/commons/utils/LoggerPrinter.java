@@ -18,7 +18,7 @@ public class LoggerPrinter {
 
     // debug
     public static void debug(Logger log, String message, Object... args) {
-        log.debug(LOG_PREFIX + message, args);
+        if (log.isDebugEnabled()) log.debug(LOG_PREFIX + message, args);
     }
 
     public static void debug(String message, Object... args) {
@@ -27,7 +27,7 @@ public class LoggerPrinter {
 
     // info
     public static void info(Logger log, String message, Object... args) {
-        log.info(LOG_PREFIX + message, args);
+        if (log.isInfoEnabled()) log.info(LOG_PREFIX + message, args);
     }
 
     public static void info(String message, Object... args) {
@@ -36,7 +36,7 @@ public class LoggerPrinter {
 
     // warn
     public static void warn(Logger log, String message, Object... args) {
-        log.warn(LOG_PREFIX + message, args);
+        if (log.isWarnEnabled()) log.warn(LOG_PREFIX + message, args);
     }
 
     public static void warn(String message, Object... args) {
@@ -45,11 +45,20 @@ public class LoggerPrinter {
 
     // error
     public static void error(Logger log, String message, Object... args) {
-        log.error(LOG_PREFIX + message, args);
+        if (log.isErrorEnabled()) log.error(LOG_PREFIX + message, args);
     }
 
     public static void error(String message, Object... args) {
         error(log, message, args);
+    }
+
+    // trace
+    public static void trace(Logger log, String message, Object... args) {
+        if (log.isTraceEnabled()) log.trace(LOG_PREFIX + message, args);
+    }
+
+    public static void trace(String message, Object... args) {
+        trace(log, message, args);
     }
 
 }

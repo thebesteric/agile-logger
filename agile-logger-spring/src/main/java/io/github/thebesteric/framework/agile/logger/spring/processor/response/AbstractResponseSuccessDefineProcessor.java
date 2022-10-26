@@ -6,8 +6,6 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.CollectionUtil
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ResponseSuccessDefineProcessor;
 
-import java.lang.reflect.Method;
-
 /**
  * AbstractResponseCodeReturnedProcessor
  * <p>Customize Code and value returned successfully when HttpStatus is 200
@@ -28,12 +26,11 @@ public abstract class AbstractResponseSuccessDefineProcessor implements Response
      * <p>Customize Code and value returned successfully when HttpStatus is 200
      * <p>If no exception occurs, return null
      *
-     * @param method         Method
      * @param resultJsonNode JsonNode
      * @param result         Object
      * @return String
      */
-    abstract String doProcessor(Method method, JsonNode resultJsonNode, Object result);
+    abstract String doProcessor(JsonNode resultJsonNode, Object result);
 
     @Override
     public AgileLoggerSpringProperties.ResponseSuccessDefine getResponseSuccessDefine() {
@@ -46,10 +43,10 @@ public abstract class AbstractResponseSuccessDefineProcessor implements Response
     }
 
     @Override
-    public String processor(Method method, Object result) throws JsonProcessingException {
+    public String processor(Object result) throws JsonProcessingException {
         // Result converts to JsonNode
         JsonNode resultJsonNode = getResultJsonNode(result);
-        return doProcessor(method, resultJsonNode, result);
+        return doProcessor(resultJsonNode, result);
     }
 
     /**

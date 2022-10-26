@@ -39,6 +39,9 @@ public class RequestLog extends InvokeLog {
     @Column(length = 128, comment = "请求方法")
     private String method;
 
+    @Column(length = 64, comment = "内容类型")
+    private String contentType;
+
     @Column(length = 64, comment = "请求协议")
     private String protocol;
 
@@ -98,6 +101,17 @@ public class RequestLog extends InvokeLog {
         super(logParentId);
     }
 
+    public RequestLog(String logParentId, String trackId) {
+        super(logParentId);
+        this.trackId = trackId;
+    }
+
+    public RequestLog(String logParentId, String trackId, Date createdAt) {
+        super(logParentId);
+        this.trackId = trackId;
+        this.createdAt = createdAt;
+    }
+
     public RequestLog(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
         this(requestWrapper, responseWrapper, duration);
         this.logId = id;
@@ -110,7 +124,7 @@ public class RequestLog extends InvokeLog {
         this.duration = duration.getDuration();
         this.body = requestWrapper.getBody();
         this.rawBody = requestWrapper.getRawBody();
-        this.result = StringUtils.bytesToString(responseWrapper.getByteArray());
+        this.result = StringUtils.toStr(responseWrapper.getByteArray());
         this.serverName = requestWrapper.getServerName();
         this.sessionId = requestWrapper.getRequestedSessionId();
         String queryString = requestWrapper.getQueryString();
@@ -127,6 +141,7 @@ public class RequestLog extends InvokeLog {
         this.remotePort = requestWrapper.getRemotePort();
         this.url = requestWrapper.getUrlWithQuery();
         this.uri = requestWrapper.getRequestURI();
+        this.contentType = requestWrapper.getContentType();
 
         // exception message
         int limit = 1024;

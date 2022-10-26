@@ -174,21 +174,21 @@ public class AgileLoggerJdbcTemplate {
             boolean tableColumnNullable = columnMapper.isColumnNullable();
 
             // Update Column name
-            if (StringUtils.isNotEqualsIgnoreCase(columnName, tableColumnName)) {
+            if (StringUtils.notEquals(columnName, tableColumnName, true)) {
                 String updateNameSql = "ALTER TABLE " + mapper.getTableName() + " CHANGE COLUMN " + tableColumnName + " " + columnName + " " + tableColumnType + "(" + tableColumnSize + ")";
                 executeUpdate(updateNameSql);
                 LoggerPrinter.info(log, "Update table {}: Change column name [{}] to [{}] succeed", tableName.toUpperCase(), tableColumnName, columnName);
             }
 
             // Update Column type
-            if (StringUtils.isNotEqualsIgnoreCase(columnType, tableColumnType) || columnNullable != tableColumnNullable) {
+            if (StringUtils.notEquals(columnType, tableColumnType, true) || columnNullable != tableColumnNullable) {
                 String nullable = columnNullable ? "DEFAULT NULL" : "NOT NULL";
                 String tableNullable = tableColumnNullable ? "DEFAULT NULL" : "NOT NULL";
                 throw new IllegalArgumentException(String.format("Column type [%s] cannot be changed to [%s]", columnType + "(" + nullable + ")", tableColumnType + "(" + tableNullable + ")"));
             }
 
             // Update Column size and comment
-            if (StringUtils.isEqualsIgnoreCase(columnType, tableColumnType) && (columnSize != tableColumnSize || StringUtils.isNotEqualsIgnoreCase(columnComment, tableColumnComment))) {
+            if (StringUtils.equals(columnType, tableColumnType, true) && (columnSize != tableColumnSize || StringUtils.notEquals(columnComment, tableColumnComment, true))) {
                 String oldColumnType = tableColumnType + "(" + tableColumnSize + ") COMMENT " + "'" + tableColumnComment + "'";
                 String newColumnType = columnType + "(" + columnSize + ") COMMENT " + "'" + columnComment + "'";
                 String updateNameSql = "ALTER TABLE " + mapper.getTableName() + " MODIFY COLUMN " + columnName + " " + newColumnType;

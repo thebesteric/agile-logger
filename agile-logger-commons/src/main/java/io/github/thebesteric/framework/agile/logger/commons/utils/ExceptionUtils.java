@@ -22,7 +22,8 @@ public class ExceptionUtils {
     }
 
     public static String getTitle(Throwable ex) {
-        return StringUtils.isNotEmpty(ex.getMessage()) ? ex.getMessage() : ex.toString();
+        String className = ex.getClass().getName();
+        return StringUtils.isNotEmpty(ex.getMessage()) ? className + ": " + ex.getMessage() : ex.toString();
     }
 
     public static StackTraceElement[] getCauses(Throwable ex) {

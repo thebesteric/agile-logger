@@ -1,9 +1,15 @@
 package io.github.thebesteric.framework.agile.logger.spring.processor.record;
 
+import io.github.thebesteric.framework.agile.logger.commons.utils.CurlUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.IOUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
+import io.github.thebesteric.framework.agile.logger.commons.utils.UrlUtils;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
+import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockInfo;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ExecutorService;
 
@@ -13,6 +19,7 @@ import java.util.concurrent.ExecutorService;
  * @author Eric Joe
  * @since 1.0
  */
+@Slf4j
 public abstract class AbstractThreadPoolRecordProcessor implements RecordProcessor {
 
     protected final AgileLoggerContext agileLoggerContext;
@@ -28,7 +35,10 @@ public abstract class AbstractThreadPoolRecordProcessor implements RecordProcess
 
     @Override
     public void processor(InvokeLog invokeLog) {
+        // Set mock identifier
         setMockIdentifier(invokeLog);
+        // Record CURL
+        setCurl(invokeLog);
         if (recordLoggerThreadPool != null) {
             recordLoggerThreadPool.execute(() -> {
                 doExecute(invokeLog);
@@ -38,7 +48,35 @@ public abstract class AbstractThreadPoolRecordProcessor implements RecordProcess
         }
     }
 
+    /**
+     * Set CURL when log is RequestLog
+     */
+    private void setCurl(InvokeLog invokeLog) {
+        if (!this.agileLoggerContext.getProperties().getConfig().getCurl().isEnable()) {
+            return;
+        }
+        if (invokeLog instanceof RequestLog) {
+            RequestLog requestLog = (RequestLog) invokeLog;
+            String curl = CurlUtils.builder()
+                    .url(requestLog.getUrl())
+                    .method(requestLog.getMethod())
+                    .contentType(requestLog.getContentType())
+                    .urlQuery(UrlUtils.queryStringToMap(requestLog.getQuery()))
+                    .fromParams(requestLog.getParams())
+                    .headers(requestLog.getHeaders())
+                    .body(IOUtils.toByteArray(requestLog.getBody())).curl();
+            requestLog.setCurl(curl);
+            LoggerPrinter.trace(log, curl);
+        }
+    }
+
+    /**
+     * Set Mock Identifier in cascaded
+     */
     private void setMockIdentifier(InvokeLog invokeLog) {
+        if (!this.agileLoggerContext.getProperties().getConfig().getMock().isEnable()) {
+            return;
+        }
         MockInfo mockInfo = AgileLoggerContext.getMockInfo();
         if (mockInfo == null && invokeLog.isMock()) {
             AgileLoggerContext.setMockInfo(new MockInfo(invokeLog));

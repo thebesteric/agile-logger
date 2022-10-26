@@ -1,11 +1,11 @@
 package io.github.thebesteric.framework.agile.logger.spring.plugin.mocker;
 
+import io.github.thebesteric.framework.agile.logger.commons.utils.UrlUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,27 +30,7 @@ public interface HttpClient {
      * @return String
      */
     default String mergeUrlParams(String url, Map<String, Object> params) {
-        if (params == null) {
-            params = new HashMap<>();
-        }
-        if (url.contains("?")) {
-            String[] arr = url.split("\\?");
-            url = arr[0];
-            String[] pairs = arr[1].split("&");
-            for (String pair : pairs) {
-                String[] urlParam = pair.split("=");
-                params.put(urlParam[0], urlParam[1]);
-            }
-        }
-        StringBuilder sb = new StringBuilder();
-        params.forEach((k, v) -> {
-            sb.append(k).append("=").append(v).append("&");
-        });
-        if (sb.indexOf("&") != -1) {
-            sb.deleteCharAt(sb.lastIndexOf("&"));
-            url += "?" + sb;
-        }
-        return url;
+        return UrlUtils.mergeUrlParams(url, params);
     }
 
     @Getter

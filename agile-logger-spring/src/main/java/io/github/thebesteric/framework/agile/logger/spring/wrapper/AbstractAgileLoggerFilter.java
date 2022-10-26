@@ -121,5 +121,4 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
         }
     }
 
-
 }

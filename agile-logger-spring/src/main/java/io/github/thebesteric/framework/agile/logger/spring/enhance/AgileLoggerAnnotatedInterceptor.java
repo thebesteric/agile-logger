@@ -7,10 +7,11 @@ import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethods;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
+import io.github.thebesteric.framework.agile.logger.spring.domain.Parent;
 import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
-import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.VersionerInfo;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
+import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.VersionerInfo;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
 import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.InvokeLoggerProcessor;
@@ -51,9 +52,9 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
         // Check whether intercept is required
         // If parentId is null, the Controller layer is filtered
-        String parentId = AgileLoggerContext.getParentId();
-        if (!needLogIntercept(method) || parentId == null) {
-            AgileLoggerContext.setParentId(parentId);
+        Parent parent = AgileLoggerContext.getParent();
+        if (!needLogIntercept(method) || parent == null) {
+            AgileLoggerContext.setParent(parent);
 
             // Mocker: invoke mocker result if you need to
             Object result = invokeMockerIfNecessary(method, args);
@@ -70,7 +71,8 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         }
 
         String logId = AgileContext.idGenerator.generate();
-        AgileLoggerContext.setParentId(logId);
+
+        AgileLoggerContext.setParent(new Parent(logId, method, args));
 
         final SyntheticAgileLogger syntheticAgileLogger = SpringSyntheticAgileLogger.getSpringSyntheticAgileLogger(method);
 
@@ -102,7 +104,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
             // Process non-program exceptions, For example: code != 200
             ResponseSuccessDefineProcessor responseSuccessDefineProcessor = agileLoggerContext.getResponseSuccessDefineProcessor();
-            exception = responseSuccessDefineProcessor.processor(method, result);
+            exception = responseSuccessDefineProcessor.processor(result);
 
             // Versioner: invoke versioner response method if you need to
             return mock ? result : invokeVersionerResponseMethodIfNecessary(versionerInfo, result);
@@ -118,7 +120,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             syntheticAgileLogger.setException(exception);
             // Build InvokeLog
             InvokeLoggerProcessor invokeLoggerProcessor = agileLoggerContext.getInvokeLoggerProcessor();
-            InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parentId, method, args, result, exception, duration, mock);
+            InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parent.getId(), method, args, result, exception, duration, mock);
             // Record InvokeLog
             this.agileLoggerContext.getCurrentRecordProcessor().processor(invokeLog);
         }
@@ -186,7 +188,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
             // SkyWalking's setSkyWalkingDynamicField(Object arg) method is ignored
             if (agileLoggerContext.getProperties().getConfig().getTrack().isUseSkyWalkingTrace()
-                    && StringUtils.isEquals("setSkyWalkingDynamicField", method.getName())) {
+                    && StringUtils.equals("setSkyWalkingDynamicField", method.getName())) {
                 Class<?>[] parameterTypes = method.getParameterTypes();
                 if (parameterTypes.length == 1 && parameterTypes[0].getName().equals("java.lang.Object")) {
                     checkedMethodsCache.put(key, false);

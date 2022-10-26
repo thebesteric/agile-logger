@@ -1,9 +1,9 @@
 package io.github.thebesteric.framework.agile.logger.spring;
 
-import io.github.thebesteric.framework.agile.logger.commons.utils.CurlUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
+import io.github.thebesteric.framework.agile.logger.spring.domain.Parent;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreMethodProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
@@ -72,9 +72,11 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
         AgileLoggerRequestWrapper requestWrapper = new AgileLoggerRequestWrapper((HttpServletRequest) request);
         AgileLoggerResponseWrapper responseWrapper = new AgileLoggerResponseWrapper((HttpServletResponse) response);
 
+        // Initialize: IdGenerator, TrackIdGenerator
         initConfigProperties(requestWrapper);
+
         String id = AgileContext.idGenerator.generate();
-        AgileLoggerContext.setParentId(id);
+        AgileLoggerContext.setParent(new Parent(id, method, null));
 
         String durationTag = DurationWatcher.start();
         try {
@@ -89,13 +91,9 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
 
             // Create RequestLog
             RequestLog requestLog = this.requestLoggerProcessor.processor(id, requestWrapper, responseWrapper, duration);
-            if (this.properties.getConfig().getCurl().isEnable()) {
-                requestLog.setCurl(CurlUtils.getCurl(requestWrapper));
-            }
 
             // Process non-program exceptions, For example: code != 200
-            String exception = this.agileLoggerContext.getResponseSuccessDefineProcessor()
-                    .processor(this.requestLoggerProcessor.getMethod(requestLog.getUri()), requestLog.getResult());
+            String exception = this.agileLoggerContext.getResponseSuccessDefineProcessor().processor(requestLog.getResult());
             if (exception != null) {
                 requestLog.setException(exception);
                 requestLog.setLevel(InvokeLog.LEVEL_ERROR);
@@ -104,11 +102,11 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
             // Record request info
             this.currentRecordProcessor.processor(requestLog);
 
+            DurationWatcher.clear();
+
             ServletOutputStream out = response.getOutputStream();
             out.write(responseWrapper.getByteArray());
             out.flush();
-
-            DurationWatcher.clear();
         }
 
     }

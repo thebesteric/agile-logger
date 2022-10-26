@@ -43,9 +43,9 @@ public class SyntheticAgileLogger {
             levelOnMethod = onMethod.level();
         }
 
-        this.tag = StringUtils.blankToNull(StringUtils.isNotEquals(AbstractEntity.TAG_DEFAULT, tagOnMethod) ?
+        this.tag = StringUtils.blankToNull(StringUtils.notEquals(AbstractEntity.TAG_DEFAULT, tagOnMethod) ?
                 tagOnMethod != null ? tagOnMethod : tagOnType : tagOnType == null ? AbstractEntity.TAG_DEFAULT : tagOnType);
-        this.level = StringUtils.blankToNull(StringUtils.isNotEquals(AbstractEntity.LEVEL_INFO, levelOnMethod) ?
+        this.level = StringUtils.blankToNull(StringUtils.notEquals(AbstractEntity.LEVEL_INFO, levelOnMethod) ?
                 levelOnMethod != null ? levelOnMethod : levelOnType : levelOnType == null ? AbstractEntity.LEVEL_INFO : levelOnType);
         this.extra = StringUtils.blankToNull(StringUtils.isNotEmpty(extraOnMethod) ? extraOnMethod : extraOnType);
         this.ignoreMethods = ignoreMethodsOnType;

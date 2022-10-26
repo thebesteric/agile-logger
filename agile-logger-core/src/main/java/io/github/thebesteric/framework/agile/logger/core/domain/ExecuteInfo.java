@@ -22,10 +22,14 @@ public class ExecuteInfo extends AbstractEntity {
         this.createdAt = new Date();
     }
 
+    public ExecuteInfo(String className, MethodInfo methodInfo) {
+        this();
+        this.className = className;
+        this.methodInfo = methodInfo;
+    }
+
     public ExecuteInfo(Method method, Object[] args) {
-        super();
-        this.className = method.getDeclaringClass().getName();
-        this.methodInfo = new MethodInfo(method, args);
+        this(method.getDeclaringClass().getName(), new MethodInfo(method, args));
     }
 
     public ExecuteInfo(Method method, Object[] args, DurationWatcher.Duration duration) {

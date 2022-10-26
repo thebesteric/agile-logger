@@ -1,6 +1,8 @@
 package io.github.thebesteric.framework.agile.logger.rpc.rest.template.processor;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
+import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
+import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
@@ -20,8 +22,11 @@ public class ClientHttpResponseHandler implements InvocationHandler {
     private final ClientHttpResponse clientHttpResponse;
     private byte[] body;
 
-    public ClientHttpResponseHandler(ClientHttpResponse clientHttpResponse) {
+    private RequestLog requestLog;
+
+    public ClientHttpResponseHandler(ClientHttpResponse clientHttpResponse, RequestLog requestLog) {
         this.clientHttpResponse = clientHttpResponse;
+        this.requestLog = requestLog;
     }
 
     @Override
@@ -30,6 +35,12 @@ public class ClientHttpResponseHandler implements InvocationHandler {
             if (Objects.isNull(this.body)) {
                 this.body = StreamUtils.copyToByteArray(this.clientHttpResponse.getBody());
             }
+
+            // Build ExecuteInfo
+            ExecuteInfo executeInfo = new ExecuteInfo(method, args);
+            executeInfo.setDuration(requestLog.getDuration());
+            requestLog.setExecuteInfo(executeInfo);
+
             return new ByteArrayInputStream(this.body);
         }
         return method.invoke(this.clientHttpResponse, args);

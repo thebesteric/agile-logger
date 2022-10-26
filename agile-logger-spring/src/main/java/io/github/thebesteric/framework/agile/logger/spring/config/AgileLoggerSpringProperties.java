@@ -108,11 +108,20 @@ public class AgileLoggerSpringProperties {
     public static class Rpc {
 
         private Feign feign = new Feign();
+        private RestTemplate restTemplate = new RestTemplate();
 
         @Getter
         @Setter
         public static class Feign {
             private boolean enable = true;
+            private String defaultTag = "feign";
+        }
+
+        @Getter
+        @Setter
+        public static class RestTemplate {
+            private boolean enable = true;
+            private String defaultTag = "rest-template";
         }
     }
 

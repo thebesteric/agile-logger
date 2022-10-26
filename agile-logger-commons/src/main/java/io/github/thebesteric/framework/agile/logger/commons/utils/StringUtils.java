@@ -2,7 +2,6 @@ package io.github.thebesteric.framework.agile.logger.commons.utils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -20,26 +19,6 @@ public class StringUtils {
 
     public static boolean isNotEmpty(String str) {
         return !isEmpty(str);
-    }
-
-    public static boolean isEquals(String str1, String str2) {
-        str1 = nullToBlank(str1);
-        str2 = nullToBlank(str2);
-        return str1.equals(str2);
-    }
-
-    public static boolean isNotEquals(String str1, String str2) {
-        return !isEquals(str1, str2);
-    }
-
-    public static boolean isEqualsIgnoreCase(String str1, String str2) {
-        str1 = nullToBlank(str1);
-        str2 = nullToBlank(str2);
-        return str1.equalsIgnoreCase(str2);
-    }
-
-    public static boolean isNotEqualsIgnoreCase(String str1, String str2) {
-        return !isEqualsIgnoreCase(str1, str2);
     }
 
     public static String nullToBlank(String str) {
@@ -70,10 +49,6 @@ public class StringUtils {
             }
         }
         return str;
-    }
-
-    public static String bytesToString(byte[] bytes) {
-        return CollectionUtils.isNotEmpty(bytes) ? new String(bytes, StandardCharsets.UTF_8) : null;
     }
 
     public static String limit(String str, int limit) {
@@ -107,6 +82,14 @@ public class StringUtils {
         } else {
             return ignoreCase ? str1.toString().equalsIgnoreCase(str2.toString()) : str1.toString().contentEquals(str2);
         }
+    }
+
+    public static boolean notEquals(CharSequence str1, CharSequence str2) {
+        return !equals(str1, str2, false);
+    }
+
+    public static boolean notEquals(CharSequence str1, CharSequence str2, boolean ignoreCase) {
+        return !equals(str1, str2, ignoreCase);
     }
 
     public static String toStr(Object obj) {

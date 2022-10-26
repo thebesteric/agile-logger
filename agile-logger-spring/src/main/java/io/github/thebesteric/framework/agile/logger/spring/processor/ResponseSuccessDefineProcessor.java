@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.github.thebesteric.framework.agile.logger.commons.utils.JsonUtils;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 
-import java.lang.reflect.Method;
-
 /**
  * ResponseSuccessDefineProcessor
  * <p>Customize Code and value returned successfully when HttpStatus is 200
@@ -21,11 +19,10 @@ public interface ResponseSuccessDefineProcessor {
      * <p>Customize Code and value returned successfully when HttpStatus is 200
      * <p>If no exception occurs, return null
      *
-     * @param method method
      * @param result result
      * @return exception message
      */
-    String processor(Method method, Object result) throws JsonProcessingException;
+    String processor(Object result) throws JsonProcessingException;
 
 
     AgileLoggerSpringProperties.ResponseSuccessDefine getResponseSuccessDefine();

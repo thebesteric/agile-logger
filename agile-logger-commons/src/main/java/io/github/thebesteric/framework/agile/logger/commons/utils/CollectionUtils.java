@@ -131,6 +131,14 @@ public class CollectionUtils {
         return Stream.of(items).collect(Collectors.toSet());
     }
 
+    public static <T> List<T> getList(List<T> list) {
+        return list == null ? new ArrayList<>() : list;
+    }
+
+    public static <T> Set<T> getSet(Set<T> set) {
+        return set == null ? new HashSet<>() : set;
+    }
+
     public static String toString(Object obj) {
         return ArrayUtils.toString(obj);
     }
