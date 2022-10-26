@@ -80,6 +80,7 @@
         <module>agile-logger-plugin-cache</module>
         <module>agile-logger-example</module>
         <module>agile-logger-rpc-feign</module>
+        <module>agile-logger-rpc-rest-template</module>
     </modules>
 
     <dependencies>
