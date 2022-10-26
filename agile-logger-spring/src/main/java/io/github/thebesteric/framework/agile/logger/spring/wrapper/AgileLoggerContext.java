@@ -6,6 +6,7 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.SignatureUtils
 import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUtils;
 import io.github.thebesteric.framework.agile.logger.core.domain.LogMode;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
+import io.github.thebesteric.framework.agile.logger.spring.domain.Parent;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockInfo;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
@@ -47,7 +48,7 @@ public class AgileLoggerContext {
 
     public final GenericApplicationContext applicationContext;
 
-    private static final ThreadLocal<String> parentId = new ThreadLocal<>();
+    private static final ThreadLocal<Parent> parent = new ThreadLocal<>();
     private static final ThreadLocal<MockInfo> mockInfo = new ThreadLocal<>();
 
     private final AgileLoggerSpringProperties properties;
@@ -89,14 +90,14 @@ public class AgileLoggerContext {
         return mockInfo;
     }
 
-    public static void setParentId(String id) {
-        AgileLoggerContext.parentId.set(id);
+    public static void setParent(Parent parent) {
+        AgileLoggerContext.parent.set(parent);
     }
 
-    public static String getParentId() {
-        String parentId = AgileLoggerContext.parentId.get();
-        AgileLoggerContext.parentId.remove();
-        return parentId;
+    public static Parent getParent() {
+        Parent parent = AgileLoggerContext.parent.get();
+        AgileLoggerContext.parent.remove();
+        return parent;
     }
 
     public static void setTrackId(String trackId) {
@@ -313,5 +314,4 @@ public class AgileLoggerContext {
         }
         return null;
     }
-
 }
