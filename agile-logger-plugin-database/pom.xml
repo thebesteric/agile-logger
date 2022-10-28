@@ -6,7 +6,7 @@
     <parent>
         <artifactId>agile-logger</artifactId>
         <groupId>io.github.thebesteric.framework.agile</groupId>
-        <version>1.0.7</version>
+        <version>1.0.8</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
