@@ -97,27 +97,23 @@ public class RequestLog extends InvokeLog {
         super();
     }
 
-    public RequestLog(String logParentId) {
-        super(logParentId);
+    public RequestLog(Parent parent) {
+        super(parent == null ? null : parent.getId());
     }
 
-    public RequestLog(String logParentId, String trackId) {
-        super(logParentId);
+    public RequestLog(Parent parent, String trackId) {
+        this(parent);
         this.trackId = trackId;
     }
 
-    public RequestLog(String logParentId, String trackId, Date createdAt) {
-        super(logParentId);
+    public RequestLog(Parent parent, String trackId, Date createdAt) {
+        this(parent);
         this.trackId = trackId;
         this.createdAt = createdAt;
     }
 
     public RequestLog(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
-        this(requestWrapper, responseWrapper, duration);
         this.logId = id;
-    }
-
-    public RequestLog(AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
         this.trackId = TransactionUtils.get();
         this.threadName = Thread.currentThread().getName();
         this.createdAt = new Date(duration.getStartTime());

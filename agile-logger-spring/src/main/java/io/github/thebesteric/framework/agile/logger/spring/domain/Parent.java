@@ -18,8 +18,12 @@ public class Parent {
     private Method method;
     private Object[] args;
 
-    public Parent(String id, Method method, Object[] args) {
+    public Parent(String id) {
         this.id = id;
+    }
+
+    public Parent(String id, Method method, Object[] args) {
+        this(id);
         this.method = method;
         this.args = args;
     }

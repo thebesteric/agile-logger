@@ -14,6 +14,7 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -51,7 +52,7 @@ public class RestTemplateHandler implements ClientHttpRequestInterceptor {
         DurationWatcher.Duration duration = DurationWatcher.get(tag);
         Parent parent = AgileLoggerContext.getParent();
 
-        RequestLog requestLog = new RequestLog(parent.getId(), TransactionUtils.get(), duration.getStartTimeToDate());
+        RequestLog requestLog = new RequestLog(parent, TransactionUtils.get(), duration.getStartTimeToDate());
         requestLog.setTag(agileLoggerContext.getProperties().getRpc().getRestTemplate().getDefaultTag());
 
         // Intercept the request
@@ -175,10 +176,15 @@ public class RestTemplateHandler implements ClientHttpRequestInterceptor {
         return response;
     }
 
-    private void recordLog(RequestLog requestLog, Parent parent) {
+    private void recordLog(RequestLog requestLog, @Nullable Parent parent) {
         // Record Log
         agileLoggerContext.getCurrentRecordProcessor().processor(requestLog);
         // Set Parent
-        AgileLoggerContext.setParent(new Parent(requestLog.getLogId(), parent.getMethod(), parent.getArgs()));
+        if (parent == null) {
+            parent = new Parent(requestLog.getLogId());
+        } else {
+            parent = new Parent(requestLog.getLogId(), parent.getMethod(), parent.getArgs());
+        }
+        AgileLoggerContext.setParent(parent);
     }
 }

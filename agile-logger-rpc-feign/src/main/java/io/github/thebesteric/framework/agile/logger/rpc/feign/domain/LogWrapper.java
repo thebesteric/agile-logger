@@ -5,6 +5,8 @@ import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.lang.reflect.Method;
+
 /**
  * Log Wrapper
  *
@@ -16,6 +18,9 @@ import lombok.Setter;
 public class LogWrapper {
     private RequestLog requestLog;
     private Parent parent;
+
+    private Method method;
+    private Object[] args;
 
     public LogWrapper(RequestLog requestLog, Parent parent) {
         this.requestLog = requestLog;

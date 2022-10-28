@@ -58,10 +58,12 @@ public class FeignLHandler extends feign.Logger {
 
         long timestamp = System.currentTimeMillis();
         Parent parent = AgileLoggerContext.getParent();
-        RequestLog requestLog = new RequestLog(parent.getId());
+        RequestLog requestLog = new RequestLog(parent);
         requestLog.setCreatedAt(new Date(timestamp));
         requestLog.setMethod(request.httpMethod().name().toUpperCase(Locale.ROOT));
         requestLog.setTrackId(TransactionUtils.get());
+
+        LogWrapper logWrapper = new LogWrapper(requestLog, parent);
 
         // Uri & Url
         String url = requestTemplate.url();
@@ -176,12 +178,19 @@ public class FeignLHandler extends feign.Logger {
 
             // set MethodInfo
             executeInfo.setMethodInfo(methodInfo);
+
+            // Set Method And Args
+            if (parent == null) {
+                logWrapper.setMethod(method);
+                logWrapper.setArgs(methodArgs.values().toArray());
+            }
         }
 
         // Set ExecuteInfo
         requestLog.setExecuteInfo(executeInfo);
 
-        logWrapperThreadLocal.set(new LogWrapper(requestLog, parent));
+        // Set LogWrapper
+        logWrapperThreadLocal.set(logWrapper);
     }
 
     @Override
@@ -252,12 +261,17 @@ public class FeignLHandler extends feign.Logger {
 
     private void recordLog(final LogWrapper logWrapper) {
         final RequestLog requestLog = logWrapper.getRequestLog();
-        final Parent parent = logWrapper.getParent();
+        Parent parent = logWrapper.getParent();
         // Record Log
         agileLoggerContext.getCurrentRecordProcessor().processor(requestLog);
-        // Set Parent
-        AgileLoggerContext.setParent(new Parent(requestLog.getLogId(), parent.getMethod(), parent.getArgs()));
         // Remove ThreadLocal
         logWrapperThreadLocal.remove();
+        // Set Parent
+        if (parent == null) {
+            parent = new Parent(requestLog.getLogId(), logWrapper.getMethod(), logWrapper.getArgs());
+        } else {
+            parent = new Parent(requestLog.getLogId(), parent.getMethod(), parent.getArgs());
+        }
+        AgileLoggerContext.setParent(parent);
     }
 }
