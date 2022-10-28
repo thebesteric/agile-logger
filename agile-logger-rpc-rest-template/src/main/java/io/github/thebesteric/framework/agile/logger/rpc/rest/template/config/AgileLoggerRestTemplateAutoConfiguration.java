@@ -28,7 +28,7 @@ import java.util.List;
 @Configuration
 @EnableConfigurationProperties(AgileLoggerSpringProperties.class)
 @ConditionalOnProperty(prefix = AgileLoggerConstant.PROPERTIES_PREFIX, name = "rpc.rest-template.enable", havingValue = "true", matchIfMissing = true)
-@ConditionalOnBean(RestTemplate.class)
+@ConditionalOnBean({RestTemplate.class, AgileLoggerContext.class})
 public class AgileLoggerRestTemplateAutoConfiguration {
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "restTemplateHandler")
