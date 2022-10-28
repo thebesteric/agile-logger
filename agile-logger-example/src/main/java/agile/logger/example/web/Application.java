@@ -71,7 +71,8 @@ public class Application {
     //     return new AbstractIgnoreMethodProcessor() {
     //         @Override
     //         public void addIgnoreMethods(Set<IgnoreMethod> ignoreMethods) {
-    //             ignoreMethods.add(IgnoreMethod.builder().methodName("^sayHe.*$").build());
+    //             // ignoreMethods.add(IgnoreMethod.builder().methodName("^sayHe.*$").build());
+    //             // ignoreMethods.add(IgnoreMethod.builder().clazz(TestService.class).methodName("login").build());
     //         }
     //     };
     // }

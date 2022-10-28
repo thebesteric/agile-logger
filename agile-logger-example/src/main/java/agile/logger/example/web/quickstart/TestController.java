@@ -155,7 +155,7 @@ public class TestController {
 
     @GetMapping("/feign")
     public R feign(@RequestParam String name, @RequestParam Integer age) {
-        UserInfo userInfo = feignService.getUserInfo();
+        UserInfo userInfo = feignService.getUserInfo(name);
         if (userInfo != null) {
             String wording = testService.param(name, age);
             userInfo.setGreeting(wording);
