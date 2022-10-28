@@ -36,7 +36,7 @@ public class DefaultResponseSuccessDefineProcessorProcessor extends AbstractResp
                 // Meet the expected results
                 if (jsonCodeField != null) {
                     codeValue = jsonCodeField.asText();
-                    if (codeValue.equals(codeField.getValue().toString())) {
+                    if (codeValue.equals(String.valueOf(codeField.getValue()))) {
                         // Passed successfully
                         return null;
                     }
