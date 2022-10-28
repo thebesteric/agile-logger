@@ -1,6 +1,7 @@
 package agile.logger.example.web;
 
 import io.github.thebesteric.framework.agile.logger.boot.starter.annotation.EnableAgileLogger;
+import io.github.thebesteric.framework.agile.logger.boot.starter.marker.AgileLoggerMarker;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
@@ -10,6 +11,7 @@ import io.github.thebesteric.framework.agile.logger.spring.processor.request.Met
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
@@ -36,6 +38,7 @@ public class Application {
     }
 
     @Bean
+    @ConditionalOnBean(AgileLoggerMarker.class)
     public RecordProcessor recordProcessor(AgileLoggerContext agileLoggerContext) {
         return new CustomRecordProcessor(agileLoggerContext) {
             @Override
