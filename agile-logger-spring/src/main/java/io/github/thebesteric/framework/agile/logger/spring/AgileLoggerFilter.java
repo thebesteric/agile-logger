@@ -45,6 +45,14 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
 
         // Check ignore URI
         String uri = ((HttpServletRequest) request).getRequestURI();
+
+        // Add uri prefix if present
+        String uriPrefix = this.agileLoggerContext.getProperties().getUriPrefix();
+        if (uriPrefix != null) {
+            uri = uri.substring(uriPrefix.length());
+        }
+
+        // Check IgnoreUriProcessor
         if (this.ignoreUriProcessor.matching(uri)) {
             filterChain.doFilter(request, response);
             return;

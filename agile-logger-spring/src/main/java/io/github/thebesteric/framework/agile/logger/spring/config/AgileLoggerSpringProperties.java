@@ -26,6 +26,9 @@ public class AgileLoggerSpringProperties {
     // LOG, STDOUT, CACHE, REDIS, ES, DATABASE
     private LogMode logMode = LogMode.STDOUT;
 
+    // Uri prefix
+    private String uriPrefix;
+
     // Async mode
     private Async async = new Async();
 
