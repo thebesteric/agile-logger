@@ -120,7 +120,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             syntheticAgileLogger.setException(exception);
             // Build InvokeLog
             InvokeLoggerProcessor invokeLoggerProcessor = agileLoggerContext.getInvokeLoggerProcessor();
-            InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parent.getId(), method, args, result, exception, duration, mock);
+            InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parent == null ? null : parent.getId(), method, args, result, exception, duration, mock);
             // Record InvokeLog
             this.agileLoggerContext.getCurrentRecordProcessor().processor(invokeLog);
         }
