@@ -374,6 +374,13 @@ sourceflag:
       version:
         name: my-version
 ```
+### 3.10 设置 URI 前缀
+> 由于使用 gateway 导致请求的 uri 和实际的 uri 不一致时，可以使用 uri-prefix  
+```yaml
+sourceflag:
+  agile-logger:
+    uri-prefix: /gateway
+```
 
 ## 4. 注解配置
 ### 4.1 @EnableAgileLogger 注解

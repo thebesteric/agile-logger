@@ -37,3 +37,8 @@
 - Feature: RPC-RestTemplate is supported
 - Perf: Optimization of RPC-Feign
 - Perf: Structure change AgileLoggerContext.parentId to AgileLoggerContext.parent
+### v1.0.8
+- Fixed: Fix An error occurred when @EnableAgileLogger was not enabled on RPC-Client
+- Fixed: Fix null pointer to `parent.getId()` in RPC-Client
+- Perf: `AgileLoggerSpringProperties` add uri-prefix property
+- Perf: `JsonUtils` remove NamingStrategy for snack case
