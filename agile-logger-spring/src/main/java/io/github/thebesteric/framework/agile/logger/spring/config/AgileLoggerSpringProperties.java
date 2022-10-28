@@ -247,7 +247,7 @@ public class AgileLoggerSpringProperties {
         @NoArgsConstructor
         public static class CodeField {
             private String name;
-            private String value;
+            private Object value;
         }
     }
 }
