@@ -46,6 +46,10 @@ public class VersionUtils {
     }
 
     public static int compare(String appVersion, String compareVersion) {
+        return compare(appVersion, compareVersion, 0);
+    }
+
+    public static int compare(String appVersion, String compareVersion, int digits) {
 
         Integer result = versionEmptyCheck(appVersion, compareVersion);
         if (result != null) {
@@ -58,10 +62,10 @@ public class VersionUtils {
         int len2 = array2.length;
         int compareLength = Math.min(len1, len2);
         try {
-            result = toCompare(array1, array2, 0, compareLength);
-            if (result == 0 && len1 > len2) {
+            result = toCompare(array1, array2, 0, compareLength, digits);
+            if (result == 0 && len1 > len2 && digits <= 0) {
                 return 1;
-            } else if (result == 0 && len1 < len2) {
+            } else if (result == 0 && len1 < len2 && digits <= 0) {
                 return -1;
             } else {
                 return result;
@@ -71,8 +75,12 @@ public class VersionUtils {
         }
     }
 
+    public static boolean compareEqual(String appVersion, String compareVersion, int digits) {
+        return compare(appVersion, compareVersion, digits) == 0;
+    }
+
     public static boolean compareEqual(String appVersion, String compareVersion) {
-        return compare(appVersion, compareVersion) == 0;
+        return compareEqual(appVersion, compareVersion, 0);
     }
 
     public static boolean compareGreaterThan(String appVersion, String compareVersion) {
@@ -96,13 +104,11 @@ public class VersionUtils {
             return -1;
         } else if (StringUtils.isNotEmpty(appVersion) && StringUtils.isEmpty(compareVersion)) {
             return 1;
-        } else if (StringUtils.isNotEmpty(appVersion) && StringUtils.isEmpty(compareVersion)) {
-            return 0;
         }
         return null;
     }
 
-    private static int toCompare(String[] appVersionArr, String[] compareVersionArr, int begin, int end) {
+    private static int toCompare(String[] appVersionArr, String[] compareVersionArr, int begin, int end, int digits) {
         try {
             if (begin == end) {
                 return 0;
@@ -114,7 +120,10 @@ public class VersionUtils {
             } else if (v1 < v2) {
                 return -1;
             } else {
-                return toCompare(appVersionArr, compareVersionArr, ++begin, end);
+                if (digits > 0 && --digits == 0) {
+                    return 0;
+                }
+                return toCompare(appVersionArr, compareVersionArr, ++begin, end, digits);
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Bad version");
@@ -129,6 +138,5 @@ public class VersionUtils {
         }
         return false;
     }
-
 
 }
