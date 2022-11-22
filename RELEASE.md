@@ -42,3 +42,5 @@
 - Fixed: Fix null pointer to `parent.getId()` in RPC-Client
 - Perf: `AgileLoggerSpringProperties` add uri-prefix property
 - Perf: `JsonUtils` remove NamingStrategy for snack case
+### v1.0.9
+- Fixed: Fix `UrlUtils.queryStringToMap` in split bug
