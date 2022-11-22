@@ -77,9 +77,7 @@ public class UrlUtils {
     public static String mapToQueryString(Map<String, Object> params) {
         StringBuilder queryString = new StringBuilder();
         if (CollectionUtils.isNotEmpty(params)) {
-            params.forEach((k, v) -> {
-                queryString.append(k).append("=").append(v).append("&");
-            });
+            params.forEach((k, v) -> queryString.append(k).append("=").append(v).append("&"));
             if (queryString.indexOf("&") != -1) {
                 queryString.deleteCharAt(queryString.lastIndexOf("&"));
             }
@@ -104,9 +102,11 @@ public class UrlUtils {
             }
             String[] pairs = queryString.split("&");
             for (String pair : pairs) {
-                String[] param = pair.split("=");
-                if (param.length == 2) {
-                    params.put(param[0], param[1]);
+                int index = pair.indexOf("=");
+                if (index != -1) {
+                    String key = pair.substring(0, index);
+                    String value = pair.substring(index + 1);
+                    params.put(key, value);
                     continue;
                 }
                 throw new IllegalArgumentException("Invalid query string: %s", queryString);
