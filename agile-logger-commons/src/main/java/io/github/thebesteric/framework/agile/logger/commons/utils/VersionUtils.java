@@ -1,6 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.commons.utils;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * VersionUtils
@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class VersionUtils {
 
-    public static Set<String> VERSION_NAMES = CollectionUtils.createSet("version", "x-version", "app-version", "x-app-version");
+    public static List<String> VERSION_NAMES = CollectionUtils.createList("version", "x-version", "app-version", "x-app-version");
     private static final ThreadLocal<String> versionThreadLocal = new ThreadLocal<>();
 
     public static String get() {
@@ -75,28 +75,44 @@ public class VersionUtils {
         }
     }
 
-    public static boolean compareEqual(String appVersion, String compareVersion, int digits) {
-        return compare(appVersion, compareVersion, digits) == 0;
-    }
-
     public static boolean compareEqual(String appVersion, String compareVersion) {
         return compareEqual(appVersion, compareVersion, 0);
     }
 
+    public static boolean compareEqual(String appVersion, String compareVersion, int digits) {
+        return compare(appVersion, compareVersion, digits) == 0;
+    }
+
     public static boolean compareGreaterThan(String appVersion, String compareVersion) {
-        return compare(appVersion, compareVersion) > 0;
+        return compareGreaterThan(appVersion, compareVersion, 0);
+    }
+
+    public static boolean compareGreaterThan(String appVersion, String compareVersion, int digits) {
+        return compare(appVersion, compareVersion, digits) > 0;
     }
 
     public static boolean compareGreaterThanOrEqual(String appVersion, String compareVersion) {
-        return compare(appVersion, compareVersion) >= 0;
+        return compareGreaterThanOrEqual(appVersion, compareVersion, 0);
+    }
+
+    public static boolean compareGreaterThanOrEqual(String appVersion, String compareVersion, int digits) {
+        return compare(appVersion, compareVersion, digits) >= 0;
     }
 
     public static boolean compareLessThan(String appVersion, String compareVersion) {
-        return compare(appVersion, compareVersion) < 0;
+        return compareLessThan(appVersion, compareVersion, 0);
+    }
+
+    public static boolean compareLessThan(String appVersion, String compareVersion, int digits) {
+        return compare(appVersion, compareVersion, digits) < 0;
     }
 
     public static boolean compareLessThanOrEqual(String appVersion, String compareVersion) {
-        return compare(appVersion, compareVersion) <= 0;
+        return compareLessThanOrEqual(appVersion, compareVersion, 0);
+    }
+
+    public static boolean compareLessThanOrEqual(String appVersion, String compareVersion, int digits) {
+        return compare(appVersion, compareVersion, digits) <= 0;
     }
 
     private static Integer versionEmptyCheck(String appVersion, String compareVersion) {

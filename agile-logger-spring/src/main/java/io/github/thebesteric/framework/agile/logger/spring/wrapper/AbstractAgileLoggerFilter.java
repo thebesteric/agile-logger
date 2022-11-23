@@ -99,12 +99,12 @@ public abstract class AbstractAgileLoggerFilter implements Filter {
 
         // Specify the track-id name
         if (track.getName() != null) {
-            TransactionUtils.TRACK_ID_NAMES.add(track.getName());
+            TransactionUtils.TRACK_ID_NAMES.add(0, track.getName());
         }
 
         // Specify the version name
         if (version.getName() != null) {
-            VersionUtils.VERSION_NAMES.add(version.getName());
+            VersionUtils.VERSION_NAMES.add(0, version.getName());
         }
 
         // Find default value for config properties

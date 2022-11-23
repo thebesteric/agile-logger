@@ -1,6 +1,6 @@
 package io.github.thebesteric.framework.agile.logger.commons.utils;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -11,7 +11,7 @@ import java.util.UUID;
  */
 public class TransactionUtils {
 
-    public static Set<String> TRACK_ID_NAMES = CollectionUtils.createSet("track-id", "x-track-id", "trans-id", "x-trans-id", "trace-id", "x-trace-id", "transaction-id", "x-transaction-id");
+    public static List<String> TRACK_ID_NAMES = CollectionUtils.createList("track-id", "x-track-id", "trans-id", "x-trans-id", "trace-id", "x-trace-id", "transaction-id", "x-transaction-id");
 
     private static ThreadLocal<String> trackIdThreadLocal = TransactionUtils.create();
 
