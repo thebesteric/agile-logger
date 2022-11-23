@@ -44,3 +44,5 @@
 - Perf: `JsonUtils` remove NamingStrategy for snack case
 ### v1.0.9
 - Fixed: Fix `UrlUtils.queryStringToMap` in split bug
+- Perf: `VersionUtils` add version digits compare
+- Perf: Optimize the value logic of version key and trackId key. By default, the value is the first in the list
