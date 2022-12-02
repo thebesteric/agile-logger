@@ -17,6 +17,7 @@ import io.github.thebesteric.framework.agile.logger.spring.processor.MappingProc
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.mapping.*;
 import io.github.thebesteric.framework.agile.logger.spring.processor.record.LogRecordProcessor;
+import io.github.thebesteric.framework.agile.logger.spring.processor.record.NoneRecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.record.StdoutRecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.scanner.AgileLoggerControllerScanner;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
@@ -120,6 +121,11 @@ public class AgileLoggerAutoConfiguration {
         @DependsOn("agileLoggerContext")
         public RecordProcessor logRecordProcessor(AgileLoggerContext agileLoggerContext) {
             return new LogRecordProcessor(agileLoggerContext);
+        }
+
+        @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "NoneRecordProcessor")
+        public RecordProcessor noneRecordProcessor() {
+            return new NoneRecordProcessor();
         }
     }
 
