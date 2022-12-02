@@ -15,12 +15,11 @@ public abstract class CustomRecordProcessor extends AbstractThreadPoolRecordProc
 
     public CustomRecordProcessor(AgileLoggerContext agileLoggerContext) {
         super(agileLoggerContext);
-        System.out.println("CustomRecordProcessor===========");
     }
 
     @Override
     public boolean supports(LogMode model) throws UnsupportedModeException {
-        return model == null || model.getName().trim().equals("") || LogMode.CUSTOM.getName().equalsIgnoreCase(model.getName());
+        return model != null && !model.getName().trim().equals("") && LogMode.CUSTOM.getName().equalsIgnoreCase(model.getName());
     }
 
     @Override
