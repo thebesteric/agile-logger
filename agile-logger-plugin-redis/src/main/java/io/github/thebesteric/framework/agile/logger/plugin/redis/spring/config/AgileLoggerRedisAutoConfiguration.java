@@ -12,6 +12,7 @@ import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpr
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,7 +28,6 @@ import org.springframework.data.redis.connection.lettuce.LettucePoolingClientCon
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.lang.Nullable;
 
 import java.time.Duration;
 
@@ -111,12 +111,12 @@ public class AgileLoggerRedisAutoConfiguration {
     }
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisRecordProcessor")
-    @DependsOn("agileLoggerContext")
-    public RecordProcessor redisRecordProcessor(@Nullable AgileLoggerContext agileLoggerContext,
+    @DependsOn(AgileLoggerConstant.BeanName.AGILE_LOGGER_CONTEXT)
+    public RecordProcessor redisRecordProcessor(ObjectProvider<AgileLoggerContext> agileLoggerContext,
                                                 @Qualifier(AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisTemplate")
                                                 RedisTemplate<String, Object> redisTemplate) {
-        assert (agileLoggerContext != null) : AgileLoggerConstant.ASSERT_AGILE_LOGGER_CONTEXT_NOT_NULL;
-        return new RedisRecordProcessor(agileLoggerContext, redisTemplate);
+        assert (agileLoggerContext.getIfUnique() != null) : AgileLoggerConstant.ASSERT_AGILE_LOGGER_CONTEXT_NOT_NULL;
+        return new RedisRecordProcessor(agileLoggerContext.getIfUnique(), redisTemplate);
     }
 
 }
