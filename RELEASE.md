@@ -47,3 +47,9 @@
 - Perf: `VersionUtils` add version digits compare
 - Perf: Optimize the value logic of version key and trackId key. By default, the key is the first in the key-list
 - Build: Upgrade dependencies
+### v1.1.0
+- Fixed: Fixed feignLogger bean naming error in `AgileLoggerFeignAutoConfiguration` class
+- Perf: Remove redundant code
+- Perf: Optimizing bean names
+- Feature: Add `NoneRecordProcessor` so that you don't record log, but need @Versioner or @Mocker feature
+- Feature: Add `AgileLoggers` to log manually
