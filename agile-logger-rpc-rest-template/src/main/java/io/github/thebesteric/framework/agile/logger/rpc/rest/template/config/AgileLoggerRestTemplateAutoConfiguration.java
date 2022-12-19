@@ -5,6 +5,7 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.CollectionUtil
 import io.github.thebesteric.framework.agile.logger.rpc.rest.template.processor.RestTemplateHandler;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -14,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -32,10 +32,10 @@ import java.util.List;
 public class AgileLoggerRestTemplateAutoConfiguration {
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "restTemplateHandler")
-    @DependsOn("agileLoggerContext")
-    public ClientHttpRequestInterceptor restTemplateHandler(@Nullable AgileLoggerContext agileLoggerContext) {
-        assert (agileLoggerContext != null) : AgileLoggerConstant.ASSERT_AGILE_LOGGER_CONTEXT_NOT_NULL;
-        return new RestTemplateHandler(agileLoggerContext);
+    @DependsOn(AgileLoggerConstant.BeanName.AGILE_LOGGER_CONTEXT)
+    public ClientHttpRequestInterceptor restTemplateHandler(ObjectProvider<AgileLoggerContext> agileLoggerContext) {
+        assert (agileLoggerContext.getIfUnique() != null) : AgileLoggerConstant.ASSERT_AGILE_LOGGER_CONTEXT_NOT_NULL;
+        return new RestTemplateHandler(agileLoggerContext.getIfUnique());
     }
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "RestTemplateInitializer")

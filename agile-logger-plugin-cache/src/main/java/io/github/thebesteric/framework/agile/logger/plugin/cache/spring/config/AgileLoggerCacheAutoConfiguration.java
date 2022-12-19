@@ -7,6 +7,7 @@ import io.github.thebesteric.framework.agile.logger.plugin.cache.spring.record.C
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
-import org.springframework.lang.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,10 +41,11 @@ public class AgileLoggerCacheAutoConfiguration {
     }
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "DatabaseRecordProcessor")
-    @DependsOn("agileLoggerContext")
-    public RecordProcessor cacheRecordProcessor(@Nullable AgileLoggerContext agileLoggerContext,
+    @DependsOn(AgileLoggerConstant.BeanName.AGILE_LOGGER_CONTEXT)
+    public RecordProcessor cacheRecordProcessor(ObjectProvider<AgileLoggerContext> agileLoggerContext,
                                                 @Qualifier(AgileLoggerConstant.BEAN_NAME_PREFIX + "Cache")
                                                 Cache<String, Object> cache) {
-        return new CacheRecordProcessor(agileLoggerContext, cache);
+        assert (agileLoggerContext.getIfUnique() != null) : AgileLoggerConstant.ASSERT_AGILE_LOGGER_CONTEXT_NOT_NULL;
+        return new CacheRecordProcessor(agileLoggerContext.getIfUnique(), cache);
     }
 }

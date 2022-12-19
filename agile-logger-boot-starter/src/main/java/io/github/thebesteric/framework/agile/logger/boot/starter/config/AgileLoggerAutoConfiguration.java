@@ -48,7 +48,7 @@ import java.util.List;
 @EnableConfigurationProperties(AgileLoggerSpringProperties.class)
 public class AgileLoggerAutoConfiguration {
 
-    @Bean
+    @Bean(name = AgileLoggerConstant.BeanName.AGILE_LOGGER_CONTEXT)
     public AgileLoggerContext agileLoggerContext(ApplicationContext applicationContext) {
         return new AgileLoggerContext(applicationContext);
     }
@@ -112,13 +112,13 @@ public class AgileLoggerAutoConfiguration {
     @Configuration
     public static class RecordProcessorConfiguration {
         @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "StdoutRecordProcessor")
-        @DependsOn("agileLoggerContext")
+        @DependsOn(AgileLoggerConstant.BeanName.AGILE_LOGGER_CONTEXT)
         public RecordProcessor stdoutRecordProcessor(AgileLoggerContext agileLoggerContext) {
             return new StdoutRecordProcessor(agileLoggerContext);
         }
 
         @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "LogRecordProcessor")
-        @DependsOn("agileLoggerContext")
+        @DependsOn(AgileLoggerConstant.BeanName.AGILE_LOGGER_CONTEXT)
         public RecordProcessor logRecordProcessor(AgileLoggerContext agileLoggerContext) {
             return new LogRecordProcessor(agileLoggerContext);
         }

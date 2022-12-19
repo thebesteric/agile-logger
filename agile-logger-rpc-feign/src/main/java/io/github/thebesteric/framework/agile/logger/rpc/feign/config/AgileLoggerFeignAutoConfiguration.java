@@ -4,6 +4,7 @@ import io.github.thebesteric.framework.agile.logger.commons.AgileLoggerConstant;
 import io.github.thebesteric.framework.agile.logger.rpc.feign.processor.FeignLHandler;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,7 +12,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.lang.Nullable;
 
 /**
  * AgileLoggerFeignAutoConfiguration
@@ -31,10 +31,10 @@ public class AgileLoggerFeignAutoConfiguration {
         return feign.Logger.Level.FULL;
     }
 
-    @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "RedisRecordProcessor")
-    @DependsOn("agileLoggerContext")
-    public feign.Logger feignLogger(@Nullable AgileLoggerContext agileLoggerContext) {
-        assert (agileLoggerContext != null) : AgileLoggerConstant.ASSERT_AGILE_LOGGER_CONTEXT_NOT_NULL;
-        return new FeignLHandler(agileLoggerContext);
+    @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "FeignLogger")
+    @DependsOn(AgileLoggerConstant.BeanName.AGILE_LOGGER_CONTEXT)
+    public feign.Logger feignLogger(ObjectProvider<AgileLoggerContext> agileLoggerContext) {
+        assert (agileLoggerContext.getIfUnique() != null) : AgileLoggerConstant.ASSERT_AGILE_LOGGER_CONTEXT_NOT_NULL;
+        return new FeignLHandler(agileLoggerContext.getIfUnique());
     }
 }

@@ -8,6 +8,7 @@ import io.github.thebesteric.framework.agile.logger.plugin.database.spring.recor
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.lang.Nullable;
 
 import javax.sql.DataSource;
 
@@ -53,10 +53,11 @@ public class AgileLoggerDatabaseAutoConfiguration {
     }
 
     @Bean(name = AgileLoggerConstant.BEAN_NAME_PREFIX + "DatabaseRecordProcessor")
-    @DependsOn("agileLoggerContext")
-    public RecordProcessor databaseRecordProcessor(@Nullable AgileLoggerContext agileLoggerContext,
+    @DependsOn(AgileLoggerConstant.BeanName.AGILE_LOGGER_CONTEXT)
+    public RecordProcessor databaseRecordProcessor(ObjectProvider<AgileLoggerContext> agileLoggerContext,
                                                    AgileLoggerJdbcTemplate agileLoggerJdbcTemplate) {
-        return new DatabaseRecordProcessor(agileLoggerContext, agileLoggerJdbcTemplate);
+        assert (agileLoggerContext.getIfUnique() != null) : AgileLoggerConstant.ASSERT_AGILE_LOGGER_CONTEXT_NOT_NULL;
+        return new DatabaseRecordProcessor(agileLoggerContext.getIfUnique(), agileLoggerJdbcTemplate);
     }
 
 }
