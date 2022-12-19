@@ -168,7 +168,7 @@ sourceflag:
     enable: true # true or false，默认为: true
 ```
 ### 3.2 日志输出配置
-log-mode 支持 stdout, log, cache, redis, database
+log-mode 支持 stdout, log, cache, redis, database, none
 #### 输出到控制台
 > log-mode: stdout
 
@@ -188,6 +188,16 @@ sourceflag:
   agile-logger:
     enable: true
     log-mode: log
+```
+#### 不输出日志
+> log-mode: none  
+> 该日志输出类型适用于当前项目不需要记录日志，但是需要使用 [@Versioner](#6.1) 或 [@Mocker](#6.2) 的情况
+- **_pom.xml 配置_**
+```yaml
+sourceflag:
+  agile-logger:
+    enable: true
+    log-mode: none
 ```
 #### 输出到缓存
 > **_log-mode: cache_**  
@@ -660,7 +670,7 @@ public class AppConfiguration {
 }
 ```
 ## 6. 其他
-### 6.1 版本控制
+### <span id="6.1">6.1 版本控制
 > 方法上使用 `@Versioner` 注解，可以对请求参数或响应结果进行变更  
 > 适用于：通过版本判断，根据不通的版本处理不通的请求或响应  
 > `@Versioner` 中的 type 指定的的类必须实现 `VersionerAdapter<V, R>` 或继承 `AbstractVersionerAdapter<V, R>`  
@@ -713,7 +723,7 @@ public class LoginVersion extends AbstractVersionerAdapter<Identity, UserInfo> {
 - `boolean VersionUtils.compareLessThan(String appVersion, String compareVersion)`: appVersion < compareVersion 返回 true
 - `boolean VersionUtils.compareLessThanOrEqual(String appVersion, String compareVersion)`: appVersion <= compareVersion 返回 true
 
-### 6.2 Mock 数据
+### <span id="6.2">6.2 Mock 数据
 > 方法上使用 `@Mocker` 注解，可以对响应结果进行变更  
 > 适用于：测试或未上线前进行模拟返回  
 > `enable`: 全局开关，默认开启，设置为 false 后，所有 @Mocker 均不生效  
