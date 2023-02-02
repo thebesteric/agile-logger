@@ -210,8 +210,8 @@ public class AgileLoggerSpringProperties {
     @Getter
     @Setter
     public static class AsyncParams {
-        private int corePoolSize = 1;
-        private int maximumPoolSize = Runtime.getRuntime().availableProcessors() * 2;
+        private int corePoolSize = Runtime.getRuntime().availableProcessors();
+        private int maximumPoolSize = Runtime.getRuntime().availableProcessors() * 2 + 1;
         private int keepAliveTime = 60 * 1000;
         private int queueSize = 1024;
         private String threadNamePrefix = AgileLoggerConstant.THREAD_POOL_NAME;
