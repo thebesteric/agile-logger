@@ -710,7 +710,75 @@ public class LoginVersion extends AbstractVersionerAdapter<Identity, UserInfo> {
     }
 }
 ```
-#### 6.1.1 版本控制工具类
+#### 6.1.1 版本控制扩展
+> 上述是一个方法对应一个版本控制类，如果希望一个版本控制类就可以处理多个方法的话，需要使用到下面几个方法：
+> getMethod(): 获取当前执行的方法；
+> getArgs(): 获取当前方法的所有入参；
+```java
+@Component
+@RequiredArgsConstructor
+@AgileLogger(tag = "adapter")
+public class OrderAdapter extends BaseAdapter {
+    @Versioner(type = OrderAdapterVersioner.class)
+    public AdapterResponse createPreOrder(CreatePreOrderRequest request) {
+        String url = domainConfig.getOrderUrl() + "/api/createPreOrder?lang=zh_CN";
+        HttpHeaders httpHeaders = HeaderUtils.getOrderHttpHeaders();
+        try {
+            return doPost(url, httpHeaders, request);
+        } catch (Exception e) {
+            return getResponse(e, MODEL_NAME, url, request, httpHeaders);
+        }
+    }
+
+    @Versioner(type = OrderAdapterVersioner.class)
+    public AdapterResponse submitOrder(SumbitOrderRequest request) {
+        String url = domainConfig.getOrderUrl() + "/api/submitOrder?lang=zh_CN";
+        HttpHeaders httpHeaders = HeaderUtils.getOrderHttpHeaders();
+        try {
+            return doPost(url, httpHeaders, request);
+        } catch (Exception e) {
+            return getResponse(e, MODEL_NAME, url, request, httpHeaders);
+        }
+    }
+}
+
+public class OrderAdapterVersioner extends RequestVersionerAdapter<Object> {
+
+    @Override
+    public void request(Object request) {
+        String methodName = getMethod().getName();
+        switch (methodName) {
+          case "createPreOrder":
+              ecOrderCreatePreOrder((OrderCreatePreOrderRequest) request);
+              break;
+          case "submitOrder":
+              ecOrderCreatePreOrder((SumbitOrderRequest) request);
+              break;
+          default: 
+              break;
+        }
+  
+    }
+  
+    public void ecOrderCreatePreOrder(OrderCreatePreOrderRequest request) {
+        if (VersionUtils.compareLessThan(VersionUtils.get(), "9.6.0")) {
+            request.setDiscountVersion(0);
+        } else {
+            request.setDiscountVersion(1);
+        }
+    }
+
+    public void ecOrderCreatePreOrder(SumbitOrderRequest request) {
+        if (VersionUtils.compareLessThan(VersionUtils.get(), "9.6.0")) {
+            request.setDiscountVersion(0);
+        } else {
+            request.setDiscountVersion(1);
+        }
+    }
+}
+
+```
+#### 6.1.2 版本控制工具类
 > 提供 `VersionUtils` 在版本控制方面提供相关 API 支持
 - `VersionUtils.get()`: 获取当前请求的版本号，具体配置参考: [3.9 自定义 version 的名称](#3.9)
 - `VersionUtils.compare(String appVersion, String compareVersion)`: 版本比较
