@@ -54,4 +54,4 @@
 - Feature: Add `NoneRecordProcessor` so that you don't record log, but need @Versioner or @Mocker feature
 - Feature: Add `AgileLoggers` to log manually
 ### v1.0.11
-- Perf: Set the core number of threads to cpu * 2 and maximum number of threads to cpu * 2 + 1 for asyn default log mode
+- Perf: Set the core number of threads to cpu * 2 and maximum number of threads to cpu * 2 + 1 for async default log mode
