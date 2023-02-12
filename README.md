@@ -325,8 +325,8 @@ sourceflag:
     async: 
       enable: true # 开启异步，默认：true
       async-params:
-        core-pool-size: 1 # 核心线程数量
-        maximum-pool-size: 8 # 最大线程数量，默认：CPU 核心数
+        core-pool-size: 4 # 核心线程数量，默认：CPU 核心数
+        maximum-pool-size: 9 # 最大线程数量，默认：2 * CPU 核心数 + 1
         queue-size: 1024 # 队列大小，默认：1024
         keep-alive-time: 60000 # 线程空闲时间，单位：毫秒
 ```
