@@ -55,3 +55,4 @@
 - Feature: Add `AgileLoggers` to log manually
 ### v1.0.11
 - Perf: Set the core number of threads to cpu * 2 and maximum number of threads to cpu * 2 + 1 for async default log mode
+- Build: Upgrade dependencies
