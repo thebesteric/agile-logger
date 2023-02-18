@@ -9,13 +9,8 @@ import java.util.Arrays;
 @Slf4j
 public class AgileLoggers {
 
-    public static final Stdout STDOUT;
-    public static final Logger LOG;
-
-    static {
-        STDOUT = new Stdout();
-        LOG = new Logger();
-    }
+    public static final Stdout STDOUT = new Stdout();
+    public static final Logger LOG = new Logger();
 
     @Slf4j
     public static class Logger implements LogLevel {
@@ -88,7 +83,7 @@ public class AgileLoggers {
         }
     }
 
-    public static ActualExecutor getActualExecutor() {
+    private static ActualExecutor getActualExecutor() {
         StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
         StackTraceElement stackTraceElement = stackTrace[1];
         if (stackTrace.length >= 3) {
