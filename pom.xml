@@ -81,6 +81,7 @@
         <module>agile-logger-example</module>
         <module>agile-logger-rpc-feign</module>
         <module>agile-logger-rpc-rest-template</module>
+        <module>agile-logger-plugin-mybatis</module>
     </modules>
 
     <dependencies>
