@@ -34,6 +34,9 @@ public class AgileLoggerControllerScanner implements ClassPathScanner {
             String[] classRequestMappingUrls = {""};
             if (classRequestMapping != null) {
                 classRequestMappingUrls = classRequestMapping.value();
+                if (classRequestMappingUrls.length == 0) {
+                    classRequestMappingUrls = classRequestMapping.path();
+                }
             }
             for (Method method : clazz.getDeclaredMethods()) {
                 for (MappingProcessor mappingProcessor : mappingProcessors) {

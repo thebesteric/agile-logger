@@ -18,7 +18,7 @@ public interface MappingProcessor {
     void processor(String[] classRequestMappingUrl);
 
     default void doProcessor(String[] classRequestMappingUrls, Method method, Supplier<String[]> supplier) {
-        if (classRequestMappingUrls != null && classRequestMappingUrls.length > 0) {
+        if (classRequestMappingUrls != null) {
             for (String classRequestMappingUrl : classRequestMappingUrls) {
                 String[] methodRequestMappingUrls = supplier.get();
                 handlerMapping(classRequestMappingUrl, methodRequestMappingUrls, method);
