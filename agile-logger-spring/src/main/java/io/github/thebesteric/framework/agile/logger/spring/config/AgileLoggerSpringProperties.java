@@ -139,6 +139,9 @@ public class AgileLoggerSpringProperties {
 
         // Cache-Plugin
         private Cache cache = new Cache();
+
+        // MyBatis-Plugin
+        private MyBatis myBatis = new MyBatis();
     }
 
     @Getter
@@ -205,6 +208,14 @@ public class AgileLoggerSpringProperties {
                     "expiredTime=" + MathUtils.divStripTrailingZeros((double) expiredTime, 1000D) + "s" +
                     "]";
         }
+    }
+
+    @Getter
+    @Setter
+    public static class MyBatis {
+        private boolean enable = true;
+        private boolean formatSql = true;
+        private String defaultTag = "my-batis";
     }
 
     @Getter
