@@ -1,5 +1,8 @@
 package io.github.thebesteric.framework.agile.logger.commons.utils;
 
+import org.apache.commons.lang3.SerializationUtils;
+
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,6 +96,14 @@ public class ObjectUtils {
             }
         }
         return object;
+    }
+
+    public static <T> T clone(Object obj, Class<T> clazz) {
+        return JsonUtils.gson.fromJson(JsonUtils.gson.toJson(obj), clazz);
+    }
+
+    public static <T extends Serializable> T clone(T obj) {
+        return SerializationUtils.clone(obj);
     }
 
 }

@@ -8,6 +8,7 @@ import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.domain.Parent;
+import io.github.thebesteric.framework.agile.logger.spring.domain.R;
 import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.MockProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
@@ -19,6 +20,7 @@ import io.github.thebesteric.framework.agile.logger.spring.processor.ResponseSuc
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -77,7 +79,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         final SyntheticAgileLogger syntheticAgileLogger = SpringSyntheticAgileLogger.getSpringSyntheticAgileLogger(method);
 
         String durationTag = null;
-        Object result = null;
+        Object result, cloneResult = null;
         String exception = null;
         boolean mock = false;
 
@@ -100,6 +102,13 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
                 // Invoke if without mock
                 result = methodProxy.invokeSuper(obj, args);
+
+                // Deep copy
+                if (R.class == result.getClass()) {
+                    cloneResult = SerializationUtils.clone((R)result);
+                } else {
+                    cloneResult = ObjectUtils.clone(result, result.getClass());
+                }
             }
 
             // Process non-program exceptions, For example: code != 200
@@ -120,7 +129,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             syntheticAgileLogger.setException(exception);
             // Build InvokeLog
             InvokeLoggerProcessor invokeLoggerProcessor = agileLoggerContext.getInvokeLoggerProcessor();
-            InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parent == null ? null : parent.getId(), method, args, result, exception, duration, mock);
+            InvokeLog invokeLog = invokeLoggerProcessor.processor(logId, parent.getId(), method, args, cloneResult, exception, duration, mock);
             // Record InvokeLog
             this.agileLoggerContext.getCurrentRecordProcessor().processor(invokeLog);
         }
