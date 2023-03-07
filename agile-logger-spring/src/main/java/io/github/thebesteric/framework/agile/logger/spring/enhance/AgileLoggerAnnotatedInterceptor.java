@@ -20,7 +20,6 @@ import io.github.thebesteric.framework.agile.logger.spring.processor.ResponseSuc
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -105,7 +104,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
                 // Deep copy
                 if (R.class == result.getClass()) {
-                    cloneResult = SerializationUtils.clone((R)result);
+                    cloneResult = ObjectUtils.clone((R) result);
                 } else {
                     cloneResult = ObjectUtils.clone(result, result.getClass());
                 }
