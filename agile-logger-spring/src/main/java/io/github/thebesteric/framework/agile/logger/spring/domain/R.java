@@ -4,6 +4,7 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUti
 import lombok.Data;
 import org.springframework.lang.Nullable;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import java.util.Map;
  * @since 2022/7/22
  */
 @Data
-public class R {
+public class R implements Serializable {
     private Integer code;
     private Object data;
     private Long timestamp;
