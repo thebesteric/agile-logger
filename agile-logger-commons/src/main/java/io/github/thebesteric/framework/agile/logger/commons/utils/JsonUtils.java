@@ -2,12 +2,12 @@ package io.github.thebesteric.framework.agile.logger.commons.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -31,6 +31,8 @@ public class JsonUtils {
 
     public static ObjectMapper mapper = new ObjectMapper();
 
+    public static Gson gson = new Gson();
+
     static {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
                 .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
@@ -47,8 +49,8 @@ public class JsonUtils {
             return null;
         }
         try {
-            return mapper.readerFor(clazz).readValue(jsonStr);
-        } catch (JsonProcessingException e) {
+            return gson.fromJson(jsonStr, clazz);
+        } catch (Exception e) {
             LoggerPrinter.error(log, ExceptionUtils.getSimpleMessage(e));
         }
         return null;
@@ -97,8 +99,8 @@ public class JsonUtils {
             return null;
         }
         try {
-            return mapper.writer().writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
+            return gson.toJson(obj);
+        } catch (Exception e) {
             LoggerPrinter.error(log, ExceptionUtils.getSimpleMessage(e));
         }
         return null;
