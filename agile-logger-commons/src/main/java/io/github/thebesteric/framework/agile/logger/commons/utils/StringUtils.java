@@ -1,5 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.commons.utils;
 
+import com.google.common.base.CaseFormat;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -198,5 +200,27 @@ public class StringUtils {
         } else {
             return strPattern;
         }
+    }
+
+    public static String underlineToCamel(String underline) {
+        return underlineToCamel(underline, true);
+    }
+
+    public static String underlineToCamel(String underline, boolean lowerCase) {
+        if (isEmpty(underline)) {
+            return underline;
+        }
+        return CaseFormat.LOWER_UNDERSCORE.to(lowerCase ? CaseFormat.LOWER_CAMEL : CaseFormat.UPPER_CAMEL, underline);
+    }
+
+    public static String camelToUnderline(String camel) {
+        return camelToUnderline(camel, true);
+    }
+
+    public static String camelToUnderline(String camel, boolean lowerCase) {
+        if (isEmpty(camel)) {
+            return camel;
+        }
+        return CaseFormat.LOWER_CAMEL.to(lowerCase ? CaseFormat.LOWER_UNDERSCORE : CaseFormat.UPPER_UNDERSCORE, camel);
     }
 }
