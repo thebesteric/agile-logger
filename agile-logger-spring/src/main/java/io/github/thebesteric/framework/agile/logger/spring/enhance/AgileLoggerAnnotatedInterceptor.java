@@ -5,6 +5,7 @@ import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod;
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethods;
+import io.github.thebesteric.framework.agile.logger.core.annotation.RewriteField;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.domain.Parent;
@@ -23,6 +24,7 @@ import net.sf.cglib.proxy.MethodProxy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -108,6 +110,10 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
                 } else {
                     cloneResult = ObjectUtils.clone(result, result.getClass());
                 }
+
+                // Rewrite field content
+                rewriteField(cloneResult);
+
             }
 
             // Process non-program exceptions, For example: code != 200
@@ -265,6 +271,39 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             }
         }
         return mockResult;
+    }
+
+    /**
+     * rewrite field content
+     * <p> Support PrimitiveOrWarp or String or List or Array Type
+     *
+     * @param cloneResult cloneResult
+     */
+    public void rewriteField(Object cloneResult) throws IllegalAccessException {
+        Class<?> currentResultClass = cloneResult.getClass();
+        Object currentResultObject = cloneResult;
+        if (R.class == currentResultClass) {
+            R r = (R) cloneResult;
+            currentResultClass = r.getData().getClass();
+            currentResultObject = r.getData();
+        }
+        do {
+            for (Field declaredField : currentResultClass.getDeclaredFields()) {
+                if (declaredField.isAnnotationPresent(RewriteField.class)) {
+                    RewriteField rewriteField = declaredField.getAnnotation(RewriteField.class);
+                    declaredField.setAccessible(true);
+                    // PrimitiveOrWarp or String Type
+                    if (ReflectUtils.isPrimitiveOrWarp(declaredField) || ReflectUtils.isStringType(declaredField)) {
+                        declaredField.set(currentResultObject, rewriteField.value());
+                    }
+                    // List or Array Type
+                    else if (ReflectUtils.isArrayType(declaredField) || ReflectUtils.isListType(declaredField)) {
+                        declaredField.set(currentResultObject, rewriteField.values());
+                    }
+                }
+            }
+            currentResultClass = currentResultClass.getSuperclass();
+        } while (currentResultClass != Object.class);
     }
 
 }
