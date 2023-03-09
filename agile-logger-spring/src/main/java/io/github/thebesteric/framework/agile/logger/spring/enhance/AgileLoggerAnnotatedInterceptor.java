@@ -283,6 +283,12 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      */
     public void rewriteField(Object cloneResult) throws IllegalAccessException {
         Class<?> currentResultClass = cloneResult.getClass();
+
+        // Entry<K,V> before, after fields will be loop forever
+        if (currentResultClass.getName().equals("java.util.LinkedHashMap$Entry")) {
+            return;
+        }
+
         do {
             for (Field declaredField : currentResultClass.getDeclaredFields()) {
                 declaredField.setAccessible(true);
@@ -293,7 +299,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
                         List<?> list = (List<?>) declaredField.get(cloneResult);
                         if (list != null) {
                             for (Object obj : list) {
-                                if (!ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
+                                if (obj != null && !ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
                                     rewriteField(obj);
                                 }
                             }
@@ -304,7 +310,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
                         Object[] arr = (Object[]) declaredField.get(cloneResult);
                         if (arr != null) {
                             for (Object obj : arr) {
-                                if (!ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
+                                if (obj != null && !ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
                                     rewriteField(obj);
                                 }
                             }
