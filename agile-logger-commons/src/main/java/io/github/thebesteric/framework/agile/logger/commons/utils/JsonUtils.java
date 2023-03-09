@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -31,8 +30,6 @@ public class JsonUtils {
 
     public static ObjectMapper mapper = new ObjectMapper();
 
-    public static Gson gson = new Gson();
-
     static {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
                 .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
@@ -49,7 +46,7 @@ public class JsonUtils {
             return null;
         }
         try {
-            return gson.fromJson(jsonStr, clazz);
+            return mapper.readValue(jsonStr, clazz);
         } catch (Exception e) {
             LoggerPrinter.error(log, ExceptionUtils.getSimpleMessage(e));
         }
@@ -99,7 +96,7 @@ public class JsonUtils {
             return null;
         }
         try {
-            return gson.toJson(obj);
+            return mapper.writeValueAsString(obj);
         } catch (Exception e) {
             LoggerPrinter.error(log, ExceptionUtils.getSimpleMessage(e));
         }

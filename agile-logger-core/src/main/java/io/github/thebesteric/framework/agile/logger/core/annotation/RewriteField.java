@@ -7,5 +7,4 @@ import java.lang.annotation.*;
 @Documented
 public @interface RewriteField {
     String value();
-    String[] values() default {};
 }

@@ -19,6 +19,7 @@ import io.github.thebesteric.framework.agile.logger.spring.processor.IgnoreMetho
 import io.github.thebesteric.framework.agile.logger.spring.processor.InvokeLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.ResponseSuccessDefineProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,7 @@ import java.util.regex.Pattern;
  * @version 1.0
  * @since 2022-07-27 23:21:24
  */
+@Slf4j
 public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
     private final AgileLoggerContext agileLoggerContext;
@@ -281,25 +283,78 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
      */
     public void rewriteField(Object cloneResult) throws IllegalAccessException {
         Class<?> currentResultClass = cloneResult.getClass();
-        Object currentResultObject = cloneResult;
-        if (R.class == currentResultClass) {
-            R r = (R) cloneResult;
-            currentResultClass = r.getData().getClass();
-            currentResultObject = r.getData();
-        }
         do {
             for (Field declaredField : currentResultClass.getDeclaredFields()) {
+                declaredField.setAccessible(true);
+                // Recursion if field is POJO or Collections or Array type
+                if (!ReflectUtils.isPrimitiveOrWarp(declaredField) && !ReflectUtils.isFinal(declaredField)) {
+                    // List type
+                    if (ReflectUtils.isListType(declaredField)) {
+                        List<?> list = (List<?>) declaredField.get(cloneResult);
+                        if (list != null) {
+                            for (Object obj : list) {
+                                if (!ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
+                                    rewriteField(obj);
+                                }
+                            }
+                        }
+                    }
+                    // Array type
+                    else if (ReflectUtils.isArrayType(declaredField)) {
+                        Object[] arr = (Object[]) declaredField.get(cloneResult);
+                        if (arr != null) {
+                            for (Object obj : arr) {
+                                if (!ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
+                                    rewriteField(obj);
+                                }
+                            }
+                        }
+                    }
+                    // Map type
+                    else if (ReflectUtils.isMapType(declaredField)) {
+                        Map<?, ?> map = (Map<?, ?>) declaredField.get(cloneResult);
+                        if (map != null) {
+                            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                                Object key = entry.getKey();
+                                Object value = entry.getValue();
+                                if (!ReflectUtils.isPrimitiveOrWarp(key.getClass()) && !ReflectUtils.isStringType(key.getClass())) {
+                                    rewriteField(key);
+                                }
+                                if (!ReflectUtils.isPrimitiveOrWarp(value.getClass())) {
+                                    rewriteField(value);
+                                }
+                            }
+                        }
+                    } else {
+                        // POJO type
+                        Object currObject = declaredField.get(cloneResult);
+                        if (currObject != null) {
+                            rewriteField(currObject);
+                        }
+                    }
+                }
+                // Rewrite if field has @RewriteField annotation
                 if (declaredField.isAnnotationPresent(RewriteField.class)) {
                     RewriteField rewriteField = declaredField.getAnnotation(RewriteField.class);
                     declaredField.setAccessible(true);
-                    // PrimitiveOrWarp or String Type
-                    if (ReflectUtils.isPrimitiveOrWarp(declaredField) || ReflectUtils.isStringType(declaredField)) {
-                        declaredField.set(currentResultObject, rewriteField.value());
+                    try {
+                        // PrimitiveOrWarp or String Type
+                        if (ReflectUtils.isPrimitiveOrWarp(declaredField)) {
+                            Object value = ReflectUtils.parsePrimitiveOrWarpByType(rewriteField.value(), declaredField.getType());
+                            declaredField.set(cloneResult, value);
+                            AgileLoggerContext.setRewriteFields(declaredField, value);
+                        }
+                        // String or else
+                        else {
+                            declaredField.set(cloneResult, rewriteField.value());
+                            AgileLoggerContext.setRewriteFields(declaredField, rewriteField.value());
+                        }
+                    } catch (Exception ex) {
+                        if (log.isDebugEnabled()) {
+                            ex.printStackTrace();
+                        }
                     }
-                    // List or Array Type
-                    else if (ReflectUtils.isArrayType(declaredField) || ReflectUtils.isListType(declaredField)) {
-                        declaredField.set(currentResultObject, rewriteField.values());
-                    }
+
                 }
             }
             currentResultClass = currentResultClass.getSuperclass();

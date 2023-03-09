@@ -4,9 +4,7 @@ import io.github.thebesteric.framework.agile.logger.commons.exception.ClassNotFo
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -94,6 +92,30 @@ public class ReflectUtils {
         } catch (Exception ignore) {
             return false;
         }
+    }
+
+    public static boolean isListType(Field field) {
+        Class<?> type = field.getType();
+        return List.class.isAssignableFrom(type);
+    }
+
+    public static boolean isMapType(Field field) {
+        Class<?> type = field.getType();
+        return Map.class.isAssignableFrom(type);
+    }
+
+    public static boolean isArrayType(Field field) {
+        Class<?> type = field.getType();
+        return type.isArray();
+    }
+
+    public static boolean isStringType(Field field) {
+        Class<?> type = field.getType();
+        return String.class == type;
+    }
+
+    public static boolean isStringType(Class<?> clazz) {
+        return String.class == clazz;
     }
 
     @SuppressWarnings("unchecked")
@@ -298,6 +320,35 @@ public class ReflectUtils {
         return Arrays.stream(type.getGenericInterfaces())
                 .filter(genericInterface -> ((ParameterizedType) genericInterface).getRawType() == interfaceClazz)
                 .findFirst().orElse(null);
+    }
+
+    public static Class<?> getListActualTypeArgument(Field field) {
+        if (isListType(field)) {
+            Type[] actualTypeArguments = getActualTypeArguments(field);
+            if (actualTypeArguments != null && actualTypeArguments.length == 1) {
+                return (Class<?>) actualTypeArguments[0];
+            }
+        }
+        throw new IllegalStateException("field is not a List type");
+    }
+
+    public static Class<?>[] getMapActualTypeArgument(Field field) {
+        if (isListType(field)) {
+            Type[] actualTypeArguments = getActualTypeArguments(field);
+            if (actualTypeArguments != null && actualTypeArguments.length == 2) {
+                return new Class<?>[]{(Class<?>) actualTypeArguments[0], (Class<?>) actualTypeArguments[1]};
+            }
+        }
+        throw new IllegalStateException("field is not a Map type");
+    }
+
+    public static Type[] getActualTypeArguments(Field field) {
+        Type genericType = field.getGenericType();
+        if (genericType instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) genericType;
+            return pt.getActualTypeArguments();
+        }
+        return null;
     }
 
     public static void set(Field field, Object target, Object value) throws IllegalAccessException {

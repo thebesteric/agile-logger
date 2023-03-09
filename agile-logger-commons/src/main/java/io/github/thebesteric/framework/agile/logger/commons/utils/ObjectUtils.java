@@ -99,7 +99,7 @@ public class ObjectUtils {
     }
 
     public static <T> T clone(Object obj, Class<T> clazz) {
-        return JsonUtils.gson.fromJson(JsonUtils.gson.toJson(obj), clazz);
+        return JsonUtils.toObject(obj, clazz);
     }
 
     public static <T extends Serializable> T clone(T obj) {

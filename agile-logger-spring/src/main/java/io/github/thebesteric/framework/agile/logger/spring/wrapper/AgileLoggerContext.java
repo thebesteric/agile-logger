@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.Environment;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ public class AgileLoggerContext {
 
     private static final ThreadLocal<Parent> parent = new ThreadLocal<>();
     private static final ThreadLocal<MockInfo> mockInfo = new ThreadLocal<>();
+    private static final ThreadLocal<Map<Field, Object>> rewriteFields = ThreadLocal.withInitial(HashMap::new);
 
     private final AgileLoggerSpringProperties properties;
     private final IgnoreMethodProcessor ignoreMethodProcessor;
@@ -98,6 +100,17 @@ public class AgileLoggerContext {
         Parent parent = AgileLoggerContext.parent.get();
         AgileLoggerContext.parent.remove();
         return parent;
+    }
+
+    public static void setRewriteFields(Field field, Object value) {
+        Map<Field, Object> rewriteFields = AgileLoggerContext.rewriteFields.get();
+        rewriteFields.put(field, value);
+    }
+
+    public static Map<Field, Object> getRewriteFields() {
+        Map<Field, Object> rewriteFields = AgileLoggerContext.rewriteFields.get();
+        AgileLoggerContext.rewriteFields.remove();
+        return rewriteFields;
     }
 
     public static void setTrackId(String trackId) {
