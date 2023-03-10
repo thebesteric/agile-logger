@@ -3,7 +3,9 @@ package io.github.thebesteric.framework.agile.logger.spring.config;
 import io.github.thebesteric.framework.agile.logger.commons.AgileLoggerConstant;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ClassPathUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.MathUtils;
+import io.github.thebesteric.framework.agile.logger.core.AgileLoggerConstants;
 import io.github.thebesteric.framework.agile.logger.core.domain.LogMode;
+import io.github.thebesteric.framework.agile.logger.core.domain.SqlCommandType;
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -117,14 +119,14 @@ public class AgileLoggerSpringProperties {
         @Setter
         public static class Feign {
             private boolean enable = true;
-            private String defaultTag = "feign";
+            private String defaultTag = AgileLoggerConstants.PROPERTIES_RPC_FEIGN_DEFAULT_TAG;
         }
 
         @Getter
         @Setter
         public static class RestTemplate {
             private boolean enable = true;
-            private String defaultTag = "rest-template";
+            private String defaultTag = AgileLoggerConstants.PROPERTIES_RPC_REST_TEMPLATE_DEFAULT_TAG;
         }
     }
 
@@ -165,7 +167,7 @@ public class AgileLoggerSpringProperties {
     @Getter
     @Setter
     public static class Database {
-        private String tableNamePrefix = "agile_logger";
+        private String tableNamePrefix = AgileLoggerConstants.PROPERTIES_DATABASE_TABLE_NAME_PREFIX;
         private String url;
         private String driverClassName;
         private String username;
@@ -185,7 +187,7 @@ public class AgileLoggerSpringProperties {
     @Getter
     @Setter
     public static class Redis {
-        private String keyPrefix = "agile";
+        private String keyPrefix = AgileLoggerConstants.PROPERTIES_PLUGINS_REDIS_KEY_PREFIX;
         private String host = "localhost";
         private int port = 6379;
         private int database = 1;
@@ -214,8 +216,8 @@ public class AgileLoggerSpringProperties {
     @Setter
     public static class MyBatis {
         private boolean enable = true;
-        private boolean formatSql = true;
-        private String defaultTag = "my-batis";
+        private SqlCommandType[] commandTypes = {SqlCommandType.INSERT, SqlCommandType.DELETE, SqlCommandType.UPDATE};
+        private String defaultTag = AgileLoggerConstants.PROPERTIES_PLUGINS_MYBATIS_DEFAULT_TAG;
     }
 
     @Getter

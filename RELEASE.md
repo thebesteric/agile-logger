@@ -34,9 +34,9 @@
 ### v1.0.7
 - Fixed: Fix the Chinese encoding problem in curl
 - Perf: Optimization When the log level is error, the system can identify the exception
-- Feature: RPC-RestTemplate is supported
 - Perf: Optimization of RPC-Feign
 - Perf: Structure change AgileLoggerContext.parentId to AgileLoggerContext.parent
+- Feature: RPC-RestTemplate is supported
 ### v1.0.8
 - Fixed: Fix An error occurred when @EnableAgileLogger was not enabled on RPC-Client
 - Fixed: Fix null pointer to `parent.getId()` in RPC-Client
@@ -56,3 +56,9 @@
 ### v1.0.11
 - Perf: Set the core number of threads to cpu * 2 and maximum number of threads to cpu * 2 + 1 for async default log mode
 - Build: Upgrade dependencies
+### v1.0.12
+- Fixed: Fixed an issue where `@RequestMapping` could not get value attribute when specifying the path attribute
+- Fixed: Fixed an issue where modifying the log result attribute would affect the actual return value
+- Perf: Use Gson to serialization single object
+- Feature: Add `mybatis plugin` to log SQL statements
+- Feature: Support for rewriting the value of log result-class field using the `@RewriteField` annotation

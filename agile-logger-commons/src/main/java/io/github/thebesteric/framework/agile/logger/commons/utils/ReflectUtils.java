@@ -390,5 +390,13 @@ public class ReflectUtils {
         return constructor.newInstance(args);
     }
 
+    public static Class<?> getClassForName(String className) {
+        Class<?> aClass = null;
+        try {
+            aClass = Class.forName(className);
+        } catch (java.lang.ClassNotFoundException ignored) {
+        }
+        return aClass;
+    }
 
 }

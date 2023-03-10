@@ -4,6 +4,9 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * <p>Merge {@link AgileLogger} on Class and {@link AgileLogger} on Method.
@@ -16,6 +19,7 @@ import java.lang.reflect.Method;
  */
 public class SyntheticAgileLogger {
 
+    protected Method method;
     protected String tag;
     protected String extra;
     protected String level;
@@ -23,37 +27,55 @@ public class SyntheticAgileLogger {
     protected String[] ignoreMethods;
 
     public SyntheticAgileLogger(Method method) {
-        this(method.getDeclaringClass().getAnnotation(AgileLogger.class), method.getAnnotation(AgileLogger.class));
+        this(method, AbstractEntity.TAG_DEFAULT, AbstractEntity.LEVEL_INFO);
     }
 
-    private SyntheticAgileLogger(AgileLogger onType, AgileLogger onMethod) {
+    public SyntheticAgileLogger(Method method, String defaultTag) {
+        this(method, defaultTag, AbstractEntity.LEVEL_INFO);
+    }
+
+    public SyntheticAgileLogger(Method method, String defaultTag, String defaultLevel) {
+        AgileLogger onType = method.getDeclaringClass().getAnnotation(AgileLogger.class);
+        AgileLogger onMethod = method.getAnnotation(AgileLogger.class);
         String tagOnType = null, tagOnMethod = null;
         String extraOnType = null, extraOnMethod = null;
         String levelOnType = null, levelOnMethod = null;
-        String[] ignoreMethodsOnType = null;
+        List<String> ignoreMethodsOnType = null;
         if (onType != null) {
             tagOnType = onType.tag();
             extraOnType = onType.extra();
             levelOnType = onType.level();
-            ignoreMethodsOnType = onType.ignoreMethods();
+            ignoreMethodsOnType = List.of(onType.ignoreMethods());
         }
+        List<String> ignoreMethodsOnMethod = null;
         if (onMethod != null) {
             tagOnMethod = onMethod.tag();
             extraOnMethod = onMethod.extra();
             levelOnMethod = onMethod.level();
+            ignoreMethodsOnMethod = List.of(onMethod.ignoreMethods());
         }
 
-        this.tag = StringUtils.blankToNull(StringUtils.notEquals(AbstractEntity.TAG_DEFAULT, tagOnMethod) ?
-                tagOnMethod != null ? tagOnMethod : tagOnType : tagOnType == null ? AbstractEntity.TAG_DEFAULT : tagOnType);
-        this.level = StringUtils.blankToNull(StringUtils.notEquals(AbstractEntity.LEVEL_INFO, levelOnMethod) ?
-                levelOnMethod != null ? levelOnMethod : levelOnType : levelOnType == null ? AbstractEntity.LEVEL_INFO : levelOnType);
+        // Merge ignore methods
+        List<String> mergedIgnoreMethods = new ArrayList<>();
+        if (ignoreMethodsOnType != null) {
+            mergedIgnoreMethods.addAll(ignoreMethodsOnType);
+        }
+        if (ignoreMethodsOnMethod != null) {
+            mergedIgnoreMethods.addAll(ignoreMethodsOnMethod);
+        }
+
+        this.method = method;
+        this.tag = StringUtils.blankToNull(StringUtils.notEquals(defaultTag, tagOnMethod) ?
+                (tagOnMethod != null ? tagOnMethod : tagOnType) : (tagOnType == null ? defaultTag : tagOnType));
+        this.level = StringUtils.blankToNull(StringUtils.notEquals(defaultLevel, levelOnMethod) ?
+                (levelOnMethod != null ? levelOnMethod : levelOnType) : (levelOnType == null ? defaultLevel : levelOnType));
         this.extra = StringUtils.blankToNull(StringUtils.isNotEmpty(extraOnMethod) ? extraOnMethod : extraOnType);
-        this.ignoreMethods = ignoreMethodsOnType;
+        this.ignoreMethods = new HashSet<>(mergedIgnoreMethods).toArray(new String[0]);
 
         // If Controller has not @AgileLogger
         if (onType == null && onMethod == null) {
-            this.level = AbstractEntity.LEVEL_INFO;
-            this.tag = AbstractEntity.TAG_DEFAULT;
+            this.level = defaultLevel;
+            this.tag = defaultTag;
         }
     }
 
@@ -95,5 +117,13 @@ public class SyntheticAgileLogger {
 
     public void setIgnoreMethods(String[] ignoreMethods) {
         this.ignoreMethods = ignoreMethods;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public void setMethod(Method method) {
+        this.method = method;
     }
 }
