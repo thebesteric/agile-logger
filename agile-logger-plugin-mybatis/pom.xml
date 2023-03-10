@@ -6,7 +6,7 @@
     <parent>
         <artifactId>agile-logger</artifactId>
         <groupId>io.github.thebesteric.framework.agile</groupId>
-        <version>1.0.11</version>
+        <version>1.0.12</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -27,6 +27,14 @@
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
             <version>3.5.12</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://central.sonatype.com/artifact/ -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+            <version>3.5.3.1</version>
             <scope>provided</scope>
         </dependency>
 

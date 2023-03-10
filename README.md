@@ -571,7 +571,7 @@ public class AppConfiguration {
     }
 }
 ```
-### 5.3 日志拦截器
+### <span id="5.3">5.3 日志拦截器
 #### 5.3.1 请求日志拦截器
 > 请求日志指: Controller 层的日志  
 > 所有请求日志均会被 `RequestLoggerProcessor` 所拦截  
@@ -581,11 +581,20 @@ public class AppConfiguration {
 @Configuration
 public class AppConfiguration {
     @Bean
-    public RequestLoggerProcessor requestLoggerProcessor1() {
+    public RequestLoggerProcessor requestLoggerProcessor() {
         return new AbstractRequestLoggerProcessor() {
             @Override
             public RequestLog doAfterProcessor(RequestLog requestLog) {
-                requestLog.setExtra("something");
+                Object result = requestLog.getResult();
+                try {
+                    if (result instanceof ObjectNode) {
+                        ObjectNode node = (ObjectNode) result;
+                        JsonNode data = Optional.of(node.get("data")).orElse(null);
+                        ObjectNode objectNode = (ObjectNode) data;
+                        objectNode.put("password", "******");
+                    }
+                } catch(Exception ignored) {
+                }
                 return requestLog;
             }
         };
@@ -629,7 +638,17 @@ public class AppConfiguration {
         return new AbstractInvokeLoggerProcessor() {
             @Override
             public InvokeLog doAfterProcessor(InvokeLog invokeLog) {
-                invokeLog.setExtra("something");
+                Object result = invokeLog.getResult();
+                if (result instanceof UserInfo) {
+                    UserInfo userInfo = (UserInfo) result;
+                    userInfo.setPassword("******");
+                } else if (result instanceof R) {
+                    R r = (R) result;
+                    if (r.getData() instanceof UserInfo) {
+                        UserInfo userInfo = (UserInfo) r.getData();
+                        userInfo.setPassword("******");
+                    }
+                }
                 return invokeLog;
             }
         };
@@ -669,6 +688,20 @@ public class AppConfiguration {
     }
 }
 ```
+### 5.5 改写返回字段的值
+> 当返回值含有一些敏感字段信息，此时不太方便记录日志时，可以使用 `@RewriteField` 来混淆这些属性
+
+**_示例_**
+```java
+@Data
+@AllArgsConstructor
+public class UserInfo implements Serializable {
+    private String username;
+    @RewriteField(value = "******")
+    private String password;
+}
+```
+
 ## 6. 其他
 ### <span id="6.1">6.1 版本控制
 > 方法上使用 `@Versioner` 注解，可以对请求参数或响应结果进行变更  

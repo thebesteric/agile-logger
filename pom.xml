@@ -8,7 +8,7 @@
     <groupId>io.github.thebesteric.framework.agile</groupId>
     <artifactId>agile-logger</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.11</version>
+    <version>1.0.12</version>
 
     <name>agile logger</name>
     <url>https://github.com/thebesteric/agile-logger</url>
@@ -53,7 +53,7 @@
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <aspectj-maven-plugin.version>1.13.1</aspectj-maven-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <spring.boot.version>2.7.8</spring.boot.version>
+        <spring.boot.version>2.7.9</spring.boot.version>
         <lombok.version>1.18.26</lombok.version>
         <slf4j.version>2.0.6</slf4j.version>
         <jackson.version>2.14.2</jackson.version>
