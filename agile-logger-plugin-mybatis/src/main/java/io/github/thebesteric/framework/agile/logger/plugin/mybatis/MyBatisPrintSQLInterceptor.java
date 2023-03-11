@@ -5,7 +5,9 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatche
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.StringUtils;
 import io.github.thebesteric.framework.agile.logger.core.AgileLoggerConstants;
+import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
 import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod;
+import io.github.thebesteric.framework.agile.logger.core.domain.AbstractEntity;
 import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
@@ -46,7 +48,8 @@ public class MyBatisPrintSQLInterceptor implements Interceptor {
         SyntheticAgileLogger syntheticAgileLogger = getSyntheticAgileLogger(invocation);
         String[] ignoreMethods = syntheticAgileLogger.getIgnoreMethods();
         if ((ignoreMethods != null && List.of(ignoreMethods).contains(syntheticAgileLogger.getMethod().getName()))
-                || syntheticAgileLogger.getMethod().isAnnotationPresent(IgnoreMethod.class)) {
+                || syntheticAgileLogger.getMethod().isAnnotationPresent(IgnoreMethod.class)
+                || !syntheticAgileLogger.isMatched()) {
             return invocation.proceed();
         }
 
@@ -135,6 +138,21 @@ public class MyBatisPrintSQLInterceptor implements Interceptor {
             currentClass = targetClass.getSuperclass();
         } while (currentClass != null && currentClass != Object.class);
 
-        return new SyntheticAgileLogger(targetMethod, AgileLoggerConstants.PROPERTIES_PLUGINS_MYBATIS_DEFAULT_TAG);
+        SyntheticAgileLogger syntheticAgileLogger = new SyntheticAgileLogger(targetMethod, AgileLoggerConstants.PROPERTIES_PLUGINS_MYBATIS_DEFAULT_TAG);
+        if (targetClass.isAnnotationPresent(AgileLogger.class)) {
+            syntheticAgileLogger.setMatched(true);
+            if (!targetMethod.isAnnotationPresent(AgileLogger.class)) {
+                AgileLogger onType = targetClass.getAnnotation(AgileLogger.class);
+                String tag = onType.tag();
+                if (StringUtils.equals(onType.tag(), AbstractEntity.TAG_DEFAULT) || StringUtils.isEmpty(tag)) {
+                    tag = AgileLoggerConstants.PROPERTIES_PLUGINS_MYBATIS_DEFAULT_TAG;
+                }
+                syntheticAgileLogger.setTag(tag);
+                syntheticAgileLogger.setExtra(onType.extra());
+                syntheticAgileLogger.setLevel(onType.level());
+            }
+        }
+
+        return syntheticAgileLogger;
     }
 }

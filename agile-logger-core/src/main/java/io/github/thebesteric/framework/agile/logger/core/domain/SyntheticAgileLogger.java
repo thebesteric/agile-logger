@@ -25,6 +25,7 @@ public class SyntheticAgileLogger {
     protected String level;
     protected String exception;
     protected String[] ignoreMethods;
+    protected boolean matched = true;
 
     public SyntheticAgileLogger(Method method) {
         this(method, AbstractEntity.TAG_DEFAULT, AbstractEntity.LEVEL_INFO);
@@ -37,17 +38,18 @@ public class SyntheticAgileLogger {
     public SyntheticAgileLogger(Method method, String defaultTag, String defaultLevel) {
         AgileLogger onType = method.getDeclaringClass().getAnnotation(AgileLogger.class);
         AgileLogger onMethod = method.getAnnotation(AgileLogger.class);
+
         String tagOnType = null, tagOnMethod = null;
         String extraOnType = null, extraOnMethod = null;
         String levelOnType = null, levelOnMethod = null;
-        List<String> ignoreMethodsOnType = null;
+        List<String> ignoreMethodsOnType = null, ignoreMethodsOnMethod = null, mergedIgnoreMethods = new ArrayList<>();
+
         if (onType != null) {
             tagOnType = onType.tag();
             extraOnType = onType.extra();
             levelOnType = onType.level();
             ignoreMethodsOnType = List.of(onType.ignoreMethods());
         }
-        List<String> ignoreMethodsOnMethod = null;
         if (onMethod != null) {
             tagOnMethod = onMethod.tag();
             extraOnMethod = onMethod.extra();
@@ -56,7 +58,6 @@ public class SyntheticAgileLogger {
         }
 
         // Merge ignore methods
-        List<String> mergedIgnoreMethods = new ArrayList<>();
         if (ignoreMethodsOnType != null) {
             mergedIgnoreMethods.addAll(ignoreMethodsOnType);
         }
@@ -72,10 +73,11 @@ public class SyntheticAgileLogger {
         this.extra = StringUtils.blankToNull(StringUtils.isNotEmpty(extraOnMethod) ? extraOnMethod : extraOnType);
         this.ignoreMethods = new HashSet<>(mergedIgnoreMethods).toArray(new String[0]);
 
-        // If Controller has not @AgileLogger
+        // Has not annotated @AgileLogger
         if (onType == null && onMethod == null) {
             this.level = defaultLevel;
             this.tag = defaultTag;
+            this.matched = false;
         }
     }
 
@@ -125,5 +127,13 @@ public class SyntheticAgileLogger {
 
     public void setMethod(Method method) {
         this.method = method;
+    }
+
+    public boolean isMatched() {
+        return matched;
+    }
+
+    public void setMatched(boolean matched) {
+        this.matched = matched;
     }
 }
