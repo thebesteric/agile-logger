@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.plugin.mybatis.condition;
 
 import io.github.thebesteric.framework.agile.logger.core.domain.SqlCommandType;
 import io.github.thebesteric.framework.agile.logger.plugin.mybatis.annotation.ConditionalOnSqlCommandType;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Condition;
@@ -23,6 +24,13 @@ import java.util.stream.Collectors;
 public class SqlCommandTypeCondition implements Condition {
 
     private static final String SQL_COMMAND_TYPES_PATH = "sourceflag.agile-logger.plugins.my-batis.command-types";
+    private static final String DEFAULT_SQL_COMMAND_TYPES;
+
+    static {
+        AgileLoggerSpringProperties.MyBatis myBatis = new AgileLoggerSpringProperties.MyBatis();
+        List<String> list = Arrays.stream(myBatis.getCommandTypes()).map(Enum::name).collect(Collectors.toList());
+        DEFAULT_SQL_COMMAND_TYPES = String.join(",", list);
+    }
 
     @Override
     public boolean matches(@Nonnull ConditionContext context, @Nonnull AnnotatedTypeMetadata metadata) {
@@ -32,7 +40,7 @@ public class SqlCommandTypeCondition implements Condition {
             annotatedSqlCommandType = (SqlCommandType) annotationAttributes.get("value");
         }
 
-        String sqlCommandTypeArr = context.getEnvironment().getProperty(SQL_COMMAND_TYPES_PATH);
+        String sqlCommandTypeArr = context.getEnvironment().getProperty(SQL_COMMAND_TYPES_PATH, DEFAULT_SQL_COMMAND_TYPES);
         if (StringUtils.isNotEmpty(sqlCommandTypeArr)) {
             List<String> sqlCommandTypes = Arrays.stream(sqlCommandTypeArr.split(",")).map(String::trim).collect(Collectors.toList());
             for (String sqlCommandType : sqlCommandTypes) {
