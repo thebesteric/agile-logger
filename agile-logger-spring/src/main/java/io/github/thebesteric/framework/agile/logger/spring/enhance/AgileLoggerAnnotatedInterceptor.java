@@ -52,6 +52,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         this.agileLoggerContext = agileLoggerContext;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
 
@@ -108,13 +109,43 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
                 // Deep copy
                 if (R.class == result.getClass()) {
+                    // R.data must implements Serializable and provide default constructor
                     cloneResult = ObjectUtils.clone((R) result);
                 } else {
                     cloneResult = ObjectUtils.clone(result, result.getClass());
+                    // List type
+                    if (ReflectUtils.isListType(result.getClass())) {
+                        List<Object> list = (List<Object>) result;
+                        if (CollectionUtils.isNotEmpty(list)) {
+                            Object item = list.get(0);
+                            cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                        }
+                    }
+                    // Array type
+                    else if (ReflectUtils.isArrayType(result.getClass())) {
+                        Object[] array = (Object[]) result;
+                        if (CollectionUtils.isNotEmpty(array)) {
+                            Object item = array[0];
+                            cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                        }
+                    }
+                    // Map type
+                    else if (ReflectUtils.isMapType(result.getClass())) {
+                        Map<?, ?> map = (Map<?, ?>) result;
+                        if (CollectionUtils.isNotEmpty(map)) {
+                            Optional<? extends Map.Entry<?, ?>> optional = map.entrySet().stream().findFirst();
+                            if (optional.isPresent()) {
+                                Map.Entry<?, ?> entry = optional.get();
+                                cloneResult = JsonUtils.toMap(cloneResult, entry.getKey().getClass(), entry.getValue().getClass());
+                            }
+                        }
+                    }
                 }
 
                 // Rewrite field content
-                rewriteField(cloneResult);
+                if (agileLoggerContext.getProperties().isRewrite()) {
+                    rewriteField(cloneResult);
+                }
 
             }
 
@@ -290,81 +321,109 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         }
 
         do {
-            for (Field declaredField : currentResultClass.getDeclaredFields()) {
-                declaredField.setAccessible(true);
-                // Recursion if field is POJO or Collections or Array type
-                if (!ReflectUtils.isPrimitiveOrWarp(declaredField) && !ReflectUtils.isFinal(declaredField)) {
-                    // List type
-                    if (ReflectUtils.isListType(declaredField)) {
-                        List<?> list = (List<?>) declaredField.get(cloneResult);
-                        if (list != null) {
-                            for (Object obj : list) {
-                                if (obj != null && !ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
-                                    rewriteField(obj);
-                                }
-                            }
-                        }
-                    }
-                    // Array type
-                    else if (ReflectUtils.isArrayType(declaredField)) {
-                        Object[] arr = (Object[]) declaredField.get(cloneResult);
-                        if (arr != null) {
-                            for (Object obj : arr) {
-                                if (obj != null && !ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
-                                    rewriteField(obj);
-                                }
-                            }
-                        }
-                    }
-                    // Map type
-                    else if (ReflectUtils.isMapType(declaredField)) {
-                        Map<?, ?> map = (Map<?, ?>) declaredField.get(cloneResult);
-                        if (map != null) {
-                            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                                Object key = entry.getKey();
-                                Object value = entry.getValue();
-                                if (!ReflectUtils.isPrimitiveOrWarp(key.getClass()) && !ReflectUtils.isStringType(key.getClass())) {
-                                    rewriteField(key);
-                                }
-                                if (!ReflectUtils.isPrimitiveOrWarp(value.getClass())) {
-                                    rewriteField(value);
-                                }
-                            }
-                        }
-                    } else {
-                        // POJO type
-                        Object currObject = declaredField.get(cloneResult);
-                        if (currObject != null) {
-                            rewriteField(currObject);
-                        }
-                    }
-                }
-                // Rewrite if field has @RewriteField annotation
-                if (declaredField.isAnnotationPresent(RewriteField.class)) {
-                    RewriteField rewriteField = declaredField.getAnnotation(RewriteField.class);
+            // List type
+            if (ReflectUtils.isListType(currentResultClass)) {
+                List<?> list = (List<?>) cloneResult;
+                rewriteList(list);
+            } // Array type
+            else if (ReflectUtils.isArrayType(currentResultClass)) {
+                Object[] arr = (Object[]) cloneResult;
+                rewriteArray(arr);
+            }
+            // Map type
+            else if (ReflectUtils.isMapType(currentResultClass)) {
+                Map<?, ?> map = (Map<?, ?>) cloneResult;
+                rewriteMap(map);
+            }
+            // POJO type
+            else {
+                for (Field declaredField : currentResultClass.getDeclaredFields()) {
                     declaredField.setAccessible(true);
-                    try {
-                        // PrimitiveOrWarp or String Type
-                        if (ReflectUtils.isPrimitiveOrWarp(declaredField)) {
-                            Object value = ReflectUtils.parsePrimitiveOrWarpByType(rewriteField.value(), declaredField.getType());
-                            declaredField.set(cloneResult, value);
-                            AgileLoggerContext.setRewriteFields(declaredField, value);
+                    // Recursion if field is POJO or Collections or Array type
+                    if (!ReflectUtils.isPrimitiveOrWarp(declaredField) && !ReflectUtils.isFinal(declaredField)) {
+                        if (ReflectUtils.isListType(declaredField)) {
+                            List<?> list = (List<?>) declaredField.get(cloneResult);
+                            rewriteList(list);
                         }
-                        // String or else
-                        else {
-                            declaredField.set(cloneResult, rewriteField.value());
-                            AgileLoggerContext.setRewriteFields(declaredField, rewriteField.value());
+                        // Array type
+                        else if (ReflectUtils.isArrayType(declaredField)) {
+                            Object[] arr = (Object[]) declaredField.get(cloneResult);
+                            rewriteArray(arr);
                         }
-                    } catch (Exception ex) {
-                        if (log.isDebugEnabled()) {
-                            ex.printStackTrace();
+                        // Map type
+                        else if (ReflectUtils.isMapType(declaredField)) {
+                            Map<?, ?> map = (Map<?, ?>) declaredField.get(cloneResult);
+                            if (map != null) {
+                                rewriteMap(map);
+                            }
+                        } else {
+                            // POJO type
+                            Object currObject = declaredField.get(cloneResult);
+                            if (currObject != null) {
+                                rewriteField(currObject);
+                            }
                         }
                     }
+                    // Rewrite if field has @RewriteField annotation
+                    if (declaredField.isAnnotationPresent(RewriteField.class)) {
+                        RewriteField rewriteField = declaredField.getAnnotation(RewriteField.class);
+                        declaredField.setAccessible(true);
+                        try {
+                            // PrimitiveOrWarp or String Type
+                            if (ReflectUtils.isPrimitiveOrWarp(declaredField)) {
+                                Object value = ReflectUtils.parsePrimitiveOrWarpByType(rewriteField.value(), declaredField.getType());
+                                declaredField.set(cloneResult, value);
+                                AgileLoggerContext.setRewriteFields(declaredField, value);
+                            }
+                            // String or else
+                            else {
+                                declaredField.set(cloneResult, rewriteField.value());
+                                AgileLoggerContext.setRewriteFields(declaredField, rewriteField.value());
+                            }
+                        } catch (Exception ex) {
+                            if (log.isDebugEnabled()) {
+                                ex.printStackTrace();
+                            }
+                        }
 
+                    }
                 }
             }
             currentResultClass = currentResultClass.getSuperclass();
         } while (currentResultClass != Object.class);
+    }
+
+    private void rewriteMap(Map<?, ?> map) throws IllegalAccessException {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            if (!ReflectUtils.isPrimitiveOrWarp(key.getClass()) && !ReflectUtils.isStringType(key.getClass())) {
+                rewriteField(key);
+            }
+            if (!ReflectUtils.isPrimitiveOrWarp(value.getClass())) {
+                rewriteField(value);
+            }
+        }
+    }
+
+    private void rewriteArray(Object[] array) throws IllegalAccessException {
+        if (array != null) {
+            for (Object obj : array) {
+                if (obj != null && !ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
+                    rewriteField(obj);
+                }
+            }
+        }
+    }
+
+    private void rewriteList(List<?> list) throws IllegalAccessException {
+        if (list != null) {
+            for (Object obj : list) {
+                if (obj != null && !ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
+                    rewriteField(obj);
+                }
+            }
+        }
     }
 
 }

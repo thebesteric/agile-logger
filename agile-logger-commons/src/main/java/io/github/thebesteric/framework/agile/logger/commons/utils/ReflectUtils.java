@@ -74,6 +74,14 @@ public class ReflectUtils {
         return Modifier.isFinal(member.getModifiers());
     }
 
+    public static boolean isTransient(Class<?> clazz) {
+        return Modifier.isTransient(clazz.getModifiers());
+    }
+
+    public static boolean isTransient(Member member) {
+        return Modifier.isTransient(member.getModifiers());
+    }
+
     public static boolean isPrimitive(Field field) {
         return isPrimitive(field.getType());
     }
@@ -94,28 +102,40 @@ public class ReflectUtils {
         }
     }
 
+    public static boolean isListType(Class<?> clazz) {
+        return List.class.isAssignableFrom(clazz);
+    }
+
     public static boolean isListType(Field field) {
         Class<?> type = field.getType();
-        return List.class.isAssignableFrom(type);
+        return isListType(type);
+    }
+
+    public static boolean isMapType(Class<?> clazz) {
+        return Map.class.isAssignableFrom(clazz);
     }
 
     public static boolean isMapType(Field field) {
         Class<?> type = field.getType();
-        return Map.class.isAssignableFrom(type);
+        return isMapType(type);
+    }
+
+    public static boolean isArrayType(Class<?> clazz) {
+        return clazz.isArray();
     }
 
     public static boolean isArrayType(Field field) {
         Class<?> type = field.getType();
-        return type.isArray();
-    }
-
-    public static boolean isStringType(Field field) {
-        Class<?> type = field.getType();
-        return String.class == type;
+        return isArrayType(type);
     }
 
     public static boolean isStringType(Class<?> clazz) {
         return String.class == clazz;
+    }
+
+    public static boolean isStringType(Field field) {
+        Class<?> type = field.getType();
+        return isStringType(type);
     }
 
     @SuppressWarnings("unchecked")
@@ -242,6 +262,82 @@ public class ReflectUtils {
     public static boolean allAnnotationPresent(Method method, Class<? extends Annotation> annotationClass, Class<? extends Annotation>... annotationClasses) {
         List<Class<? extends Annotation>> annoClasses = mergeIndefiniteParams(annotationClass, annotationClasses);
         return annoClasses.stream().allMatch(method::isAnnotationPresent);
+    }
+
+    public static List<Field> getAnnotationFields(Class<? extends Annotation> annotationClass, Class<?> clazz) {
+        List<Field> fields = new ArrayList<>();
+        Class<?> currentClazz = clazz;
+        do {
+            Field[] declaredFields = currentClazz.getDeclaredFields();
+            for (Field field : declaredFields) {
+                if (field.isAnnotationPresent(annotationClass)) {
+                    fields.add(field);
+                }
+            }
+            currentClazz = currentClazz.getSuperclass();
+        } while (currentClazz != null && currentClazz != Object.class);
+        return fields;
+    }
+
+    public static Map<Field, Object> getAnnotationFields(Class<? extends Annotation> annotationClass, Object object) throws IllegalAccessException {
+        Map<Field, Object> annotationFields = new LinkedHashMap<>();
+        Class<?> clazz = object.getClass();
+        Class<?> currentClazz = clazz;
+        do {
+            if (currentClazz == AbstractList.class) {
+                break;
+            }
+            Field[] declaredFields = currentClazz.getDeclaredFields();
+            for (Field field : declaredFields) {
+                field.setAccessible(true);
+                if (field.isAnnotationPresent(annotationClass) && !isTransient(field)) {
+                    annotationFields.put(field, field.get(object));
+                } else {
+                    if (!isPrimitiveOrWarp(field) && !isStringType(field) && !isFinal(field)) {
+                        // List type
+                        if (isListType(field)) {
+                            List<?> list = (List<?>) field.get(object);
+                            if (list != null) {
+                                for (Object obj : list) {
+                                    if (obj != null && !ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
+                                        getAnnotationFields(annotationClass, obj);
+                                    }
+                                }
+                            }
+                        }
+                        // Array type
+                        else if (isArrayType(field)) {
+                            Object[] arr = (Object[]) field.get(object);
+                            if (arr != null) {
+                                for (Object obj : arr) {
+                                    if (obj != null && !ReflectUtils.isPrimitiveOrWarp(obj.getClass()) && !ReflectUtils.isStringType(obj.getClass())) {
+                                        getAnnotationFields(annotationClass, obj);
+                                    }
+                                }
+                            }
+                        }
+                        // Map type
+                        else if (isMapType(field)) {
+                            Map<?, ?> map = (Map<?, ?>) field.get(object);
+                            if (map != null) {
+                                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                                    Object key = entry.getKey();
+                                    Object value = entry.getValue();
+                                    if (!ReflectUtils.isPrimitiveOrWarp(key.getClass()) && !ReflectUtils.isStringType(key.getClass())) {
+                                        getAnnotationFields(annotationClass, key);
+                                    }
+                                    if (!ReflectUtils.isPrimitiveOrWarp(value.getClass())) {
+                                        getAnnotationFields(annotationClass, value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            currentClazz = clazz.getSuperclass();
+        } while (currentClazz != null && currentClazz != Object.class);
+        return annotationFields;
     }
 
     @SafeVarargs
