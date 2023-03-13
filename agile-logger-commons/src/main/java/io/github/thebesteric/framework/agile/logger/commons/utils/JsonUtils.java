@@ -2,7 +2,9 @@ package io.github.thebesteric.framework.agile.logger.commons.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -101,6 +103,20 @@ public class JsonUtils {
             LoggerPrinter.error(log, ExceptionUtils.getSimpleMessage(e));
         }
         return null;
+    }
+
+    public static JsonNode toJsonNode(String jsonStr) {
+        JsonNode jsonNode;
+        try {
+            jsonNode = mapper.readTree(jsonStr);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonNode;
+    }
+
+    public static JsonNode toJsonNode(Object obj) {
+        return toJsonNode(toJson(obj));
     }
 
     public static String formatJson(String str) {

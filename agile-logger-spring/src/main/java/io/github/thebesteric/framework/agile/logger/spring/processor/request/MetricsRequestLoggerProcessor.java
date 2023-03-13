@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.spring.processor.request;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.domain.MetricsRequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 
@@ -16,11 +17,12 @@ public class MetricsRequestLoggerProcessor extends AbstractRequestLoggerProcesso
 
     public Cache<String, MetricsRequestLog.Metrics> cache;
 
-    public MetricsRequestLoggerProcessor() {
-        this(256, 1024);
+    public MetricsRequestLoggerProcessor(AgileLoggerSpringProperties properties) {
+        this(256, 1024, properties);
     }
 
-    public MetricsRequestLoggerProcessor(int initialCapacity, int maximumSize) {
+    public MetricsRequestLoggerProcessor(int initialCapacity, int maximumSize, AgileLoggerSpringProperties properties) {
+        super(properties);
         this.cache = Caffeine.newBuilder().initialCapacity(initialCapacity).maximumSize(maximumSize).build();
     }
 

@@ -75,8 +75,8 @@ public class AgileLoggerContext {
         this.ignoreMethodProcessor = generateIgnoreMethodProcessor();
         this.ignoreUriProcessor = generateIgnoreUriProcessor();
         this.responseSuccessDefineProcessor = generateResponseSuccessDefineProcessor();
-        this.requestLoggerProcessor = getBeanOrDefault(RequestLoggerProcessor.class, new DefaultRequestLoggerProcessor());
-        this.invokeLoggerProcessor = getBeanOrDefault(InvokeLoggerProcessor.class, new DefaultInvokeLoggerProcessor());
+        this.requestLoggerProcessor = getBeanOrDefault(RequestLoggerProcessor.class, new DefaultRequestLoggerProcessor(properties));
+        this.invokeLoggerProcessor = getBeanOrDefault(InvokeLoggerProcessor.class, new DefaultInvokeLoggerProcessor(properties));
         this.recordLoggerThreadPool = generateExecutorService();
         this.environment = getBean(Environment.class);
         this.mockProcessors = new ArrayList<>(getBeans(MockProcessor.class).values());

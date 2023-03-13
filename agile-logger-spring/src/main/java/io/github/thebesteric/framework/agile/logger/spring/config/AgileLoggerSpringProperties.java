@@ -24,6 +24,7 @@ import java.util.List;
 public class AgileLoggerSpringProperties {
 
     private boolean enable = true;
+    private boolean rewrite = false;
 
     // LOG, STDOUT, CACHE, REDIS, ES, DATABASE
     private LogMode logMode = LogMode.STDOUT;

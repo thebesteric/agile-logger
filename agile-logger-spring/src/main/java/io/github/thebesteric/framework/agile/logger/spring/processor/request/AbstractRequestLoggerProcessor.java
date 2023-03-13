@@ -8,11 +8,13 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.JsonUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
 import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RequestLoggerProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerRequestWrapper;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerResponseWrapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -28,7 +30,10 @@ import java.util.Map;
  * @version 1.0
  */
 @Slf4j
+@RequiredArgsConstructor
 public abstract class AbstractRequestLoggerProcessor implements RequestLoggerProcessor {
+
+    private final AgileLoggerSpringProperties properties;
 
     @Override
     public RequestLog processor(String id, AgileLoggerRequestWrapper requestWrapper, AgileLoggerResponseWrapper responseWrapper, DurationWatcher.Duration duration) throws IOException {
@@ -49,7 +54,9 @@ public abstract class AbstractRequestLoggerProcessor implements RequestLoggerPro
             requestLog.setExecuteInfo(new ExecuteInfo(method, null, duration));
         }
 
-        rewriteField(requestLog);
+        if (properties.isRewrite()) {
+            rewriteField(requestLog);
+        }
 
         return doAfterProcessor(requestLog);
     }

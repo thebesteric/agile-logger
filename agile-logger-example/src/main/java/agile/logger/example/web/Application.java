@@ -3,6 +3,7 @@ package agile.logger.example.web;
 import io.github.thebesteric.framework.agile.logger.boot.starter.annotation.EnableAgileLogger;
 import io.github.thebesteric.framework.agile.logger.boot.starter.marker.AgileLoggerMarker;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.domain.RequestLog;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RecordProcessor;
 import io.github.thebesteric.framework.agile.logger.spring.processor.RequestLoggerProcessor;
@@ -33,8 +34,8 @@ public class Application {
     }
 
     @Bean
-    public RequestLoggerProcessor requestLoggerProcessor() {
-        return new MetricsRequestLoggerProcessor();
+    public RequestLoggerProcessor requestLoggerProcessor(AgileLoggerSpringProperties properties) {
+        return new MetricsRequestLoggerProcessor(properties);
     }
 
     @Bean

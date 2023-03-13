@@ -6,8 +6,10 @@ import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUti
 import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
 import io.github.thebesteric.framework.agile.logger.spring.processor.InvokeLoggerProcessor;
+import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Method;
 
@@ -17,7 +19,11 @@ import java.lang.reflect.Method;
  * @author Eric Joe
  * @version 1.0
  */
+@RequiredArgsConstructor
 public abstract class AbstractInvokeLoggerProcessor implements InvokeLoggerProcessor {
+
+    private final AgileLoggerSpringProperties properties;
+
     @Override
     public InvokeLog processor(String logId, String parentId, Method method, Object[] args, Object result, String exception, DurationWatcher.Duration duration, boolean mock) {
         // Initialize the invokeLog
