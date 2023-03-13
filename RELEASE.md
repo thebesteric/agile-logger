@@ -60,5 +60,9 @@
 - Fixed: Fixed an issue where `@RequestMapping` could not get value attribute when specifying the path attribute
 - Fixed: Fixed an issue where modifying the log result attribute would affect the actual return value
 - Perf: Use Gson to serialization single object
-- Feature: Add `mybatis plugin` to log SQL statements
+- c: Add `mybatis plugin` to log SQL statements
 - Feature: Support for rewriting the value of log result-class field using the `@RewriteField` annotation
+### v1.0.13
+- Fixed: Fixed `@RewriteField` not being able to overwrite array, collection and map type data
+- Perf: Add `@RewriteField` switch
+- Perf: Optimized problem with mybatis-plugin not getting the default value of SqlCommandType
