@@ -391,6 +391,13 @@ sourceflag:
   agile-logger:
     uri-prefix: /gateway
 ```
+### 3.11 重写敏感字段开关配置
+> 可能日志中包含某些返回值是涉密的，所以需要重新改写这些字段内容，此时就需要使用 `@RewriteField` 字段来修饰返回类的字段，同时开启重写字段开关
+```yaml
+sourceflag:
+  agile-logger:
+    rewrite-field: true
+```
 
 ## 4. 注解配置
 ### 4.1 @EnableAgileLogger 注解
@@ -689,7 +696,13 @@ public class AppConfiguration {
 }
 ```
 ### 5.5 改写返回字段的值
-> 当返回值含有一些敏感字段信息，此时不太方便记录日志时，可以使用 `@RewriteField` 来混淆这些属性
+> 当返回值含有一些敏感字段信息，此时不太方便记录日志时，可以使用 `@RewriteField` 来混淆这些属性  
+> 需要开启 `sourceflag.agile-logger.rewrite-field = true` 默认为 `false`
+```yaml
+sourceflag:
+  agile-logger:
+    rewrite-field: true
+```
 
 **_示例_**
 ```java
