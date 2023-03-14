@@ -66,3 +66,6 @@
 - Fixed: Fixed `@RewriteField` not being able to overwrite array, collection and map type data
 - Perf: Add `@RewriteField` switch
 - Perf: Optimized problem with mybatis-plugin not getting the default value of SqlCommandType
+### v1.0.14
+- Fixed: Fixed NullPointerException being thrown when result is null in AgileLoggerAnnotatedIntercepto
+- Perf: Modify the name of the rewrite attr to rewrite-field in properties
