@@ -8,7 +8,7 @@
     <groupId>io.github.thebesteric.framework.agile</groupId>
     <artifactId>agile-logger</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.13</version>
+    <version>1.0.14</version>
 
     <name>agile logger</name>
     <url>https://github.com/thebesteric/agile-logger</url>
