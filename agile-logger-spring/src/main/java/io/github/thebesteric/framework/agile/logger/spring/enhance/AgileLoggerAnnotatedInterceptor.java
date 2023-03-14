@@ -93,7 +93,7 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
             durationTag = DurationWatcher.start();
 
             // Mocker: invoke mocker result if you need to
-            result = invokeMockerIfNecessary(method, args);
+            cloneResult = result = invokeMockerIfNecessary(method, args);
             if (result != null) {
                 mock = true;
             }
@@ -108,45 +108,46 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
                 result = methodProxy.invokeSuper(obj, args);
 
                 // Deep copy
-                if (R.class == result.getClass()) {
-                    // R.data must implements Serializable and provide default constructor
-                    cloneResult = ObjectUtils.clone((R) result);
-                } else {
-                    cloneResult = ObjectUtils.clone(result, result.getClass());
-                    // List type
-                    if (ReflectUtils.isListType(result.getClass())) {
-                        List<Object> list = (List<Object>) result;
-                        if (CollectionUtils.isNotEmpty(list)) {
-                            Object item = list.get(0);
-                            cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                if (result != null) {
+                    if (R.class == result.getClass()) {
+                        // R.data must implements Serializable and provide default constructor
+                        cloneResult = ObjectUtils.clone((R) result);
+                    } else {
+                        cloneResult = ObjectUtils.clone(result, result.getClass());
+                        // List type
+                        if (ReflectUtils.isListType(result.getClass())) {
+                            List<Object> list = (List<Object>) result;
+                            if (CollectionUtils.isNotEmpty(list)) {
+                                Object item = list.get(0);
+                                cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                            }
                         }
-                    }
-                    // Array type
-                    else if (ReflectUtils.isArrayType(result.getClass())) {
-                        Object[] array = (Object[]) result;
-                        if (CollectionUtils.isNotEmpty(array)) {
-                            Object item = array[0];
-                            cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                        // Array type
+                        else if (ReflectUtils.isArrayType(result.getClass())) {
+                            Object[] array = (Object[]) result;
+                            if (CollectionUtils.isNotEmpty(array)) {
+                                Object item = array[0];
+                                cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                            }
                         }
-                    }
-                    // Map type
-                    else if (ReflectUtils.isMapType(result.getClass())) {
-                        Map<?, ?> map = (Map<?, ?>) result;
-                        if (CollectionUtils.isNotEmpty(map)) {
-                            Optional<? extends Map.Entry<?, ?>> optional = map.entrySet().stream().findFirst();
-                            if (optional.isPresent()) {
-                                Map.Entry<?, ?> entry = optional.get();
-                                cloneResult = JsonUtils.toMap(cloneResult, entry.getKey().getClass(), entry.getValue().getClass());
+                        // Map type
+                        else if (ReflectUtils.isMapType(result.getClass())) {
+                            Map<?, ?> map = (Map<?, ?>) result;
+                            if (CollectionUtils.isNotEmpty(map)) {
+                                Optional<? extends Map.Entry<?, ?>> optional = map.entrySet().stream().findFirst();
+                                if (optional.isPresent()) {
+                                    Map.Entry<?, ?> entry = optional.get();
+                                    cloneResult = JsonUtils.toMap(cloneResult, entry.getKey().getClass(), entry.getValue().getClass());
+                                }
                             }
                         }
                     }
-                }
 
-                // Rewrite field content
-                if (agileLoggerContext.getProperties().isRewrite()) {
-                    rewriteField(cloneResult);
+                    // Rewrite field content
+                    if (agileLoggerContext.getProperties().isRewriteField()) {
+                        rewriteField(cloneResult);
+                    }
                 }
-
             }
 
             // Process non-program exceptions, For example: code != 200
