@@ -64,7 +64,7 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
         String versionName = StringUtils.isNotEmpty(version.getName()) ? version.getName() : "USE_DEFAULT";
         LoggerPrinter.info(log, "Config: mock is {}, version name is: {}, track-id name is: {}", mockStatus, versionName, trackIdName);
 
-        boolean rewrite = properties.isRewrite();
+        boolean rewrite = properties.isRewriteField();
         LoggerPrinter.info(log, "Logger Rewrite is {}", rewrite ? "Enable" : "Disabled");
     }
 }
