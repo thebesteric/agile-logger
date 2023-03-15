@@ -67,5 +67,8 @@
 - Perf: Add `@RewriteField` switch
 - Perf: Optimized problem with mybatis-plugin not getting the default value of SqlCommandType
 ### v1.0.14
-- Fixed: Fixed NullPointerException being thrown when result is null in AgileLoggerAnnotatedIntercepto
+- Fixed: Fixed NullPointerException being thrown when result is null in AgileLoggerAnnotatedInterceptor
 - Perf: Modify the name of the rewrite attr to rewrite-field in properties
+### v1.0.15
+- Fixed: Fixed the problem with the original message was overridden by default in `R.class` when setCode is called
+- Fixed: Fixed `@RewriteField` throw NullPointerException in iterator Map Object
