@@ -398,10 +398,10 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             Object key = entry.getKey();
             Object value = entry.getValue();
-            if (!ReflectUtils.isPrimitiveOrWarp(key.getClass()) && !ReflectUtils.isStringType(key.getClass())) {
+            if (key != null && !ReflectUtils.isPrimitiveOrWarp(key.getClass()) && !ReflectUtils.isStringType(key.getClass())) {
                 rewriteField(key);
             }
-            if (!ReflectUtils.isPrimitiveOrWarp(value.getClass())) {
+            if (value != null && !ReflectUtils.isPrimitiveOrWarp(value.getClass()) && !ReflectUtils.isStringType(value.getClass())) {
                 rewriteField(value);
             }
         }
