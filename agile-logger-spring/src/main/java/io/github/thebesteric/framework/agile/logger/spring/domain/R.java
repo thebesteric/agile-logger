@@ -63,7 +63,6 @@ public class R implements Serializable {
 
     public R setCode(int code) {
         this.code = code;
-        this.message = HttpStatus.OK.memo;
         return this;
     }
 
@@ -98,7 +97,7 @@ public class R implements Serializable {
     }
 
     public static R success(HttpStatus httpStatus) {
-        return success(httpStatus, null);
+        return success(httpStatus, HttpStatus.OK.memo);
     }
 
     public static R success(HttpStatus httpStatus, String message) {
