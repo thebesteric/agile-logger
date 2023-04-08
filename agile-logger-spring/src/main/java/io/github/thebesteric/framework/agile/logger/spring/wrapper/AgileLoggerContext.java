@@ -51,6 +51,7 @@ public class AgileLoggerContext {
 
     private static final ThreadLocal<Parent> parent = new ThreadLocal<>();
     private static final ThreadLocal<MockInfo> mockInfo = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> rewireMatchedAccordingPreMethod = ThreadLocal.withInitial(() -> false);
     private static final ThreadLocal<Map<Field, Object>> rewriteFields = ThreadLocal.withInitial(HashMap::new);
 
     private final AgileLoggerSpringProperties properties;
@@ -100,6 +101,14 @@ public class AgileLoggerContext {
         Parent parent = AgileLoggerContext.parent.get();
         AgileLoggerContext.parent.remove();
         return parent;
+    }
+
+    public static void setRewireMatchedAccordingPreMethod(boolean isMatch) {
+        AgileLoggerContext.rewireMatchedAccordingPreMethod.set(isMatch);
+    }
+
+    public static boolean getRewireMatchedAccordingPreMethod() {
+        return AgileLoggerContext.rewireMatchedAccordingPreMethod.get();
     }
 
     public static void setRewriteFields(Field field, Object value) {

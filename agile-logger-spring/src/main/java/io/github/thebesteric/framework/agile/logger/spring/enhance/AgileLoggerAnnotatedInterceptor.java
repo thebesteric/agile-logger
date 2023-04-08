@@ -106,14 +106,15 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
                 versionerInfo = invokeVersionerRequestMethodIfNecessary(method, args);
 
                 // Invoke if without mock
-                result = methodProxy.invokeSuper(obj, args);
+                cloneResult = result = methodProxy.invokeSuper(obj, args);
 
                 // Rewrite if matches
                 AgileLoggerSpringProperties.Rewrite rewrite = agileLoggerContext.getProperties().getRewrite();
                 if (result != null && rewrite.canRewrite()) {
                     String packageName = ClassUtils.getPackageName(result.getClass());
-                    boolean shouldBeRewrite = rewrite.isMatch(packageName);
-                    if (shouldBeRewrite) {
+                    boolean packageMatched = rewrite.isMatch(packageName);
+                    if (packageMatched ||
+                            (R.class == result.getClass() && AgileLoggerContext.getRewireMatchedAccordingPreMethod())) {
                         // Deep copy
                         if (R.class == result.getClass()) {
                             // R.data must implements Serializable and provide default constructor
@@ -151,6 +152,8 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
 
                         // Rewrite field content
                         rewriteField(cloneResult);
+
+                        AgileLoggerContext.setRewireMatchedAccordingPreMethod(true);
                     }
                 }
             }

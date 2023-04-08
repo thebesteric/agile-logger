@@ -276,23 +276,24 @@ public class AgileLoggerSpringProperties {
         private List<String> packages = new ArrayList<>();
 
         public boolean canRewrite() {
-            return this.enable && CollectionUtils.isEmpty(this.packages);
+            return this.enable && CollectionUtils.isNotEmpty(this.packages);
         }
 
         public boolean isMatch(String currentPackage) {
+            boolean isMatch = false;
             for (String p : this.packages) {
                 int starIndex = p.lastIndexOf("*");
                 if (starIndex != -1) {
                     if (currentPackage.startsWith(p.substring(0, starIndex))) {
-                        return true;
+                        isMatch = true;
+                        break;
                     }
-                } else {
-                    if (currentPackage.equals(p)) {
-                        return true;
-                    }
+                } else if (currentPackage.equals(p)) {
+                    isMatch = true;
+                    break;
                 }
             }
-            return false;
+            return isMatch;
         }
     }
 }

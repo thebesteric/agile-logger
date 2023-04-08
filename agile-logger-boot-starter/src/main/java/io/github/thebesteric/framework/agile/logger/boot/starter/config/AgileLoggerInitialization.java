@@ -71,7 +71,7 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
         String rewriteStatus = rewrite.canRewrite() ? "Enable" : "Disabled";
         String rewriteInfo = rewrite.canRewrite() ? "rewrite packages are " + Arrays.toString(rewrite.getPackages().toArray()) :
                 rewrite.isEnable() ? "please set rewrite packages" : "";
-        LoggerPrinter.info(log, "Logger Rewrite is {}, rewrite packages are {}", rewriteInfo);
+        LoggerPrinter.info(log, "Logger Rewrite is {}, {}", rewriteStatus, rewriteInfo);
 
     }
 }
