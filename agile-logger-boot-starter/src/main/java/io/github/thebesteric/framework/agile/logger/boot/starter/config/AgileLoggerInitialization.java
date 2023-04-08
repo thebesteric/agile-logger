@@ -9,6 +9,7 @@ import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpr
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AbstractAgileLoggerFilter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -53,18 +54,24 @@ public class AgileLoggerInitialization extends AbstractAgileLoggerInitialization
         AgileLoggerSpringProperties.Track track = config.getTrack();
         AgileLoggerSpringProperties.Version version = config.getVersion();
 
+        // SkyWalking
         AgileLoggerSpringProperties.Async async = properties.getAsync();
         String asyncMessage = async.isEnable() ? "Async: " + async.getAsyncParams() : "Sync";
         String traceMessage = track.isUseSkyWalkingTrace() ? "SkyWalking Trace" : "Local Generator";
         LoggerPrinter.info(log, "Log Mode is {}, Running in {}, TrackIdGenerator: {}", properties.getLogMode(), asyncMessage, traceMessage);
 
-
+        // Mock
         String mockStatus = mock.isEnable() ? mock.toString() : "Disabled";
         String trackIdName = StringUtils.isNotEmpty(track.getName()) ? track.getName() : "USE_DEFAULT";
         String versionName = StringUtils.isNotEmpty(version.getName()) ? version.getName() : "USE_DEFAULT";
         LoggerPrinter.info(log, "Config: mock is {}, version name is: {}, track-id name is: {}", mockStatus, versionName, trackIdName);
 
-        boolean rewrite = properties.isRewriteField();
-        LoggerPrinter.info(log, "Logger Rewrite is {}", rewrite ? "Enable" : "Disabled");
+        // Rewire
+        AgileLoggerSpringProperties.Rewrite rewrite = properties.getRewrite();
+        String rewriteStatus = rewrite.canRewrite() ? "Enable" : "Disabled";
+        String rewriteInfo = rewrite.canRewrite() ? "rewrite packages are " + Arrays.toString(rewrite.getPackages().toArray()) :
+                rewrite.isEnable() ? "please set rewrite packages" : "";
+        LoggerPrinter.info(log, "Logger Rewrite is {}, rewrite packages are {}", rewriteInfo);
+
     }
 }

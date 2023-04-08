@@ -54,7 +54,7 @@ public abstract class AbstractRequestLoggerProcessor implements RequestLoggerPro
             requestLog.setExecuteInfo(new ExecuteInfo(method, null, duration));
         }
 
-        if (properties.isRewriteField()) {
+        if (properties.getRewrite().canRewrite()) {
             rewriteField(requestLog);
         }
 

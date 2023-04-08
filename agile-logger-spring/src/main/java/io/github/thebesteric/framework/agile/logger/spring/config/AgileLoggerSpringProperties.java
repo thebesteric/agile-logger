@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.spring.config;
 
 import io.github.thebesteric.framework.agile.logger.commons.AgileLoggerConstant;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ClassPathUtils;
+import io.github.thebesteric.framework.agile.logger.commons.utils.CollectionUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.MathUtils;
 import io.github.thebesteric.framework.agile.logger.core.AgileLoggerConstants;
 import io.github.thebesteric.framework.agile.logger.core.domain.LogMode;
@@ -9,6 +10,7 @@ import io.github.thebesteric.framework.agile.logger.core.domain.SqlCommandType;
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +26,9 @@ import java.util.List;
 public class AgileLoggerSpringProperties {
 
     private boolean enable = true;
-    private boolean rewriteField = false;
+
+    // Rewrite Domain field
+    private Rewrite rewrite = new Rewrite();
 
     // LOG, STDOUT, CACHE, REDIS, ES, DATABASE
     private LogMode logMode = LogMode.STDOUT;
@@ -262,6 +266,33 @@ public class AgileLoggerSpringProperties {
         public static class CodeField {
             private String name;
             private Object value;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class Rewrite {
+        private boolean enable = false;
+        private List<String> packages = new ArrayList<>();
+
+        public boolean canRewrite() {
+            return this.enable && CollectionUtils.isEmpty(this.packages);
+        }
+
+        public boolean isMatch(String currentPackage) {
+            for (String p : this.packages) {
+                int starIndex = p.lastIndexOf("*");
+                if (starIndex != -1) {
+                    if (currentPackage.startsWith(p.substring(0, starIndex))) {
+                        return true;
+                    }
+                } else {
+                    if (currentPackage.equals(p)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

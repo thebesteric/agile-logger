@@ -8,6 +8,7 @@ import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod
 import io.github.thebesteric.framework.agile.logger.core.annotation.RewriteField;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.core.domain.SyntheticAgileLogger;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.domain.Parent;
 import io.github.thebesteric.framework.agile.logger.spring.domain.R;
 import io.github.thebesteric.framework.agile.logger.spring.domain.SpringSyntheticAgileLogger;
@@ -107,44 +108,48 @@ public class AgileLoggerAnnotatedInterceptor implements MethodInterceptor {
                 // Invoke if without mock
                 result = methodProxy.invokeSuper(obj, args);
 
-                // Deep copy
-                if (result != null) {
-                    if (R.class == result.getClass()) {
-                        // R.data must implements Serializable and provide default constructor
-                        cloneResult = ObjectUtils.clone((R) result);
-                    } else {
-                        cloneResult = ObjectUtils.clone(result, result.getClass());
-                        // List type
-                        if (ReflectUtils.isListType(result.getClass())) {
-                            List<Object> list = (List<Object>) result;
-                            if (CollectionUtils.isNotEmpty(list)) {
-                                Object item = list.get(0);
-                                cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                // Rewrite if matches
+                AgileLoggerSpringProperties.Rewrite rewrite = agileLoggerContext.getProperties().getRewrite();
+                if (result != null && rewrite.canRewrite()) {
+                    String packageName = ClassUtils.getPackageName(result.getClass());
+                    boolean shouldBeRewrite = rewrite.isMatch(packageName);
+                    if (shouldBeRewrite) {
+                        // Deep copy
+                        if (R.class == result.getClass()) {
+                            // R.data must implements Serializable and provide default constructor
+                            cloneResult = ObjectUtils.clone((R) result);
+                        } else {
+                            cloneResult = ObjectUtils.clone(result, result.getClass());
+                            // List type
+                            if (ReflectUtils.isListType(result.getClass())) {
+                                List<Object> list = (List<Object>) result;
+                                if (CollectionUtils.isNotEmpty(list)) {
+                                    Object item = list.get(0);
+                                    cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                                }
                             }
-                        }
-                        // Array type
-                        else if (ReflectUtils.isArrayType(result.getClass())) {
-                            Object[] array = (Object[]) result;
-                            if (CollectionUtils.isNotEmpty(array)) {
-                                Object item = array[0];
-                                cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                            // Array type
+                            else if (ReflectUtils.isArrayType(result.getClass())) {
+                                Object[] array = (Object[]) result;
+                                if (CollectionUtils.isNotEmpty(array)) {
+                                    Object item = array[0];
+                                    cloneResult = JsonUtils.toList(cloneResult, item.getClass());
+                                }
                             }
-                        }
-                        // Map type
-                        else if (ReflectUtils.isMapType(result.getClass())) {
-                            Map<?, ?> map = (Map<?, ?>) result;
-                            if (CollectionUtils.isNotEmpty(map)) {
-                                Optional<? extends Map.Entry<?, ?>> optional = map.entrySet().stream().findFirst();
-                                if (optional.isPresent()) {
-                                    Map.Entry<?, ?> entry = optional.get();
-                                    cloneResult = JsonUtils.toMap(cloneResult, entry.getKey().getClass(), entry.getValue().getClass());
+                            // Map type
+                            else if (ReflectUtils.isMapType(result.getClass())) {
+                                Map<?, ?> map = (Map<?, ?>) result;
+                                if (CollectionUtils.isNotEmpty(map)) {
+                                    Optional<? extends Map.Entry<?, ?>> optional = map.entrySet().stream().findFirst();
+                                    if (optional.isPresent()) {
+                                        Map.Entry<?, ?> entry = optional.get();
+                                        cloneResult = JsonUtils.toMap(cloneResult, entry.getKey().getClass(), entry.getValue().getClass());
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    // Rewrite field content
-                    if (agileLoggerContext.getProperties().isRewriteField()) {
+                        // Rewrite field content
                         rewriteField(cloneResult);
                     }
                 }

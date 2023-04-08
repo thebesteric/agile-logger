@@ -58,4 +58,15 @@ public class ClassUtils {
         return obj;
     }
 
+    public static String getPackageName(Class<?> clazz) {
+        assert clazz != null : "Class must not be null";
+        return getPackageName(clazz.getName());
+    }
+
+    public static String getPackageName(String className) {
+        assert className != null : "Class name must not be null";
+        int lastDotIndex = className.lastIndexOf(46);
+        return lastDotIndex != -1 ? className.substring(0, lastDotIndex) : "";
+    }
+
 }
