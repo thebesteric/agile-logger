@@ -396,7 +396,9 @@ sourceflag:
 ```yaml
 sourceflag:
   agile-logger:
-    rewrite-field: true
+    rewrite:
+      enabled: true
+      packages: "com.example.*"
 ```
 
 ## 4. 注解配置

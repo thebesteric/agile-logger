@@ -60,7 +60,7 @@
 - Fixed: Fixed an issue where `@RequestMapping` could not get value attribute when specifying the path attribute
 - Fixed: Fixed an issue where modifying the log result attribute would affect the actual return value
 - Perf: Use Gson to serialization single object
-- c: Add `mybatis plugin` to log SQL statements
+- Feature: Add `mybatis plugin` to log SQL statements
 - Feature: Support for rewriting the value of log result-class field using the `@RewriteField` annotation
 ### v1.0.13
 - Fixed: Fixed `@RewriteField` not being able to overwrite array, collection and map type data
@@ -72,3 +72,6 @@
 ### v1.0.15
 - Fixed: Fixed the problem with the original message was overridden by default in `R.class` when setCode is called
 - Fixed: Fixed `@RewriteField` throw NullPointerException in iterator Map Object
+### v1.0.16
+- Fixed: Fixed the Rewrite Bug
+- Perf: Readjust the way you rewrite and configure, You must specify a rewrite packages
