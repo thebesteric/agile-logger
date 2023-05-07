@@ -1,7 +1,8 @@
 package io.github.thebesteric.framework.agile.logger.core.domain;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;

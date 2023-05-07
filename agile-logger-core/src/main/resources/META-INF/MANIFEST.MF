@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Premain-Class: io.github.thebesteric.framework.agile.logger.core.AgileApplication
-Can-Redefine-Classes: true
-Can-Retransform-Classes: true

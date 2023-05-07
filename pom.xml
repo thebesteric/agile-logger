@@ -8,7 +8,7 @@
     <groupId>io.github.thebesteric.framework.agile</groupId>
     <artifactId>agile-logger</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.16</version>
+    <version>${revision}</version>
 
     <name>agile logger</name>
     <url>https://github.com/thebesteric/agile-logger</url>
@@ -41,9 +41,8 @@
     </developers>
 
     <properties>
-        <java.version>11</java.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <revision>2.0.0</revision>
+        <java.version>17</java.version>
         <source.directory>src/main/java</source.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -51,22 +50,20 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <skipTests>true</skipTests>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-        <aspectj-maven-plugin.version>1.13.1</aspectj-maven-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <spring.boot.version>2.7.9</spring.boot.version>
+        <spring.boot.version>3.0.6</spring.boot.version>
         <lombok.version>1.18.26</lombok.version>
-        <slf4j.version>2.0.6</slf4j.version>
-        <jackson.version>2.14.2</jackson.version>
+        <slf4j.version>2.0.7</slf4j.version>
+        <jackson.version>2.15.0</jackson.version>
         <cglib.version>3.3.0</cglib.version>
-        <aspectj.version>1.9.9.1</aspectj.version>
         <apache.commons.lang3.version>3.12.0</apache.commons.lang3.version>
         <apache.commons.collections4.version>4.4</apache.commons.collections4.version>
-        <jedis.version>4.3.1</jedis.version>
+        <jedis.version>4.3.2</jedis.version>
         <caffeine.version>3.1.3</caffeine.version>
         <skywalking.version>8.14.0</skywalking.version>
-        <netty.version>4.1.89.Final</netty.version>
-        <feign.version>12.1</feign.version>
-        <snakeyaml.version>1.33</snakeyaml.version>
+        <netty.version>4.1.92.Final</netty.version>
+        <feign.version>12.3</feign.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
         <guava.version>31.1-jre</guava.version>
     </properties>
 
@@ -78,7 +75,6 @@
         <module>agile-logger-plugin-redis</module>
         <module>agile-logger-plugin-database</module>
         <module>agile-logger-plugin-cache</module>
-        <module>agile-logger-example</module>
         <module>agile-logger-rpc-feign</module>
         <module>agile-logger-rpc-rest-template</module>
         <module>agile-logger-plugin-mybatis</module>
@@ -145,11 +141,11 @@
             <version>${jackson.version}</version>
         </dependency>
 
-        <!-- https://search.maven.org/artifact/javax.servlet/javax.servlet-api -->
+        <!-- https://search.maven.org/artifact/jakarta.servlet/jakarta.servlet-api -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -215,27 +211,6 @@
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
                 <version>${cglib.version}</version>
-            </dependency>
-
-            <!-- https://search.maven.org/artifact/org.aspectj/aspectjrt -->
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjrt</artifactId>
-                <version>${aspectj.version}</version>
-            </dependency>
-
-            <!-- https://search.maven.org/artifact/org.aspectj/aspectjweaver -->
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjweaver</artifactId>
-                <version>${aspectj.version}</version>
-            </dependency>
-
-            <!-- https://search.maven.org/artifact/org.aspectj/aspectjtools -->
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjtools</artifactId>
-                <version>${aspectj.version}</version>
             </dependency>
 
             <!-- https://search.maven.org/artifact/redis.clients/jedis -->

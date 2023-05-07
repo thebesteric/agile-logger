@@ -5,10 +5,10 @@ import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.utils.DefaultIdGenerator;
 import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.processor.*;
+import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.skywalking.apm.toolkit.trace.TraceContext;
 
-import javax.servlet.Filter;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
