@@ -94,13 +94,12 @@ public class AgileLoggerRedisAutoConfiguration {
         template.setKeySerializer(keySerializer);
         template.setHashKeySerializer(keySerializer);
 
-        Jackson2JsonRedisSerializer<Object> jacksonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        jacksonSerializer.setObjectMapper(objectMapper);
+        Jackson2JsonRedisSerializer<Object> jacksonSerializer = new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
 
         // Value Serializer
         template.setValueSerializer(jacksonSerializer);

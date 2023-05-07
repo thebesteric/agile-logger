@@ -11,11 +11,11 @@ import io.github.thebesteric.framework.agile.logger.spring.wrapper.AbstractAgile
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerRequestWrapper;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerResponseWrapper;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;

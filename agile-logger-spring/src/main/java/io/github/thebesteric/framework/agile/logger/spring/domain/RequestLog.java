@@ -164,9 +164,9 @@ public class RequestLog extends InvokeLog {
         }
 
         // cookies
-        javax.servlet.http.Cookie[] cookies = requestWrapper.getCookies();
-        if (cookies != null && cookies.length > 0) {
-            for (javax.servlet.http.Cookie cookie : cookies) {
+        jakarta.servlet.http.Cookie[] cookies = requestWrapper.getCookies();
+        if (cookies != null) {
+            for (jakarta.servlet.http.Cookie cookie : cookies) {
                 this.getCookies().add(new RequestLog.Cookie(cookie));
             }
         }
@@ -187,23 +187,19 @@ public class RequestLog extends InvokeLog {
 
         private String name;
         private String value;
-        private String comment;
         private String domain;
         private int maxAge = -1;
         private String path;
         private boolean secure;
-        private int version = 0;
         private boolean isHttpOnly = false;
 
-        public Cookie(javax.servlet.http.Cookie cookie) {
+        public Cookie(jakarta.servlet.http.Cookie cookie) {
             this.name = cookie.getName();
             this.value = cookie.getValue();
-            this.comment = cookie.getComment();
             this.domain = cookie.getDomain();
             this.maxAge = cookie.getMaxAge();
             this.path = cookie.getPath();
             this.secure = cookie.getSecure();
-            this.version = cookie.getVersion();
             this.isHttpOnly = cookie.isHttpOnly();
         }
 

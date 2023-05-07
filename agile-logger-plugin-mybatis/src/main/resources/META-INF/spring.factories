@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  io.github.thebesteric.framework.agile.logger.plugin.mybatis.config.AgileLoggerMybatisAutoConfiguration

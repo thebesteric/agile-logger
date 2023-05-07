@@ -1,9 +1,9 @@
 package io.github.thebesteric.framework.agile.logger.commons.utils;
 
 import io.github.thebesteric.framework.agile.logger.commons.exception.IllegalArgumentException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
