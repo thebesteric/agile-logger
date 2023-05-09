@@ -8,7 +8,7 @@
     <groupId>io.github.thebesteric.framework.agile</groupId>
     <artifactId>agile-logger</artifactId>
     <packaging>pom</packaging>
-    <version>${revision}</version>
+    <version>2.0.1</version>
 
     <name>agile logger</name>
     <url>https://github.com/thebesteric/agile-logger</url>
@@ -41,7 +41,6 @@
     </developers>
 
     <properties>
-        <revision>2.0.0</revision>
         <java.version>17</java.version>
         <source.directory>src/main/java</source.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
