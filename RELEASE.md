@@ -75,3 +75,9 @@
 ### v1.0.16
 - Fixed: Fixed the Rewrite Bug
 - Perf: Readjust the way you rewrite and configure, You must specify a rewrite packages
+### v2.0.0
+- Refactor: Support Java 17
+### v2.0.1
+- Fixed: Fixed a version issue that caused the download to fail
+### v2.1.0
+- Refactor: R.class structure refactor
