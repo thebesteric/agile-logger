@@ -18,20 +18,24 @@ import java.util.Map;
  * @since 2022/7/22
  */
 @Data
-public class R implements Serializable {
+public class R<T> implements Serializable {
     private Integer code;
-    private Object data;
+    private T data;
     private Long timestamp;
     private String message;
     private String trackId;
     private static final String ZONE_OFFSET = "+8";
 
-    public synchronized static R newInstance() {
+    private R() {
+        super();
+    }
+
+    public synchronized static <T> R<T> newInstance() {
         return initInstance(null, null, null, null);
     }
 
-    private synchronized static R initInstance(Integer code, String message, String trackId, Object data) {
-        R instance = new R();
+    private synchronized static <T> R<T> initInstance(Integer code, String message, String trackId, T data) {
+        R<T> instance = new R<>();
         instance.code = code;
         instance.message = message;
         instance.data = data;
@@ -50,110 +54,91 @@ public class R implements Serializable {
     }
 
     @SuppressWarnings({"unchecked"})
-    public R put(String key, Object value) {
-        if (this.data == null) {
-            this.data = new HashMap<>();
+    public R<T> put(String key, Object value) {
+        if (data == null) {
+            this.data = (T) new HashMap<>();
         }
         if (this.data instanceof Map) {
             ((Map<String, Object>) this.data).put(key, value);
             return this;
         }
-        throw new IllegalArgumentException(String.format("data: [%s] is not a map structure", this.data));
+        String className = this.data.getClass().getName();
+        throw new IllegalArgumentException(String.format("data: [%s] is not a map structure", className));
     }
 
-    public R setCode(int code) {
+    public R<T> setCode(int code) {
         this.code = code;
         return this;
     }
 
-    public R setCode(HttpStatus httpStatus) {
+    public R<T> setCode(HttpStatus httpStatus) {
         return setCode(httpStatus.code);
     }
 
-    public R setMessage(String message) {
+    public R<T> setMessage(String message) {
         this.message = message;
         return this;
     }
 
-    public R setData(Object data) {
+    public R<T> setData(T data) {
         this.data = data;
         return this;
     }
 
-    public static R success(int code, String message, String trackId, Object data) {
+    public static <T> R<T> success(int code, String message, String trackId, T data) {
         return initInstance(code, message, trackId, data);
     }
 
-    public static R success() {
-        return success(HttpStatus.OK);
+    public static <T> R<T> success() {
+        return success(HttpStatus.OK.memo, null);
     }
 
-    public static R success(String message) {
-        return success(HttpStatus.OK, message);
+    public static <T> R<T> success(T data) {
+        return success(HttpStatus.OK.memo, data);
     }
 
-    public static R success(Object data) {
-        return success(null, data);
-    }
-
-    public static R success(HttpStatus httpStatus) {
-        return success(httpStatus, HttpStatus.OK.memo);
-    }
-
-    public static R success(HttpStatus httpStatus, String message) {
-        return success(httpStatus, message, null);
-    }
-
-    public static R success(String message, Object data) {
+    public static <T> R<T> success(String message, T data) {
         return success(HttpStatus.OK, message, data);
     }
 
-    public static R success(HttpStatus httpStatus, String message, Object data) {
+    public static <T> R<T> success(HttpStatus httpStatus, T data) {
+        return success(httpStatus, httpStatus.memo, data);
+    }
+
+    public static <T> R<T> success(HttpStatus httpStatus, String message, T data) {
         return success(httpStatus.code, null != message ? message : httpStatus.memo, data);
     }
 
-    public static R success(int code, String message, Object data) {
+    public static <T> R<T> success(int code, String message, T data) {
         return success(code, message, TransactionUtils.get(), data);
     }
 
-    public static R error(int code, String message, String trackId, Object data) {
+    public static <T> R<T> error(int code, String message, String trackId, T data) {
         return initInstance(code, message, trackId, data);
     }
 
-    public static R error() {
-        return error(HttpStatus.INTERNAL_SERVER_ERROR);
+    public static <T> R<T> error() {
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, null);
     }
 
-    public static R error(String message) {
-        return error(HttpStatus.INTERNAL_SERVER_ERROR, message);
+    public static <T> R<T> error(T data) {
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, data);
     }
 
-    public static R error(Object data) {
-        return error(HttpStatus.INTERNAL_SERVER_ERROR, null, data);
-    }
-
-    public static R error(String message, Object data) {
+    public static <T> R<T> error(String message, T data) {
         return error(HttpStatus.INTERNAL_SERVER_ERROR, message, data);
     }
 
-    public static R error(HttpStatus httpStatus) {
-        return error(httpStatus, httpStatus.memo);
+    public static <T> R<T> error(HttpStatus httpStatus, T data) {
+        return error(httpStatus, httpStatus.memo, data);
     }
 
-    public static R error(HttpStatus httpStatus, String message) {
-        return error(httpStatus, message, null);
-    }
-
-    public static R error(HttpStatus httpStatus, String message, Object data) {
+    public static <T> R<T> error(HttpStatus httpStatus, String message, T data) {
         return error(httpStatus.code, null != message ? message : httpStatus.memo, data);
     }
 
-    public static R error(int code, String message, Object data) {
-        return error(code, message, null, data);
-    }
-
-    public static R error(int code, String message) {
-        return error(code, message, null, null);
+    public static <T> R<T> error(int code, String message, T data) {
+        return error(code, message, TransactionUtils.get(), data);
     }
 
     /**
