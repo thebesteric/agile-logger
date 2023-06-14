@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -40,7 +41,10 @@ public class JsonUtils {
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
                 .configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false)
+                // Fix Java 8 date/time type `java.time.LocalDateTime` not supported by default
+                .registerModule(new JavaTimeModule())
                 .setSerializationInclusion(JsonInclude.Include.ALWAYS);
+
     }
 
     public static <T> T toObject(String jsonStr, Class<T> clazz) {

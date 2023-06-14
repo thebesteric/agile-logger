@@ -155,6 +155,14 @@ public class StringUtils {
         }
     }
 
+    public static void print(String template, Object... params) {
+        System.out.print(format(template, params));
+    }
+
+    public static void println(String template, Object... params) {
+        System.out.println(format(template, params));
+    }
+
     public static String format(String template, Object... params) {
         return formatWith(template, "{}", params);
     }
