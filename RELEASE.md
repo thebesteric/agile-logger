@@ -73,7 +73,7 @@
 - Fixed: Fixed the problem with the original message was overridden by default in `R.class` when setCode is called
 - Fixed: Fixed `@RewriteField` throw NullPointerException in iterator Map Object
 ### v1.0.16
-- Fixed: Fixed the Rewrite Bug
+- c: Fixed the Rewrite Bug
 - Perf: Readjust the way you rewrite and configure, You must specify a rewrite packages
 ### v2.0.0
 - Refactor: Support Java 17
@@ -81,3 +81,7 @@
 - Fixed: Fixed a version issue that caused the download to fail
 ### v2.1.0
 - Refactor: R.class structure refactor
+### v2.1.1
+- Fixed: Java 8 date/time type `java.time.LocalDateTime` not supported by default
+- Perf: `StringUtils` add `print` method
+- Build: Upgrade Spring-boot version to v3.1.0
