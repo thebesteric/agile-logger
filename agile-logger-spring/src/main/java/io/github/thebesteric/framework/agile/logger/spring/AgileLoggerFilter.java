@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.*;
 
 /**
  * AgileLoggerFilter
@@ -58,8 +58,15 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
             return;
         }
 
+        // Fetch URI mapping Method
+        Method method = URL_MAPPING.get(uri);
+
+        // Check uri is @PathVariable type
+        if (method == null) {
+            method = checkPathVariables(uri);
+        }
+
         // Check ignore Method
-        Method method = AbstractAgileLoggerFilter.URL_MAPPING.get(uri);
         IgnoreMethodProcessor.IgnoreMethod ignoreMethod = null;
         if (method != null) {
             ignoreMethod = IgnoreMethodProcessor.IgnoreMethod.builder().clazz(method.getDeclaringClass()).method(method).build();
@@ -118,4 +125,47 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
         }
 
     }
+
+
+    /**
+     * checkPathVariables
+     *
+     * @param uri uri
+     * @return Method
+     * @author wangweijun
+     * @since 2023/6/22 17:08
+     */
+    private Method checkPathVariables(String uri) {
+        // Find in cache
+        Method method = PATH_VARIABLE_URL_MAPPING.get(uri);
+        if (method != null) {
+            return method;
+        }
+
+        Set<Map.Entry<String, Method>> entries = AbstractAgileLoggerFilter.URL_MAPPING.entrySet();
+        for (Map.Entry<String, Method> entry : entries) {
+            String path = entry.getKey();
+            // Check @PathVariable Uri
+            if (path.contains("{") && path.contains("}")) {
+                List<String> origin = Arrays.asList(uri.split("/"));
+                List<String> dest = Arrays.asList(path.split("/"));
+                boolean isPathVariable = true;
+                for (int i = 0; i < origin.size(); i++) {
+                    if (origin.get(i).equals(dest.get(i)) || (dest.get(i).startsWith("{") && dest.get(i).endsWith("}"))) {
+                        continue;
+                    }
+                    isPathVariable = false;
+                    break;
+                }
+                if (isPathVariable) {
+                    method = entry.getValue();
+                    PATH_VARIABLE_URL_MAPPING.put(uri, method);
+                    return method;
+                }
+            }
+        }
+        return null;
+    }
+
+
 }

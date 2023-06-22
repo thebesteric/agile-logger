@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractAgileLoggerFilter implements Filter {
 
     public static final Map<String, Method> URL_MAPPING = new ConcurrentHashMap<>(128);
+    public static final Map<String, Method> PATH_VARIABLE_URL_MAPPING = new HashMap<>(128);
     public static boolean useSkyWalkingTrace = true;
 
     protected final AgileLoggerContext agileLoggerContext;
