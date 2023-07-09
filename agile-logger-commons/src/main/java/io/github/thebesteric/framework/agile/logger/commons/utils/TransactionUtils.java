@@ -34,6 +34,10 @@ public class TransactionUtils {
         trackIdThreadLocal.set(trackId);
     }
 
+    public static void clear() {
+        trackIdThreadLocal.remove();
+    }
+
     public static void initialize() {
         trackIdThreadLocal = create();
     }

@@ -1,6 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.spring;
 
 import io.github.thebesteric.framework.agile.logger.commons.utils.DurationWatcher;
+import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUtils;
 import io.github.thebesteric.framework.agile.logger.core.AgileContext;
 import io.github.thebesteric.framework.agile.logger.core.domain.InvokeLog;
 import io.github.thebesteric.framework.agile.logger.spring.domain.Parent;
@@ -118,6 +119,7 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
             this.currentRecordProcessor.processor(requestLog);
 
             DurationWatcher.clear();
+            TransactionUtils.clear();
 
             ServletOutputStream out = response.getOutputStream();
             out.write(responseWrapper.getByteArray());
