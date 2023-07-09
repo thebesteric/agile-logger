@@ -87,3 +87,6 @@
 - Build: Upgrade Spring-boot version to v3.1.0
 ### v2.2.1
 - Feature: Support `@PathVariable` type
+### v2.2.2
+- Feature: Feign plugin Support ignore method
+- Fixed: Fixed an issue where `TransactionUtils` did not clean up "track-id" in the thread
