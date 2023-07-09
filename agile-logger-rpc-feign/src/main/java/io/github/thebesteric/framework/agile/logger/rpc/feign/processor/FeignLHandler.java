@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import feign.*;
 import io.github.thebesteric.framework.agile.logger.commons.utils.*;
+import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
+import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethod;
+import io.github.thebesteric.framework.agile.logger.core.annotation.IgnoreMethods;
 import io.github.thebesteric.framework.agile.logger.core.domain.AbstractEntity;
 import io.github.thebesteric.framework.agile.logger.core.domain.ExecuteInfo;
 import io.github.thebesteric.framework.agile.logger.core.domain.MethodInfo;
@@ -24,6 +27,7 @@ import java.net.Inet4Address;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * FeignLogger
@@ -180,10 +184,8 @@ public class FeignLHandler extends feign.Logger {
             executeInfo.setMethodInfo(methodInfo);
 
             // Set Method And Args
-            if (parent == null) {
-                logWrapper.setMethod(method);
-                logWrapper.setArgs(methodArgs.values().toArray());
-            }
+            logWrapper.setMethod(method);
+            logWrapper.setArgs(methodArgs.values().toArray());
         }
 
         // Set ExecuteInfo
@@ -262,16 +264,106 @@ public class FeignLHandler extends feign.Logger {
     private void recordLog(final LogWrapper logWrapper) {
         final RequestLog requestLog = logWrapper.getRequestLog();
         Parent parent = logWrapper.getParent();
+        Method method = logWrapper.getMethod();
+
+        // Ignore Method
+        if (ignoreMethod(method)) {
+            return;
+        }
+
+        // Handler RequestLog Attributes
+        handleRequestLogAttrs(requestLog, method);
+
         // Record Log
         agileLoggerContext.getCurrentRecordProcessor().processor(requestLog);
         // Remove ThreadLocal
         logWrapperThreadLocal.remove();
         // Set Parent
         if (parent == null) {
-            parent = new Parent(requestLog.getLogId(), logWrapper.getMethod(), logWrapper.getArgs());
+            parent = new Parent(requestLog.getLogId(), method, logWrapper.getArgs());
         } else {
             parent = new Parent(requestLog.getLogId(), parent.getMethod(), parent.getArgs());
         }
         AgileLoggerContext.setParent(parent);
+    }
+
+    /**
+     * Ignore Method
+     *
+     * @param method method
+     * @author wangweijun
+     * @since 2023/7/9 18:47
+     */
+    private boolean ignoreMethod(Method method) {
+        assert method != null;
+
+        // @IgnoreMethods on Type
+        Class<?> clazz = method.getDeclaringClass();
+        IgnoreMethods ignoreMethods = clazz.getAnnotation(IgnoreMethods.class);
+        if (ignoreMethods != null) {
+            String[] ignoreMethodsOnType = ignoreMethods.value();
+            for (String ignoreMethod : ignoreMethodsOnType) {
+                if (Pattern.matches(ignoreMethod, method.getName())) {
+                    return true;
+                }
+            }
+        }
+
+        // Handle @AgileLogger On Type
+        AgileLogger AgileLoggerOnType = clazz.getAnnotation(AgileLogger.class);
+        if (AgileLoggerOnType != null) {
+            String[] ignoredMethodsOnType = AgileLoggerOnType.ignoreMethods();
+            for (String ignoreMethod : ignoredMethodsOnType) {
+                if (Pattern.matches(ignoreMethod, method.getName())) {
+                    return true;
+                }
+            }
+        }
+
+        // @IgnoreMethod on Method
+        if (method.isAnnotationPresent(IgnoreMethod.class)) {
+            return true;
+        }
+
+        // Handle @AgileLogger On Method
+        AgileLogger agileLoggerOnMethod = method.getAnnotation(AgileLogger.class);
+        if (agileLoggerOnMethod != null) {
+            String[] ignoredMethodsOnMethod = agileLoggerOnMethod.ignoreMethods();
+            for (String ignoreMethod : ignoredMethodsOnMethod) {
+                if (Pattern.matches(ignoreMethod, method.getName())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Handler RequestLog Attributes
+     *
+     * @param requestLog requestLog
+     * @param method     method
+     * @author wangweijun
+     * @since 2023/7/9 18:47
+     */
+    private void handleRequestLogAttrs(RequestLog requestLog, Method method) {
+        // Handle @AgileLogger
+        AgileLogger agileLogger = method.getAnnotation(AgileLogger.class);
+        if (agileLogger == null) {
+            return;
+        }
+
+        // Handle tag
+        String tagOnAgileLogger = agileLogger.tag();
+        if (StringUtils.isNotEmpty(tagOnAgileLogger)) {
+            requestLog.setTag(tagOnAgileLogger);
+        }
+
+        // Handle extra
+        String extra = agileLogger.extra();
+        if (StringUtils.isNotEmpty(extra)) {
+            requestLog.setExtra(extra);
+        }
     }
 }
