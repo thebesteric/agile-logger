@@ -21,6 +21,9 @@ public interface MappingProcessor {
         if (classRequestMappingUrls != null) {
             for (String classRequestMappingUrl : classRequestMappingUrls) {
                 String[] methodRequestMappingUrls = supplier.get();
+                if (!classRequestMappingUrl.startsWith("/")) {
+                    classRequestMappingUrl = "/" + classRequestMappingUrl;
+                }
                 handlerMapping(classRequestMappingUrl, methodRequestMappingUrls, method);
             }
         }
