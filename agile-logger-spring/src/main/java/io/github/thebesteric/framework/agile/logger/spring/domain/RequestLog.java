@@ -176,7 +176,8 @@ public class RequestLog extends InvokeLog {
         this.response.setStatus(responseWrapper.getStatus());
         this.response.setContentType(responseWrapper.getContentType());
         this.response.setLocale(responseWrapper.getLocale().toString());
-        Map<String, String> responseHeaders = responseWrapper.getHeaderNames().stream().collect(Collectors.toMap((key) -> key, responseWrapper::getHeader));
+        Map<String, String> responseHeaders = responseWrapper.getHeaderNames().stream()
+                .collect(Collectors.toMap((key) -> key, responseWrapper::getHeader, (v1, v2) -> v2));
         this.response.setHeaders(responseHeaders);
     }
 
