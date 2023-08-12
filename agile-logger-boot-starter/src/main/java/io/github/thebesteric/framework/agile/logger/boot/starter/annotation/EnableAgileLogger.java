@@ -10,4 +10,5 @@ import java.lang.annotation.*;
 @Import(AgileLoggerMarker.class)
 @Documented
 public @interface EnableAgileLogger {
+    String[] basePackages() default {};
 }

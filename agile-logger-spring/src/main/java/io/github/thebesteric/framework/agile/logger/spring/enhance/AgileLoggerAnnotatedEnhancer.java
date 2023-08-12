@@ -13,7 +13,6 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * AgileLoggerAnnotatedEnhancer
@@ -52,13 +51,22 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
 
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
-
         Class<?> beanClass = bean.getClass();
         String originClassName = getOriginClassName(beanClass);
         Class<?> originClass = ClassUtils.forName(originClassName, false);
 
+        // Check base packages
+        String[] basePackages = agileLoggerContext.getBasePackages();
+        if (basePackages != null) {
+            for (String basePackage : basePackages) {
+                if (!originClass.getPackageName().startsWith(basePackage)) {
+                    return bean;
+                }
+            }
+        }
+
         // Beans that does not require to enhance
-        if (!agileLoggerContext.getProperties().isEnable() || !needEnhance(originClass) || isSpringInternalClass(originClass)) {
+        if (!agileLoggerContext.getProperties().isEnable() || !needEnhance(originClass, beanName) || isSpringInternalClass(originClass)) {
             return bean;
         }
 
@@ -72,7 +80,6 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
     }
 
     public Object enhance(Class<?> originClass, Callback callback, String beanName, Object bean) {
-
         enhancer.setSuperclass(originClass);
         enhancer.setCallback(callback);
 
@@ -102,7 +109,7 @@ public class AgileLoggerAnnotatedEnhancer extends AbstractAnnotatedEnhancer {
 
             // 2.2. In reverse order of the number of arguments to the constructors
             List<? extends Constructor<?>> sortedConstructors = constructors.entrySet().stream()
-                    .sorted((o1, o2) -> o2.getValue() - o1.getValue()).map(Map.Entry::getKey).collect(Collectors.toList());
+                    .sorted((o1, o2) -> o2.getValue() - o1.getValue()).map(Map.Entry::getKey).toList();
 
 
             // 2.3. There is only one constructor that checks whether the parameter can be injected
