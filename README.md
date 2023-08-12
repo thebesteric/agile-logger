@@ -13,9 +13,9 @@ A flexible logging plug-in
 </dependency>
 ```
 
-在启动类注解上标记`@EnableAgileLogger`即可
+在启动类注解上标记`@EnableAgileLogger`即可完成，或指定`basePackages`属性，完成指定路径扫描
 ```java
-@EnableAgileLogger
+@EnableAgileLogger(basePackages="io.github.thebesteric")
 @SpringBootApplication
 public class Application {
     public static void main(String[] args) {

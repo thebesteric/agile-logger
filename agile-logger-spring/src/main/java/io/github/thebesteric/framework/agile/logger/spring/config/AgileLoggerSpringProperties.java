@@ -73,6 +73,15 @@ public class AgileLoggerSpringProperties {
         private Mock mock = new Mock();
         private Track track = new Track();
         private Curl curl = new Curl();
+        private Enhancer enhancer = new Enhancer();
+    }
+
+    @Getter
+    @Setter
+    public static class Enhancer {
+        private String[] ignoreClasses;
+        private String[] ignoreBeanNames;
+        private String[] ignorePackages;
     }
 
     @Getter

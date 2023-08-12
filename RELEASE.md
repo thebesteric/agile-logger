@@ -90,3 +90,7 @@
 ### v2.2.2
 - Feature: Feign plugin Support ignore method
 - Fixed: Fixed an issue where `TransactionUtils` did not clean up "track-id" in the thread
+### v2.2.3
+- Feature: Support specified package path to scanning
+- Fixed: Fixed an issue where class request mapping url does not start with "/"
+- Fixed: Fixed an issue where Duplicate key in response headers

@@ -1,6 +1,7 @@
 package io.github.thebesteric.framework.agile.logger.spring.wrapper;
 
 import io.github.thebesteric.framework.agile.logger.commons.exception.InvalidDataException;
+import io.github.thebesteric.framework.agile.logger.commons.utils.CollectionUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
 import io.github.thebesteric.framework.agile.logger.commons.utils.SignatureUtils;
 import io.github.thebesteric.framework.agile.logger.commons.utils.TransactionUtils;
@@ -21,17 +22,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.Environment;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -45,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Getter
-public class AgileLoggerContext {
+public class AgileLoggerContext implements ApplicationContextAware {
 
     public final GenericApplicationContext applicationContext;
 
@@ -63,7 +64,9 @@ public class AgileLoggerContext {
     private final ExecutorService recordLoggerThreadPool;
     private final Environment environment;
     private final List<MockProcessor> mockProcessors;
+
     private List<RecordProcessor> recordProcessors;
+    private String[] basePackages;
 
     @Setter
     private RecordProcessor currentRecordProcessor;
@@ -335,5 +338,28 @@ public class AgileLoggerContext {
                     new ThreadPoolExecutor.CallerRunsPolicy());
         }
         return null;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        final String annotationStr = "io.github.thebesteric.framework.agile.logger.boot.starter.annotation.EnableAgileLogger";
+        try {
+            Class<? extends Annotation> annotation = (Class<? extends Annotation>) Class.forName(annotationStr);
+            Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(annotation);
+            if (CollectionUtils.isNotEmpty(beansWithAnnotation)) {
+                Optional<Object> optional = beansWithAnnotation.values().stream().findFirst();
+                if (optional.isPresent()) {
+                    Object application = optional.get();
+                    String className = application.getClass().getName().split("\\$\\$")[0];
+                    Class<?> applicatioClass = Class.forName(className);
+                    Annotation enableAgileLoggerAnnotation = applicatioClass.getAnnotation(annotation);
+                    Class<? extends Annotation> enableAgileLoggerAnnotationClass = enableAgileLoggerAnnotation.annotationType();
+                    Method method = enableAgileLoggerAnnotationClass.getDeclaredMethod("basePackages");
+                    basePackages = (String[]) method.invoke(enableAgileLoggerAnnotation);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

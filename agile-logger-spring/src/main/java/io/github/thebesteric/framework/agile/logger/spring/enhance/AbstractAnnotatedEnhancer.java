@@ -3,6 +3,7 @@ package io.github.thebesteric.framework.agile.logger.spring.enhance;
 import io.github.thebesteric.framework.agile.logger.commons.utils.LoggerPrinter;
 import io.github.thebesteric.framework.agile.logger.commons.utils.ReflectUtils;
 import io.github.thebesteric.framework.agile.logger.core.annotation.AgileLogger;
+import io.github.thebesteric.framework.agile.logger.spring.config.AgileLoggerSpringProperties;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.mocker.annotation.Mocker;
 import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.annotation.Versioner;
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
@@ -36,11 +37,53 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
         this.agileLoggerContext = agileLoggerContext;
     }
 
-    protected boolean needEnhance(Class<?> clazz) {
-        return ReflectUtils.isAnnotationPresent(clazz, AgileLogger.class, true)
-                || ReflectUtils.anyAnnotationPresent(clazz, RestController.class, Controller.class)
-                || ReflectUtils.isAnnotationPresent(clazz, Versioner.class, true)
-                || ReflectUtils.isAnnotationPresent(clazz, Mocker.class, true);
+    protected boolean needEnhance(Class<?> clazz, String beanName) {
+        return checkPropertiesEnhancerConfig(clazz, beanName) &&
+                (ReflectUtils.isAnnotationPresent(clazz, AgileLogger.class, true)
+                        || ReflectUtils.anyAnnotationPresent(clazz, RestController.class, Controller.class)
+                        || ReflectUtils.isAnnotationPresent(clazz, Versioner.class, true)
+                        || ReflectUtils.isAnnotationPresent(clazz, Mocker.class, true));
+    }
+
+    protected boolean checkPropertiesEnhancerConfig(Class<?> clazz, String beanName) {
+
+        AgileLoggerSpringProperties.Enhancer enhancer = agileLoggerContext.getProperties().getConfig().getEnhancer();
+        if (enhancer == null) {
+            return true;
+        }
+
+        // Check ignore packages
+        String[] ignorePackages = enhancer.getIgnorePackages();
+        if (ignorePackages != null) {
+            for (String ignorePackage : ignorePackages) {
+                if (clazz.getPackageName().startsWith(ignorePackage)) {
+                    return false;
+                }
+            }
+        }
+
+
+        // Check Ignore CLasses
+        String[] ignoreClasses = enhancer.getIgnoreClasses();
+        if (ignoreClasses != null) {
+            for (String ignoreClass : ignoreClasses) {
+                if (clazz.getName().equals(ignoreClass)) {
+                    return false;
+                }
+            }
+        }
+
+        // Check Ignore Bean Names
+        String[] ignoreBeanNames = enhancer.getIgnoreBeanNames();
+        if (ignoreBeanNames != null) {
+            for (String ignoreBeanName : ignoreBeanNames) {
+                if (beanName.equals(ignoreBeanName)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     protected boolean isSpringInternalClass(Class<?> clazz) {
