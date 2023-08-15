@@ -94,3 +94,6 @@
 - Feature: Support specified package path to scanning
 - Fixed: Fixed an issue where class request mapping url does not start with "/"
 - Fixed: Fixed an issue where Duplicate key in response headers
+### v2.2.4
+- Perf: Support `server.servlet.context-path`, And the priority is lower than that of the property `uri-prefix`
+- Perf: Optimized how `AgileLoggerContext` gets `basePackages`
