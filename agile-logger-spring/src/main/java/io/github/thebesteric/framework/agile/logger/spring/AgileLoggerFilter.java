@@ -19,7 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * AgileLoggerFilter
@@ -45,13 +48,7 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
         }
 
         // Check ignore URI
-        String uri = ((HttpServletRequest) request).getRequestURI();
-
-        // Add uri prefix if present
-        String uriPrefix = this.agileLoggerContext.getProperties().getUriPrefix();
-        if (uriPrefix != null) {
-            uri = uri.substring(uriPrefix.length());
-        }
+        String uri = getRelativeRequestURI(request);
 
         // Check IgnoreUriProcessor
         if (this.ignoreUriProcessor.matching(uri)) {
@@ -126,6 +123,20 @@ public class AgileLoggerFilter extends AbstractAgileLoggerFilter {
             out.flush();
         }
 
+    }
+
+    private String getRelativeRequestURI(ServletRequest servletRequest) {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String uri = request.getRequestURI();
+        // Add uri prefix if present
+        String uriPrefix = this.agileLoggerContext.getProperties().getUriPrefix();
+        if (uriPrefix == null) {
+            uriPrefix = this.agileLoggerContext.getContextPath();;
+        }
+        if (uriPrefix != null) {
+            uri = uri.substring(uriPrefix.length());
+        }
+        return uri;
     }
 
 

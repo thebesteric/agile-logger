@@ -21,9 +21,7 @@ public interface MappingProcessor {
         if (classRequestMappingUrls != null) {
             for (String classRequestMappingUrl : classRequestMappingUrls) {
                 String[] methodRequestMappingUrls = supplier.get();
-                if (!classRequestMappingUrl.startsWith("/")) {
-                    classRequestMappingUrl = "/" + classRequestMappingUrl;
-                }
+                classRequestMappingUrl = addUrlSlashPrefix(classRequestMappingUrl);
                 handlerMapping(classRequestMappingUrl, methodRequestMappingUrls, method);
             }
         }
@@ -37,9 +35,16 @@ public interface MappingProcessor {
             }
         } else {
             for (String methodRequestMappingUrl : methodRequestMappingUrls) {
-                String url = classRequestMappingUrl + methodRequestMappingUrl;
+                String url = classRequestMappingUrl + addUrlSlashPrefix(methodRequestMappingUrl);
                 AbstractAgileLoggerFilter.URL_MAPPING.put(url, method);
             }
         }
+    }
+
+    default String addUrlSlashPrefix(String url) {
+        if (!url.startsWith("/")) {
+            url = "/" + url;
+        }
+        return url;
     }
 }
