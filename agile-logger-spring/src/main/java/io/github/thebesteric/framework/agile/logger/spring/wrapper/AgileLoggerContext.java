@@ -25,7 +25,6 @@ import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.Environment;
 
@@ -46,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Getter
-public class AgileLoggerContext implements ApplicationContextAware {
+public class AgileLoggerContext {
 
     public final GenericApplicationContext applicationContext;
 
@@ -64,9 +63,10 @@ public class AgileLoggerContext implements ApplicationContextAware {
     private final ExecutorService recordLoggerThreadPool;
     private final Environment environment;
     private final List<MockProcessor> mockProcessors;
+    private final String[] basePackages;
+    private final String contextPath;
 
     private List<RecordProcessor> recordProcessors;
-    private String[] basePackages;
 
     @Setter
     private RecordProcessor currentRecordProcessor;
@@ -84,6 +84,8 @@ public class AgileLoggerContext implements ApplicationContextAware {
         this.recordLoggerThreadPool = generateExecutorService();
         this.environment = getBean(Environment.class);
         this.mockProcessors = new ArrayList<>(getBeans(MockProcessor.class).values());
+        this.basePackages = getBasePackages(applicationContext);
+        this.contextPath = applicationContext.getEnvironment().getProperty("server.servlet.context-path");
     }
 
     public static void setMockInfo(MockInfo mockInfo) {
@@ -340,8 +342,8 @@ public class AgileLoggerContext implements ApplicationContextAware {
         return null;
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    @SuppressWarnings("unchecked")
+    public String[] getBasePackages(ApplicationContext applicationContext) throws BeansException {
         final String annotationStr = "io.github.thebesteric.framework.agile.logger.boot.starter.annotation.EnableAgileLogger";
         try {
             Class<? extends Annotation> annotation = (Class<? extends Annotation>) Class.forName(annotationStr);
@@ -355,11 +357,12 @@ public class AgileLoggerContext implements ApplicationContextAware {
                     Annotation enableAgileLoggerAnnotation = applicatioClass.getAnnotation(annotation);
                     Class<? extends Annotation> enableAgileLoggerAnnotationClass = enableAgileLoggerAnnotation.annotationType();
                     Method method = enableAgileLoggerAnnotationClass.getDeclaredMethod("basePackages");
-                    basePackages = (String[]) method.invoke(enableAgileLoggerAnnotation);
+                    return  (String[]) method.invoke(enableAgileLoggerAnnotation);
                 }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        return null;
     }
 }
