@@ -188,7 +188,7 @@ public abstract class AbstractStatementProcessor implements StatementProcessor {
 
         Map<String, Object> parameters = statementInfo.getParameters();
         LinkedHashMap<String, Object> parameterTypes = new LinkedHashMap<>();
-        parameters.forEach((key, value) -> parameterTypes.put(key, value.getClass()));
+        parameters.forEach((key, value) -> parameterTypes.put(key, value == null ? null : value.getClass()));
 
         Method method = invocation.getMethod();
 
@@ -200,7 +200,7 @@ public abstract class AbstractStatementProcessor implements StatementProcessor {
         if (targetClass != null) {
             Method[] declaredMethods = targetClass.getDeclaredMethods();
             if (CollectionUtils.isNotEmpty(declaredMethods)) {
-                List<String> declaredMethodNames = Arrays.stream(declaredMethods).map(Method::getName).collect(Collectors.toList());
+                List<String> declaredMethodNames = Arrays.stream(declaredMethods).map(Method::getName).toList();
                 if (!declaredMethodNames.contains(targetMethodName)) {
                     targetClassName = method.getDeclaringClass().getName();
                     targetMethodName = method.getName();

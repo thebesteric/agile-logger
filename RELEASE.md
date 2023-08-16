@@ -97,3 +97,6 @@
 ### v2.2.4
 - Perf: Support `server.servlet.context-path`, And the priority is lower than that of the property `uri-prefix`
 - Perf: Optimized how `AgileLoggerContext` gets `basePackages`
+### v2.2.5
+- Fixed (agile-logger-plugin-mybatis): Fixed an issue for parameterTypes when parameters have empty item
+- Fixed (agile-logger-spring): Fixed an issue for `PutMappingProcessor`
