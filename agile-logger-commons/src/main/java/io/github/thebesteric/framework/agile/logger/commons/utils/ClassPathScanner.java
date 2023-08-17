@@ -45,7 +45,7 @@ public interface ClassPathScanner {
                         processClassFile(className);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException("classpath scan error: ", e);
                 }
             }
         }
