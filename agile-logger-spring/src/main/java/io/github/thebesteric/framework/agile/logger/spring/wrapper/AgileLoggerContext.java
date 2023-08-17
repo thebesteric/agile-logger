@@ -233,6 +233,16 @@ public class AgileLoggerContext {
     /**
      * Get bean for type
      *
+     * @param beanName String
+     * @return T
+     */
+    public Object getBean(String beanName) {
+        return getApplicationContext().getBean(beanName);
+    }
+
+    /**
+     * Get bean for type
+     *
      * @param beanType Class<T>
      * @return T
      */
