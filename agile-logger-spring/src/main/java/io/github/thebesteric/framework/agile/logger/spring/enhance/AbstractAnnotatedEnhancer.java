@@ -9,6 +9,7 @@ import io.github.thebesteric.framework.agile.logger.spring.plugin.versioner.anno
 import io.github.thebesteric.framework.agile.logger.spring.wrapper.AgileLoggerContext;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.Enhancer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.stereotype.Controller;
@@ -165,8 +166,60 @@ public abstract class AbstractAnnotatedEnhancer implements BeanPostProcessor {
                     // Copy property if source field value is not null
                     Object sourceFieldValue = sourceField.get(source);
                     Object targetFieldValue = sourceField.get(target);
+
                     if (sourceFieldValue == null && targetFieldValue == null) {
-                        sourceFieldValue = this.agileLoggerContext.getCorrectBean(sourceField.getName(), sourceField.getType());
+                        // @Value inject
+                        if (sourceField.isAnnotationPresent(Value.class)) {
+                            Value valueAnnotation = sourceField.getAnnotation(Value.class);
+                            String expression = valueAnnotation.value().trim();
+                            // @Value("${server.port:8080}")
+                            if (expression.startsWith("$")) {
+                                expression = expression.substring(2, expression.length() - 1).trim();
+                                String[] arr = expression.split(":");
+                                String defaultValue = null;
+                                if (arr.length == 2) {
+                                    defaultValue = arr[1];
+                                }
+                                sourceFieldValue = this.agileLoggerContext.getEnvironment().getProperty(arr[0]);
+                                if (sourceFieldValue == null) {
+                                    sourceFieldValue = defaultValue;
+                                }
+                            }
+                            // @Value("#{myBeans.name:anonymous}")
+                            else if (expression.startsWith("#")) {
+                                expression = expression.substring(2, expression.length() - 1).trim();
+                                String[] arr = expression.split(":");
+                                String defaultValue = null;
+                                if (arr.length == 2) {
+                                    defaultValue = arr[1];
+                                }
+                                String[] attrArr = arr[0].split("\\.");
+                                Object currentBean = null;
+                                for (int i = 0; i < attrArr.length; i++) {
+                                    if (i == (attrArr.length - 1) && attrArr.length > 1) {
+                                        break;
+                                    }
+                                    currentBean = this.agileLoggerContext.getBean(attrArr[i]);
+                                }
+                                if (currentBean != null) {
+                                    Field field = currentBean.getClass().getField(attrArr[attrArr.length - 1]);
+                                    field.setAccessible(true);
+                                    sourceFieldValue = field.get(currentBean);
+                                    if (sourceFieldValue == null && defaultValue != null) {
+                                        sourceFieldValue = defaultValue;
+                                    }
+                                }
+                            }
+                            // @Value("hello")
+                            else {
+                                sourceFieldValue = expression;
+                            }
+                        }
+                        // Bean inject
+                        else {
+                            sourceFieldValue = this.agileLoggerContext.getCorrectBean(sourceField.getName(), sourceField.getType());
+                        }
+
                         if (sourceFieldValue != null) {
                             // Join to source
                             sourceField.set(source, sourceFieldValue);
