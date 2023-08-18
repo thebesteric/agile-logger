@@ -2,6 +2,7 @@ package io.github.thebesteric.framework.agile.logger.core.domain;
 
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.InputStream;
@@ -50,6 +51,8 @@ public class MethodInfo extends AbstractEntity {
                     } else {
                         if (args[i] instanceof Exception) {
                             arguments.put(param.getName(), String.valueOf(args[i]));
+                        } else if (args[i] instanceof MultipartFile file) {
+                            arguments.put(param.getName(), file.getOriginalFilename());
                         } else {
                             arguments.put(param.getName(), args[i]);
                         }
