@@ -103,4 +103,4 @@
 ### v2.2.6
 - Fixed (agile-logger-spring): Fixed an issue `AbstractAnnotatedEnhancer#copyProperties` for handler @Value annotation in multi enhancer
 ### v2.2.7
-- Fixed (agile-logger-core): Fixed a `MultipartFile` processing failure in `MethodInfo`
+- Fixed (agile-logger-core): Fixed a `MultipartFile` processing failure in `MethodInfo` construct
