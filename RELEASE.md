@@ -101,4 +101,6 @@
 - Fixed (agile-logger-plugin-mybatis): Fixed an issue for parameterTypes when parameters have empty item
 - Fixed (agile-logger-spring): Fixed an issue for `PutMappingProcessor`
 ### v2.2.6
-- Fixed (agile-logger-spring): Fixed an issue `AbstractAnnotatedEnhancer#copyProperties` for handler @Value annotation in multi enhancer 
+- Fixed (agile-logger-spring): Fixed an issue `AbstractAnnotatedEnhancer#copyProperties` for handler @Value annotation in multi enhancer
+### v2.2.7
+- Fixed (agile-logger-core): Fixed a `MultipartFile` processing failure in `MethodInfo` construct
